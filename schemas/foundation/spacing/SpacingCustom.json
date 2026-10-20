@@ -1,0 +1,13 @@
+{
+  "name": "SpacingCustom",
+  "type": "object",
+  "description": "Произвольный отступ вне шкалы",
+  "properties": [
+    {
+      "name": "value",
+      "type": "integer",
+      "required": true,
+      "description": "Величина отступа в условных единицах"
+    }
+  ]
+}
