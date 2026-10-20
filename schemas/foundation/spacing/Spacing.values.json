@@ -1,0 +1,20 @@
+{
+  "$ref": "Spacing",
+  "valueType": "integer",
+  "modes": [
+    {
+      "name": "default",
+      "values": {
+        "zero": 0,
+        "xs2": 2,
+        "xs": 4,
+        "s": 8,
+        "m": 12,
+        "l": 16,
+        "xl": 24,
+        "xl2": 32,
+        "xl3": 48
+      }
+    }
+  ]
+}
