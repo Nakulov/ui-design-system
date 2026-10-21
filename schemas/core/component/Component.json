@@ -9,6 +9,12 @@
   },
   "properties": [
     {
+      "name": "id",
+      "type": "string",
+      "required": false,
+      "description": "Идентификатор компонента: UI-тесты, источник событий, ключ элемента в списках, аналитика. Если задан, уникален в пределах дерева модели"
+    },
+    {
       "name": "layout",
       "$ref": "../layout/Layout",
       "required": true,
