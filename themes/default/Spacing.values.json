@@ -1,5 +1,5 @@
 {
-  "$ref": "Spacing",
+  "$ref": "../../schemas/foundation/spacing/Spacing",
   "valueType": "integer",
   "modes": [
     {
