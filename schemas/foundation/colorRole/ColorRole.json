@@ -1,0 +1,16 @@
+{
+  "name": "ColorRole",
+  "type": "oneOf",
+  "description": "Семантическая роль цвета: назначение цвета в интерфейсе, а не конкретный цвет. Цвета ролей задаются темой и меняются в зависимости от режима (светлый, тёмный)",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "oneOf": [
+    {
+      "$ref": "ColorRoleScale",
+      "inline": true
+    }
+  ]
+}
