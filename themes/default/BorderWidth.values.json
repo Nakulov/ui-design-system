@@ -1,0 +1,15 @@
+{
+  "$ref": "../../schemas/foundation/borderWidth/BorderWidth",
+  "valueType": "integer",
+  "modes": [
+    {
+      "name": "default",
+      "values": {
+        "zero": 0,
+        "s": 1,
+        "m": 2,
+        "l": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "BorderWidthCustom",
+  "type": "object",
+  "description": "Произвольная толщина обводки вне шкалы",
+  "properties": [
+    {
+      "name": "value",
+      "type": "integer",
+      "required": true,
+      "description": "Толщина обводки в условных единицах"
+    }
+  ]
+}

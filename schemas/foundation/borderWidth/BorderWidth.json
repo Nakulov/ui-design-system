@@ -1,0 +1,23 @@
+{
+  "name": "BorderWidth",
+  "type": "oneOf",
+  "description": "Толщина обводки или разделителя. Значения задаются в условных единицах: dp на Android, pt на iOS, px в Figma",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "oneOf": [
+    {
+      "$ref": "BorderWidthScale",
+      "inline": true
+    },
+    {
+      "$ref": "BorderWidthCustom",
+      "name": "custom",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
+    }
+  ]
+}
