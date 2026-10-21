@@ -1,0 +1,24 @@
+{
+  "name": "TypographyRoleScale",
+  "type": "enum",
+  "description": "Именованные роли текста",
+  "values": [
+    { "name": "displayLarge", "description": "Крупный дисплейный текст: ключевые числа, заставки" },
+    { "name": "displayMedium", "description": "Средний дисплейный текст" },
+    { "name": "displaySmall", "description": "Малый дисплейный текст" },
+    { "name": "headlineLarge", "description": "Крупный заголовок экрана" },
+    { "name": "headlineMedium", "description": "Средний заголовок" },
+    { "name": "headlineSmall", "description": "Малый заголовок" },
+    { "name": "titleLarge", "description": "Крупный заголовок блока: карточки, диалоги" },
+    { "name": "titleMedium", "description": "Средний заголовок блока" },
+    { "name": "titleSmall", "description": "Малый заголовок блока" },
+    { "name": "bodyLarge", "description": "Крупный основной текст" },
+    { "name": "bodyMedium", "description": "Основной текст" },
+    { "name": "bodyMediumEmphasized", "description": "Основной текст с выделением" },
+    { "name": "bodySmall", "description": "Мелкий основной текст" },
+    { "name": "labelLarge", "description": "Крупная подпись элементов управления: кнопки, вкладки" },
+    { "name": "labelMedium", "description": "Средняя подпись элементов управления" },
+    { "name": "labelSmall", "description": "Малая подпись элементов управления" },
+    { "name": "caption", "description": "Вспомогательный мелкий текст: пояснения, метки" }
+  ]
+}

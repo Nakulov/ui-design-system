@@ -1,0 +1,10 @@
+{
+  "name": "FontFace",
+  "type": "enum",
+  "description": "Внутренний перечень начертаний шрифтов темы default. На платформах не публикуется; используется для подключения файлов шрифтов",
+  "values": [
+    { "name": "interRegular", "description": "Inter, вес 400" },
+    { "name": "interMedium", "description": "Inter, вес 500" },
+    { "name": "interBold", "description": "Inter, вес 700" }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "FontFaceValue",
+  "type": "object",
+  "description": "Начертание шрифта: семейство, вес и файл",
+  "properties": [
+    {
+      "name": "family",
+      "type": "string",
+      "required": true,
+      "description": "Имя семейства шрифта, как его используют платформы и Figma"
+    },
+    {
+      "name": "weight",
+      "type": "integer",
+      "required": true,
+      "description": "Вес начертания от 100 до 900"
+    },
+    {
+      "name": "source",
+      "type": "string",
+      "required": true,
+      "description": "Путь к файлу шрифта относительно каталога темы"
+    }
+  ]
+}

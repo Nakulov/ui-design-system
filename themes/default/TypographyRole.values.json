@@ -1,0 +1,28 @@
+{
+  "$ref": "../../schemas/foundation/typographyRole/TypographyRole",
+  "valueType": { "$ref": "../../schemas/foundation/typographyRole/TypographyStyle" },
+  "modes": [
+    {
+      "name": "default",
+      "values": {
+        "displayLarge": { "fontFamily": "Inter", "fontWeight": 700, "fontSize": 36, "lineHeight": 40 },
+        "displayMedium": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 32, "lineHeight": 36 },
+        "displaySmall": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 28, "lineHeight": 32 },
+        "headlineLarge": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 28, "lineHeight": 32 },
+        "headlineMedium": { "fontFamily": "Inter", "fontWeight": 700, "fontSize": 24, "lineHeight": 28 },
+        "headlineSmall": { "fontFamily": "Inter", "fontWeight": 700, "fontSize": 18, "lineHeight": 24 },
+        "titleLarge": { "fontFamily": "Inter", "fontWeight": 700, "fontSize": 16, "lineHeight": 20 },
+        "titleMedium": { "fontFamily": "Inter", "fontWeight": 700, "fontSize": 14, "lineHeight": 18 },
+        "titleSmall": { "fontFamily": "Inter", "fontWeight": 700, "fontSize": 12, "lineHeight": 16, "letterSpacing": 0.2 },
+        "bodyLarge": { "fontFamily": "Inter", "fontWeight": 400, "fontSize": 16, "lineHeight": 24 },
+        "bodyMedium": { "fontFamily": "Inter", "fontWeight": 400, "fontSize": 14, "lineHeight": 20 },
+        "bodyMediumEmphasized": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 14, "lineHeight": 20 },
+        "bodySmall": { "fontFamily": "Inter", "fontWeight": 400, "fontSize": 12, "lineHeight": 16 },
+        "labelLarge": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 16, "lineHeight": 20 },
+        "labelMedium": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 14, "lineHeight": 18 },
+        "labelSmall": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 12, "lineHeight": 16, "letterSpacing": 0.2 },
+        "caption": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 10, "lineHeight": 14, "letterSpacing": 0.2 }
+      }
+    }
+  ]
+}

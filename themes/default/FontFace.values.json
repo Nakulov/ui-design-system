@@ -1,0 +1,14 @@
+{
+  "$ref": "FontFace",
+  "valueType": { "$ref": "FontFaceValue" },
+  "modes": [
+    {
+      "name": "default",
+      "values": {
+        "interRegular": { "family": "Inter", "weight": 400, "source": "fonts/inter_regular.ttf" },
+        "interMedium": { "family": "Inter", "weight": 500, "source": "fonts/inter_medium.ttf" },
+        "interBold": { "family": "Inter", "weight": 700, "source": "fonts/inter_bold.ttf" }
+      }
+    }
+  ]
+}

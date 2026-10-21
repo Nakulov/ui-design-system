@@ -1,0 +1,37 @@
+{
+  "name": "TypographyStyle",
+  "type": "object",
+  "description": "Параметры стиля текста. Размеры задаются в условных единицах текста: sp на Android, pt на iOS, px в Figma",
+  "properties": [
+    {
+      "name": "fontFamily",
+      "type": "string",
+      "required": true,
+      "description": "Имя семейства шрифта, например Inter. В теме должно существовать начертание с этим семейством и весом"
+    },
+    {
+      "name": "fontWeight",
+      "type": "integer",
+      "required": true,
+      "description": "Вес шрифта от 100 до 900: 400 — обычный, 500 — средний, 700 — жирный"
+    },
+    {
+      "name": "fontSize",
+      "type": "float",
+      "required": true,
+      "description": "Размер шрифта"
+    },
+    {
+      "name": "lineHeight",
+      "type": "float",
+      "required": true,
+      "description": "Межстрочный интервал"
+    },
+    {
+      "name": "letterSpacing",
+      "type": "float",
+      "required": false,
+      "description": "Межбуквенный интервал; при отсутствии — 0"
+    }
+  ]
+}
