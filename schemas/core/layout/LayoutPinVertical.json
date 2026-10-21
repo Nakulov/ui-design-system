@@ -1,0 +1,23 @@
+{
+  "name": "LayoutPinVertical",
+  "type": "oneOf",
+  "description": "Закрепление по вертикали",
+  "oneOf": [
+    {
+      "$ref": "LayoutPinOffset",
+      "name": "top"
+    },
+    {
+      "$ref": "LayoutPinOffset",
+      "name": "bottom"
+    },
+    {
+      "$ref": "LayoutPinOffset",
+      "name": "center"
+    },
+    {
+      "$ref": "LayoutPinStretchVertical",
+      "name": "stretch"
+    }
+  ]
+}

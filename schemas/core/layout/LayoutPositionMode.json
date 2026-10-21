@@ -1,0 +1,8 @@
+{
+  "name": "LayoutPositionMode",
+  "type": "enum",
+  "description": "Способы положения, не требующие параметров",
+  "values": [
+    { "name": "flow", "description": "В потоке родителя: ребёнок Auto Layout в Figma" }
+  ]
+}

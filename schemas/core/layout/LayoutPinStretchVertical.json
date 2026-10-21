@@ -1,0 +1,19 @@
+{
+  "name": "LayoutPinStretchVertical",
+  "type": "object",
+  "description": "Растяжение между верхней и нижней сторонами родителя",
+  "properties": [
+    {
+      "name": "top",
+      "$ref": "../../foundation/spacing/Spacing",
+      "required": true,
+      "description": "Смещение от верхней стороны"
+    },
+    {
+      "name": "bottom",
+      "$ref": "../../foundation/spacing/Spacing",
+      "required": true,
+      "description": "Смещение от нижней стороны"
+    }
+  ]
+}

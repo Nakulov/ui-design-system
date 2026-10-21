@@ -1,0 +1,9 @@
+{
+  "name": "LayoutSizingMode",
+  "type": "enum",
+  "description": "Способы задания размера, не требующие величины",
+  "values": [
+    { "name": "hug", "description": "По содержимому: Hug contents в Figma" },
+    { "name": "fill", "description": "По доступному пространству родителя: Fill container в Figma; в строке — доля свободного места" }
+  ]
+}

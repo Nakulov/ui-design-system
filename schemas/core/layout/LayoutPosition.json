@@ -1,0 +1,15 @@
+{
+  "name": "LayoutPosition",
+  "type": "oneOf",
+  "description": "Положение компонента относительно родителя",
+  "oneOf": [
+    {
+      "$ref": "LayoutPositionMode",
+      "inline": true
+    },
+    {
+      "$ref": "LayoutPinned",
+      "name": "pinned"
+    }
+  ]
+}

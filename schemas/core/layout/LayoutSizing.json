@@ -1,0 +1,15 @@
+{
+  "name": "LayoutSizing",
+  "type": "oneOf",
+  "description": "Способ задания размера по оси",
+  "oneOf": [
+    {
+      "$ref": "LayoutSizingMode",
+      "inline": true
+    },
+    {
+      "$ref": "../../foundation/size/Size",
+      "name": "fixed"
+    }
+  ]
+}

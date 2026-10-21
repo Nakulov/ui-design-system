@@ -1,0 +1,30 @@
+{
+  "name": "Layout",
+  "type": "object",
+  "description": "Поведение компонента внутри родителя: размеры по осям и положение. Поведение родителя (направление, промежутки, отступы, выравнивание детей) задаётся полями контейнера",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "properties": [
+    {
+      "name": "width",
+      "$ref": "LayoutDimension",
+      "required": true,
+      "description": "Ширина компонента"
+    },
+    {
+      "name": "height",
+      "$ref": "LayoutDimension",
+      "required": true,
+      "description": "Высота компонента"
+    },
+    {
+      "name": "position",
+      "$ref": "LayoutPosition",
+      "required": true,
+      "description": "Положение компонента: в потоке родителя или закреплён относительно него"
+    }
+  ]
+}

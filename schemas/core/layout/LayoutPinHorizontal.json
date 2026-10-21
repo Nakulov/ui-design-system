@@ -1,0 +1,23 @@
+{
+  "name": "LayoutPinHorizontal",
+  "type": "oneOf",
+  "description": "Закрепление по горизонтали",
+  "oneOf": [
+    {
+      "$ref": "LayoutPinOffset",
+      "name": "start"
+    },
+    {
+      "$ref": "LayoutPinOffset",
+      "name": "end"
+    },
+    {
+      "$ref": "LayoutPinOffset",
+      "name": "center"
+    },
+    {
+      "$ref": "LayoutPinStretchHorizontal",
+      "name": "stretch"
+    }
+  ]
+}
