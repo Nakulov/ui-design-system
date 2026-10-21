@@ -1,0 +1,20 @@
+{
+  "name": "Size",
+  "type": "oneOf",
+  "description": "Размер компонента или его части: иконки, аватара, высоты кнопки и т. д. Значения задаются в условных единицах: dp на Android, pt на iOS, px в Figma",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "oneOf": [
+    {
+      "$ref": "SizeScale",
+      "inline": true
+    },
+    {
+      "$ref": "SizeCustom",
+      "name": "custom"
+    }
+  ]
+}

@@ -512,8 +512,8 @@ README не дублирует машиночитаемые данные кон�
 ```json
 {
   "schemaFormat": "0.7",
-  "figmaMapping": "0.4",
-  "documentationManifest": "0.2"
+  "figmaMapping": "0.5",
+  "documentationManifest": "0.3"
 }
 ```
 

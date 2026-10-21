@@ -1,0 +1,13 @@
+{
+  "name": "SizeCustom",
+  "type": "object",
+  "description": "Произвольный размер вне шкалы",
+  "properties": [
+    {
+      "name": "value",
+      "type": "integer",
+      "required": true,
+      "description": "Размер в условных единицах"
+    }
+  ]
+}

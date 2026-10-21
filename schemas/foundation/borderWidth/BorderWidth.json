@@ -14,10 +14,7 @@
     },
     {
       "$ref": "BorderWidthCustom",
-      "name": "custom",
-      "releaseVersions": {
-        "figma": "willNotBeReleased"
-      }
+      "name": "custom"
     }
   ]
 }

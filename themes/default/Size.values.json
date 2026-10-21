@@ -1,0 +1,20 @@
+{
+  "$ref": "../../schemas/foundation/size/Size",
+  "valueType": "integer",
+  "modes": [
+    {
+      "name": "default",
+      "values": {
+        "zero": 0,
+        "xs2": 12,
+        "xs": 16,
+        "s": 24,
+        "m": 32,
+        "l": 40,
+        "xl": 48,
+        "xl2": 56,
+        "xl3": 64
+      }
+    }
+  ]
+}

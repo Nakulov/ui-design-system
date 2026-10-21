@@ -14,10 +14,7 @@
     },
     {
       "$ref": "SpacingCustom",
-      "name": "custom",
-      "releaseVersions": {
-        "figma": "willNotBeReleased"
-      }
+      "name": "custom"
     }
   ]
 }
