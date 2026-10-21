@@ -50,6 +50,19 @@ sealed interface Spacing {
 }
 ```
 
+Величины значений шкалы не входят в тип: они генерируются из файла значений и берутся из темы, что позволяет иметь
+разные величины для разных режимов. `Custom` несёт собственную величину:
+
+```kotlin
+val Spacing.dp: Dp
+    @Composable get() = when (this) {
+        is Spacing.Custom -> value.dp
+        else -> LocalSpacingValues.current.of(this)
+    }
+
+Modifier.padding(Spacing.M.dp)
+```
+
 ## Рекомендации по использованию
 
 - Предпочитайте значения шкалы: они обеспечивают единый ритм интерфейса.
