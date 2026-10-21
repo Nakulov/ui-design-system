@@ -1,0 +1,26 @@
+{
+  "$ref": "../../schemas/foundation/elevation/Elevation",
+  "valueType": { "$ref": "../../schemas/foundation/elevation/ElevationStyle" },
+  "modes": [
+    {
+      "name": "light",
+      "values": {
+        "zero": { "offsetX": 0, "offsetY": 0, "blur": 0, "color": "#00000000" },
+        "s": { "offsetX": 0, "offsetY": 1, "blur": 3, "color": "#0000001F" },
+        "m": { "offsetX": 0, "offsetY": 2, "blur": 8, "color": "#00000024" },
+        "l": { "offsetX": 0, "offsetY": 4, "blur": 16, "color": "#00000029" },
+        "xl": { "offsetX": 0, "offsetY": 8, "blur": 24, "color": "#0000002E" }
+      }
+    },
+    {
+      "name": "dark",
+      "values": {
+        "zero": { "offsetX": 0, "offsetY": 0, "blur": 0, "color": "#00000000" },
+        "s": { "offsetX": 0, "offsetY": 1, "blur": 3, "color": "#00000052" },
+        "m": { "offsetX": 0, "offsetY": 2, "blur": 8, "color": "#0000005C" },
+        "l": { "offsetX": 0, "offsetY": 4, "blur": 16, "color": "#00000066" },
+        "xl": { "offsetX": 0, "offsetY": 8, "blur": 24, "color": "#00000070" }
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "ElevationStyle",
+  "type": "object",
+  "description": "Параметры тени одного слоя. Размеры задаются в условных единицах: dp на Android, pt на iOS, px в Figma",
+  "properties": [
+    {
+      "name": "offsetX",
+      "type": "float",
+      "required": true,
+      "description": "Смещение тени по горизонтали"
+    },
+    {
+      "name": "offsetY",
+      "type": "float",
+      "required": true,
+      "description": "Смещение тени по вертикали; положительное значение — вниз"
+    },
+    {
+      "name": "blur",
+      "type": "float",
+      "required": true,
+      "description": "Радиус размытия тени в терминах Figma; платформы пересчитывают его в собственные единицы"
+    },
+    {
+      "name": "spread",
+      "type": "float",
+      "required": false,
+      "description": "Растяжение тени; при отсутствии — 0. Не поддерживается в SwiftUI"
+    },
+    {
+      "name": "color",
+      "type": "color",
+      "required": true,
+      "description": "Цвет тени с прозрачностью"
+    }
+  ]
+}

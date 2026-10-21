@@ -1,0 +1,20 @@
+{
+  "name": "Elevation",
+  "type": "oneOf",
+  "description": "Уровень приподнятости элемента над поверхностью, передаваемый тенью. Параметры тени задаются темой",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "oneOf": [
+    {
+      "$ref": "ElevationScale",
+      "inline": true
+    },
+    {
+      "$ref": "ElevationStyle",
+      "name": "custom"
+    }
+  ]
+}

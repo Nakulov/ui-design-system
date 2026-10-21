@@ -418,11 +418,14 @@ themes/
   default/
     ColorPalette.json
     ColorPalette.values.json
+    BorderWidth.values.json
     ColorRole.values.json
     CornerRadius.values.json
+    Elevation.values.json
     FontFace.json
     FontFace.values.json
     FontFaceValue.json
+    Size.values.json
     Spacing.values.json
     TypographyRole.values.json
     fonts/
@@ -512,7 +515,7 @@ README не дублирует машиночитаемые данные кон�
 ```json
 {
   "schemaFormat": "0.7",
-  "figmaMapping": "0.5",
+  "figmaMapping": "0.6",
   "documentationManifest": "0.3"
 }
 ```

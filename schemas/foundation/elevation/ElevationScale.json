@@ -1,0 +1,12 @@
+{
+  "name": "ElevationScale",
+  "type": "enum",
+  "description": "Именованные уровни приподнятости",
+  "values": [
+    { "name": "zero", "description": "Без тени" },
+    { "name": "s", "description": "Слабая тень: карточки" },
+    { "name": "m", "description": "Средняя тень: плавающие кнопки, приподнятые элементы" },
+    { "name": "l", "description": "Заметная тень: меню, выпадающие списки" },
+    { "name": "xl", "description": "Сильная тень: диалоги, нижние листы" }
+  ]
+}
