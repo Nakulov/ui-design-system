@@ -415,7 +415,7 @@ schemas/
    | Файл                | Назначение                   | Спецификация                |
    |---------------------|------------------------------|-----------------------------|
    | `<Имя>.values.json` | Величины сущности.           | Раздел 9.1.                 |
-   | `<Имя>.figma.json`  | Проект Figma Component Set.  | `figma-mapping.md`          |
+   | `<Имя>.figma.json`  | Проект Figma-компонента.     | `figma-mapping.md`          |
    | `<Имя>.docs.json`   | Манифест документации Figma. | `documentation-manifest.md` |
 
 5. Дополнительные слои (например, составные типы и компоненты) будут вводиться по мере необходимости.
@@ -445,8 +445,8 @@ README не дублирует машиночитаемые данные кон�
 ```json
 {
   "schemaFormat": "0.5",
-  "figmaMapping": "0.1",
-  "documentationManifest": "0.1"
+  "figmaMapping": "0.2",
+  "documentationManifest": "0.2"
 }
 ```
 
