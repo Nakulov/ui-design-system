@@ -19,6 +19,12 @@
       "$ref": "../layout/Layout",
       "required": true,
       "description": "Размеры и положение компонента внутри родителя"
+    },
+    {
+      "name": "padding",
+      "$ref": "../padding/Padding",
+      "required": true,
+      "description": "Внутренние отступы корня компонента"
     }
   ]
 }

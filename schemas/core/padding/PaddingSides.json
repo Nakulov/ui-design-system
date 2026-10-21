@@ -1,0 +1,31 @@
+{
+  "name": "PaddingSides",
+  "type": "object",
+  "description": "Отступы, заданные для каждой стороны",
+  "properties": [
+    {
+      "name": "start",
+      "$ref": "../../foundation/spacing/Spacing",
+      "required": true,
+      "description": "Отступ с начальной стороны: слева при письме слева направо"
+    },
+    {
+      "name": "top",
+      "$ref": "../../foundation/spacing/Spacing",
+      "required": true,
+      "description": "Отступ сверху"
+    },
+    {
+      "name": "end",
+      "$ref": "../../foundation/spacing/Spacing",
+      "required": true,
+      "description": "Отступ с конечной стороны: справа при письме слева направо"
+    },
+    {
+      "name": "bottom",
+      "$ref": "../../foundation/spacing/Spacing",
+      "required": true,
+      "description": "Отступ снизу"
+    }
+  ]
+}
