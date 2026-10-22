@@ -1,0 +1,20 @@
+{
+  "name": "Event",
+  "type": "oneOf",
+  "description": "Событие, которое компонент передаёт приложению при взаимодействии пользователя, вместе с данными о том, что нужно сделать",
+  "releaseVersions": {
+    "figma": "willNotBeReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "oneOf": [
+    {
+      "$ref": "EventData",
+      "name": "click"
+    },
+    {
+      "$ref": "EventData",
+      "name": "longPress"
+    }
+  ]
+}

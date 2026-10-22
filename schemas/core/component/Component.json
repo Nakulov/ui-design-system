@@ -25,6 +25,19 @@
       "$ref": "../padding/Padding",
       "required": true,
       "description": "Внутренние отступы корня компонента"
+    },
+    {
+      "name": "events",
+      "type": "array",
+      "items": {
+        "$ref": "../events/Event"
+      },
+      "uniqueVariants": true,
+      "required": false,
+      "description": "События, которые компонент передаёт приложению, с данными о том, что нужно сделать. Каждое событие задаётся не более одного раза",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
     }
   ]
 }

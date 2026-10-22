@@ -1,0 +1,13 @@
+{
+  "name": "EventData",
+  "type": "object",
+  "description": "Данные события",
+  "properties": [
+    {
+      "name": "payload",
+      "type": "payload",
+      "required": true,
+      "description": "Что нужно сделать при событии. Тип задаёт приложение; компонент передаёт данные обработчику без изменений"
+    }
+  ]
+}
