@@ -12,6 +12,14 @@
       "name": "vertical"
     },
     {
+      "$ref": "ContainerHorizontalWrap",
+      "name": "horizontalWrap"
+    },
+    {
+      "$ref": "ContainerVerticalWrap",
+      "name": "verticalWrap"
+    },
+    {
       "$ref": "ContainerOverlay",
       "name": "overlay"
     }

@@ -5,7 +5,7 @@
   "values": [
     {
       "name": "spaceBetween",
-      "description": "Крайние дети у краёв, свободное место поровну между детьми: Spacing between items = Auto в Figma"
+      "description": "Крайние элементы (дети, строки или колонки) у краёв, свободное место поровну между ними: Auto в Figma"
     }
   ]
 }

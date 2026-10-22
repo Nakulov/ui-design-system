@@ -1,0 +1,15 @@
+{
+  "name": "ContainerLineDistribution",
+  "type": "oneOf",
+  "description": "Распределение строк или колонок при переносе. Положение группы строк задаёт alignment",
+  "oneOf": [
+    {
+      "$ref": "ContainerLinePacked",
+      "name": "packed"
+    },
+    {
+      "$ref": "ContainerDistributionMode",
+      "inline": true
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "ContainerHorizontalWrap",
+  "type": "object",
+  "description": "Дети в строку с переносом на новую строку: горизонтальный Auto Layout с Wrap в Figma",
+  "properties": [
+    {
+      "name": "alignment",
+      "$ref": "ContainerVerticalAlignment",
+      "required": true,
+      "description": "Выравнивание по вертикали: детей внутри строки и строк в контейнере"
+    },
+    {
+      "name": "distribution",
+      "$ref": "ContainerHorizontalDistribution",
+      "required": true,
+      "description": "Распределение детей внутри каждой строки"
+    },
+    {
+      "name": "lineDistribution",
+      "$ref": "ContainerLineDistribution",
+      "required": true,
+      "description": "Распределение строк по вертикали"
+    }
+  ]
+}

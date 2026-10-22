@@ -178,27 +178,34 @@ stroke:     { width: BorderWidth, color: ColorRole }                       — �
 
 ## 9. Контейнер
 
-`Container` (`schemas/components/container/Container`) — первый компонент: располагает детей в строку, в колонку или
-наложением. Наследует `Component` (`extends`, `schema-format.md`, раздел 5.2).
+`Container` (`schemas/components/container/Container`) — первый компонент: располагает детей в строку, в колонку (в том
+числе с переносом) или наложением. Наследует `Component` (`extends`, `schema-format.md`, раздел 5.2).
 
 ```
 arrangement: oneOf
   horizontal { alignment: top | center | bottom,    distribution }
   vertical   { alignment: start | center | end,     distribution }
+  horizontalWrap { alignment: top | center | bottom, distribution, lineDistribution }
+  verticalWrap   { alignment: start | center | end,  distribution, lineDistribution }
   overlay    { horizontal: start | center | end,    vertical: top | center | bottom }
 distribution: oneOf
   packed { gap: Spacing, position }               — position по оси контейнера
   spaceBetween
+lineDistribution: oneOf                           — строки (колонки) при переносе
+  packed { gap: Spacing }                         — положение группы задаёт alignment
+  spaceBetween
 children?: [Component]                            — любой компонент, порядок значим
 ```
 
-| Вариант        | Figma                                       | Compose                               | SwiftUI               |
-|----------------|---------------------------------------------|---------------------------------------|-----------------------|
-| `horizontal`   | Auto Layout, horizontal                     | `Row`                                 | `HStack`              |
-| `vertical`     | Auto Layout, vertical                       | `Column`                              | `VStack`              |
-| `overlay`      | фрейм без Auto Layout, дети с констрейнтами | `Box(contentAlignment)`               | `ZStack(alignment:)`  |
-| `packed`       | Spacing between items = `gap`               | `Arrangement.spacedBy(gap, position)` | `spacing:`, `Spacer`  |
-| `spaceBetween` | Spacing between items = Auto                | `Arrangement.SpaceBetween`            | `Spacer` между детьми |
+| Вариант          | Figma                                       | Compose                               | SwiftUI                      |
+|------------------|---------------------------------------------|---------------------------------------|------------------------------|
+| `horizontal`     | Auto Layout, horizontal                     | `Row`                                 | `HStack`                     |
+| `vertical`       | Auto Layout, vertical                       | `Column`                              | `VStack`                     |
+| `horizontalWrap` | Auto Layout, horizontal, Wrap               | `FlowRow`                             | свой `FlowLayout` (`Layout`) |
+| `verticalWrap`   | Auto Layout, vertical, Wrap                 | `FlowColumn`                          | свой `FlowLayout` (`Layout`) |
+| `overlay`        | фрейм без Auto Layout, дети с констрейнтами | `Box(contentAlignment)`               | `ZStack(alignment:)`         |
+| `packed`         | Spacing between items = `gap`               | `Arrangement.spacedBy(gap, position)` | `spacing:`, `Spacer`         |
+| `spaceBetween`   | Spacing between items = Auto                | `Arrangement.SpaceBetween`            | `Spacer` между детьми        |
 
 1. Один контейнер с вариантами вместо отдельных `Row`, `Column`, `Overlay`: в Figma направление — свойство фрейма, и
    сервер меняет направление, не меняя тип компонента. `oneOf` исключает бессмысленные сочетания (`gap` у наложения).
@@ -210,12 +217,14 @@ children?: [Component]                            — любой компоне�
    своему закреплению. Последний ребёнок рисуется сверху. В Figma плагин переводит положение в констрейнты.
 6. `children` необязательно: контейнер без детей — оформленный блок (плашка, разделитель).
 7. В Figma контейнер — обычный фрейм, а не Figma-компонент.
+8. Перенос — отдельные варианты `horizontalWrap` и `verticalWrap`, а не флаг: у переноса есть промежуток между
+   строками, а оси задают типы выравнивания. Один `alignment` выравнивает и детей в строке, и группу строк: в Figma
+   оба задаются `counterAxisAlignItems`. `maxLines` и `maxItemsInEachRow` не используются: в Figma их нет.
 
 ## 10. Открытые вопросы
 
 1. Остальные поля `Component`.
-2. Контейнер: перенос детей на новую строку (wrap), выравнивание по базовой линии текста, правила Figma для
-   контейнера в `figma-mapping.md`.
+2. Контейнер: выравнивание по базовой линии текста, правила Figma для контейнера в `figma-mapping.md`.
 3. Изменения `schema-format.md`: набор поддерживаемых событий и контекстов `appearance` у компонента, значения по
    умолчанию, состояния взаимодействия для Figma.
 4. Закреплённые дети в потоковых контейнерах (вне контейнера наложения).

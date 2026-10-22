@@ -1,0 +1,25 @@
+{
+  "name": "ContainerVerticalWrap",
+  "type": "object",
+  "description": "Дети в колонку с переносом в новую колонку: вертикальный Auto Layout с Wrap в Figma",
+  "properties": [
+    {
+      "name": "alignment",
+      "$ref": "ContainerHorizontalAlignment",
+      "required": true,
+      "description": "Выравнивание по горизонтали: детей внутри колонки и колонок в контейнере"
+    },
+    {
+      "name": "distribution",
+      "$ref": "ContainerVerticalDistribution",
+      "required": true,
+      "description": "Распределение детей внутри каждой колонки"
+    },
+    {
+      "name": "lineDistribution",
+      "$ref": "ContainerLineDistribution",
+      "required": true,
+      "description": "Распределение колонок по горизонтали"
+    }
+  ]
+}
