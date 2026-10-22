@@ -1,0 +1,25 @@
+{
+  "name": "AppearanceControl",
+  "type": "object",
+  "description": "Оформление нажимаемого компонента (например, кнопки) по состояниям",
+  "properties": [
+    {
+      "name": "default",
+      "$ref": "AppearancePlain",
+      "required": true,
+      "description": "Обычное состояние"
+    },
+    {
+      "name": "pressed",
+      "$ref": "AppearancePlain",
+      "required": true,
+      "description": "Состояние во время нажатия"
+    },
+    {
+      "name": "disabled",
+      "$ref": "AppearancePlain",
+      "required": true,
+      "description": "Недоступное состояние"
+    }
+  ]
+}

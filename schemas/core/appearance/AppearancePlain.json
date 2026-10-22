@@ -1,0 +1,37 @@
+{
+  "name": "AppearancePlain",
+  "type": "object",
+  "description": "Оформление без состояний",
+  "properties": [
+    {
+      "name": "background",
+      "$ref": "AppearanceBackground",
+      "required": false,
+      "description": "Фон. Если не задан, фон прозрачный"
+    },
+    {
+      "name": "shadow",
+      "$ref": "../../foundation/elevation/Elevation",
+      "required": false,
+      "description": "Тень. Если не задана, тени нет"
+    },
+    {
+      "name": "cornerRadius",
+      "$ref": "../../foundation/cornerRadius/CornerRadius",
+      "required": false,
+      "description": "Скругление углов. Если не задано, углы прямые"
+    },
+    {
+      "name": "stroke",
+      "$ref": "AppearanceStroke",
+      "required": false,
+      "description": "Внутренняя обводка. Если не задана, обводки нет"
+    },
+    {
+      "name": "clip",
+      "type": "boolean",
+      "required": false,
+      "description": "Обрезать содержимое по границам и скруглению компонента. Если не задано, содержимое не обрезается"
+    }
+  ]
+}

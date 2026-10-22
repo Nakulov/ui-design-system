@@ -1,0 +1,19 @@
+{
+  "name": "AppearanceSelectable",
+  "type": "object",
+  "description": "Оформление выбираемого компонента (например, чипа, чекбокса, таба). Каждое положение выбора содержит оформление нажимаемого компонента, поэтому сочетания состояний (выбран и нажат) выражаются вложением",
+  "properties": [
+    {
+      "name": "unselected",
+      "$ref": "AppearanceControl",
+      "required": true,
+      "description": "Оформление невыбранного компонента"
+    },
+    {
+      "name": "selected",
+      "$ref": "AppearanceControl",
+      "required": true,
+      "description": "Оформление выбранного компонента"
+    }
+  ]
+}

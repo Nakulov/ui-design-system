@@ -1,0 +1,28 @@
+{
+  "name": "Appearance",
+  "type": "oneOf",
+  "description": "Оформление корня компонента: фон, тень, скругление, обводка, обрезка. Вариант задаёт контекст компонента и набор его состояний",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "oneOf": [
+    {
+      "$ref": "AppearancePlain",
+      "name": "plain"
+    },
+    {
+      "$ref": "AppearanceControl",
+      "name": "control"
+    },
+    {
+      "$ref": "AppearanceSelectable",
+      "name": "selectable"
+    },
+    {
+      "$ref": "AppearanceFocusable",
+      "name": "focusable"
+    }
+  ]
+}

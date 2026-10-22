@@ -1,0 +1,11 @@
+{
+  "name": "AppearanceBackground",
+  "type": "oneOf",
+  "description": "Заливка фона",
+  "oneOf": [
+    {
+      "$ref": "../../foundation/colorRole/ColorRole",
+      "name": "solid"
+    }
+  ]
+}

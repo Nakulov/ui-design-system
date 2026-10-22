@@ -1,0 +1,25 @@
+{
+  "name": "AppearanceFocusable",
+  "type": "object",
+  "description": "Оформление компонента, принимающего фокус ввода (например, поля ввода), по состояниям",
+  "properties": [
+    {
+      "name": "default",
+      "$ref": "AppearancePlain",
+      "required": true,
+      "description": "Обычное состояние"
+    },
+    {
+      "name": "focused",
+      "$ref": "AppearancePlain",
+      "required": true,
+      "description": "Компонент в фокусе: например, в поле ввода установлен курсор"
+    },
+    {
+      "name": "disabled",
+      "$ref": "AppearancePlain",
+      "required": true,
+      "description": "Недоступное состояние"
+    }
+  ]
+}

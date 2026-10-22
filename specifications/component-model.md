@@ -23,12 +23,13 @@
 
 Каждый компонент расширяет базовую модель `Component`. Её поля:
 
-| Поле      | Статус                 | Контракт                       |
-|-----------|------------------------|--------------------------------|
-| `id`      | Согласовано (раздел 5) | свойство `Component`           |
-| `layout`  | Согласовано (раздел 4) | `schemas/core/layout/Layout`   |
-| `padding` | Согласовано (раздел 6) | `schemas/core/padding/Padding` |
-| `events`  | Согласовано (раздел 7) | `schemas/core/events/Event`    |
+| Поле         | Статус                 | Контракт                             |
+|--------------|------------------------|--------------------------------------|
+| `id`         | Согласовано (раздел 5) | свойство `Component`                 |
+| `layout`     | Согласовано (раздел 4) | `schemas/core/layout/Layout`         |
+| `padding`    | Согласовано (раздел 6) | `schemas/core/padding/Padding`       |
+| `appearance` | Согласовано (раздел 8) | `schemas/core/appearance/Appearance` |
+| `events`     | Согласовано (раздел 7) | `schemas/core/events/Event`          |
 
 Базовая модель: `schemas/core/component/Component`.
 
@@ -140,11 +141,51 @@ payload: Payload                   — тип задаёт приложение
 4. В Figma события не реализуются (`willNotBeReleased` у свойства `events` и контракта `Event`): `payload` — тип
    приложения, дизайнер его не задаёт, а на отрисовку события не влияют.
 
-## 8. Открытые вопросы
+## 8. `appearance`
 
-1. Остальные поля `Component`: оформление и другие.
+Оформление корня компонента. Тип `Appearance` — `oneOf` по контексту компонента: контекст задаёт набор состояний, поэтому
+у кнопки нет состояния «выбран», а у текста — «нажат».
+
+```
+appearance:
+  plain:      { background?, shadow?, cornerRadius?, stroke?, clip? }
+  control:    { default: plain, pressed: plain, disabled: plain }          — кнопка
+  selectable: { unselected: control, selected: control }                   — чип, чекбокс, таб
+  focusable:  { default: plain, focused: plain, disabled: plain }          — поле ввода
+background: solid(ColorRole)
+stroke:     { width: BorderWidth, color: ColorRole }                       — только внутренняя
+```
+
+| Поле `plain`   | Тип                         | Figma         | Compose              | SwiftUI         |
+|----------------|-----------------------------|---------------|----------------------|-----------------|
+| `background`   | `solid(ColorRole)`          | Fill          | `background`         | `.background`   |
+| `shadow`       | `Elevation`                 | Effect style  | `shadow`             | `.shadow`       |
+| `cornerRadius` | `CornerRadius`              | Corner radius | `RoundedCornerShape` | `.clipShape`    |
+| `stroke`       | `BorderWidth` + `ColorRole` | Stroke inside | `border`             | `.strokeBorder` |
+| `clip`         | `boolean`                   | Clip content  | `clip`               | `.clipped()`    |
+
+1. Поля `plain` необязательны: отсутствие означает прозрачный фон, отсутствие тени и обводки, прямые углы и содержимое
+   без обрезки.
+2. Сочетания состояний выражаются вложением контекстов: нажатый выбранный чип оформлен `selected.pressed`.
+3. `Appearance` описывает только вид состояний. Состояние определяют поля компонента (доступность, выбор) и
+   взаимодействие пользователя (нажатие, фокус).
+4. Фон — `oneOf`, чтобы градиент (`gradient`) добавился вариантом без несовместимого изменения.
+5. Обводка только внутренняя: не меняет размер компонента; в Compose `border` рисует внутри, в Figma — Stroke inside.
+6. В Figma `plain` соответствует оформлению корневого фрейма instance (fill, effect style, corner radius, stroke, clip
+   content), состояния — variant-свойству состояния в Component Set. Правила войдут в `figma-mapping.md` при переносе
+   модели компонентов в спецификацию.
+7. Каждое состояние задаёт оформление полностью; повтор общих полей предполагается решить пресетами оформления.
+
+## 9. Открытые вопросы
+
+1. Остальные поля `Component`.
 2. Поля контейнера: направление (`horizontal`, `vertical`, `overlay`), `gap`, `padding`, выравнивание, распределение
-   (`packed`, `spaceBetween`), оформление (в том числе фон-изображение), дети.
+   (`packed`, `spaceBetween`), дети. Оформление контейнера задаёт `appearance` базовой модели.
 3. Изменения `schema-format.md`: базовый контракт и расширение, тип «любой компонент», набор поддерживаемых
    событий у компонента, значения по умолчанию, состояния взаимодействия для Figma.
 4. Закреплённые дети в потоковых контейнерах (вне контейнера наложения).
+5. Оформление: пресеты, градиент и изображение фона, набор контекстов `appearance`, допустимых для компонента.
+6. Контекст `expandable` (`collapsed`, `expanded`, в каждом — `control`) — вместе с первым аккордеоном, если его корень
+   выглядит по-разному в этих положениях.
+7. Состояния загрузки контента (изображение, файл): загрузка, ошибка, готово. Относятся к содержимому компонента, а не к
+   `appearance`.

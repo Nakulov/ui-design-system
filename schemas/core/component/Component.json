@@ -27,6 +27,12 @@
       "description": "Внутренние отступы корня компонента"
     },
     {
+      "name": "appearance",
+      "$ref": "../appearance/Appearance",
+      "required": true,
+      "description": "Оформление корня компонента по состояниям: фон, тень, скругление, обводка, обрезка"
+    },
+    {
       "name": "events",
       "type": "array",
       "items": {
