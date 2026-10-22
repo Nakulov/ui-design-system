@@ -176,13 +176,48 @@ stroke:     { width: BorderWidth, color: ColorRole }                       — �
    модели компонентов в спецификацию.
 7. Каждое состояние задаёт оформление полностью; повтор общих полей предполагается решить пресетами оформления.
 
-## 9. Открытые вопросы
+## 9. Контейнер
+
+`Container` (`schemas/components/container/Container`) — первый компонент: располагает детей в строку, в колонку или
+наложением. Наследует `Component` (`extends`, `schema-format.md`, раздел 5.2).
+
+```
+arrangement: oneOf
+  horizontal { alignment: top | center | bottom,    distribution }
+  vertical   { alignment: start | center | end,     distribution }
+  overlay    { horizontal: start | center | end,    vertical: top | center | bottom }
+distribution: oneOf
+  packed { gap: Spacing, position }               — position по оси контейнера
+  spaceBetween
+children?: [Component]                            — любой компонент, порядок значим
+```
+
+| Вариант        | Figma                                       | Compose                               | SwiftUI               |
+|----------------|---------------------------------------------|---------------------------------------|-----------------------|
+| `horizontal`   | Auto Layout, horizontal                     | `Row`                                 | `HStack`              |
+| `vertical`     | Auto Layout, vertical                       | `Column`                              | `VStack`              |
+| `overlay`      | фрейм без Auto Layout, дети с констрейнтами | `Box(contentAlignment)`               | `ZStack(alignment:)`  |
+| `packed`       | Spacing between items = `gap`               | `Arrangement.spacedBy(gap, position)` | `spacing:`, `Spacer`  |
+| `spaceBetween` | Spacing between items = Auto                | `Arrangement.SpaceBetween`            | `Spacer` между детьми |
+
+1. Один контейнер с вариантами вместо отдельных `Row`, `Column`, `Overlay`: в Figma направление — свойство фрейма, и
+   сервер меняет направление, не меняя тип компонента. `oneOf` исключает бессмысленные сочетания (`gap` у наложения).
+2. `gap` есть только у `packed`: при `spaceBetween` промежуток вычисляется.
+3. `alignment` выравнивает детей поперёк оси. Растяжение задаёт `layout` ребёнка (`fill`), поэтому `stretch` в
+   выравнивании нет.
+4. `spaceAround` и `spaceEvenly` не используются: в Figma их нет.
+5. В наложении `overlay` задаёт положение детей с `position = flow`; дети с `position = pinned` располагаются по
+   своему закреплению. Последний ребёнок рисуется сверху. В Figma плагин переводит положение в констрейнты.
+6. `children` необязательно: контейнер без детей — оформленный блок (плашка, разделитель).
+7. В Figma контейнер — обычный фрейм, а не Figma-компонент.
+
+## 10. Открытые вопросы
 
 1. Остальные поля `Component`.
-2. Поля контейнера: направление (`horizontal`, `vertical`, `overlay`), `gap`, `padding`, выравнивание, распределение
-   (`packed`, `spaceBetween`), дети. Оформление контейнера задаёт `appearance` базовой модели.
-3. Изменения `schema-format.md`: базовый контракт и расширение, тип «любой компонент», набор поддерживаемых
-   событий у компонента, значения по умолчанию, состояния взаимодействия для Figma.
+2. Контейнер: перенос детей на новую строку (wrap), выравнивание по базовой линии текста, правила Figma для
+   контейнера в `figma-mapping.md`.
+3. Изменения `schema-format.md`: набор поддерживаемых событий и контекстов `appearance` у компонента, значения по
+   умолчанию, состояния взаимодействия для Figma.
 4. Закреплённые дети в потоковых контейнерах (вне контейнера наложения).
 5. Оформление: пресеты, градиент и изображение фона, набор контекстов `appearance`, допустимых для компонента.
 6. Контекст `expandable` (`collapsed`, `expanded`, в каждом — `control`) — вместе с первым аккордеоном, если его корень

@@ -1,0 +1,15 @@
+{
+  "name": "ContainerVerticalDistribution",
+  "type": "oneOf",
+  "description": "Распределение детей по вертикали",
+  "oneOf": [
+    {
+      "$ref": "ContainerVerticalPacked",
+      "name": "packed"
+    },
+    {
+      "$ref": "ContainerDistributionMode",
+      "inline": true
+    }
+  ]
+}

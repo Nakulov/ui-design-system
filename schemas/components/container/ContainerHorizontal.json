@@ -1,0 +1,19 @@
+{
+  "name": "ContainerHorizontal",
+  "type": "object",
+  "description": "Дети в строку: горизонтальный Auto Layout в Figma",
+  "properties": [
+    {
+      "name": "alignment",
+      "$ref": "ContainerVerticalAlignment",
+      "required": true,
+      "description": "Выравнивание детей по вертикали"
+    },
+    {
+      "name": "distribution",
+      "$ref": "ContainerHorizontalDistribution",
+      "required": true,
+      "description": "Распределение детей по горизонтали"
+    }
+  ]
+}

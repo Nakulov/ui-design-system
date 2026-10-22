@@ -1,0 +1,19 @@
+{
+  "name": "ContainerArrangement",
+  "type": "oneOf",
+  "description": "Способ расположения детей",
+  "oneOf": [
+    {
+      "$ref": "ContainerHorizontal",
+      "name": "horizontal"
+    },
+    {
+      "$ref": "ContainerVertical",
+      "name": "vertical"
+    },
+    {
+      "$ref": "ContainerOverlay",
+      "name": "overlay"
+    }
+  ]
+}

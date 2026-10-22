@@ -1,0 +1,19 @@
+{
+  "name": "ContainerOverlay",
+  "type": "object",
+  "description": "Дети наложены друг на друга; последний ребёнок сверху. Задаёт положение детей с position = flow; дети с position = pinned располагаются по своему закреплению",
+  "properties": [
+    {
+      "name": "horizontal",
+      "$ref": "ContainerHorizontalAlignment",
+      "required": true,
+      "description": "Положение детей по горизонтали"
+    },
+    {
+      "name": "vertical",
+      "$ref": "ContainerVerticalAlignment",
+      "required": true,
+      "description": "Положение детей по вертикали"
+    }
+  ]
+}

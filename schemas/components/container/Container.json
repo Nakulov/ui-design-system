@@ -1,0 +1,28 @@
+{
+  "name": "Container",
+  "type": "object",
+  "extends": "../../core/component/Component",
+  "description": "Контейнер: располагает детей в строку, в колонку или наложением. В Figma соответствует фрейму: с Auto Layout для строки и колонки, без него для наложения",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "properties": [
+    {
+      "name": "arrangement",
+      "$ref": "ContainerArrangement",
+      "required": true,
+      "description": "Способ расположения детей: строка, колонка или наложение"
+    },
+    {
+      "name": "children",
+      "type": "array",
+      "items": {
+        "$ref": "../../core/component/Component"
+      },
+      "required": false,
+      "description": "Дети в порядке расположения; порядок совпадает с порядком слоёв в Figma. Если не заданы, контейнер — оформленный блок без содержимого"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "ContainerDistributionMode",
+  "type": "enum",
+  "description": "Способы распределения, не требующие параметров",
+  "values": [
+    {
+      "name": "spaceBetween",
+      "description": "Крайние дети у краёв, свободное место поровну между детьми: Spacing between items = Auto в Figma"
+    }
+  ]
+}

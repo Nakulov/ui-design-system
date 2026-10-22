@@ -1,0 +1,19 @@
+{
+  "name": "ContainerVerticalAlignment",
+  "type": "enum",
+  "description": "Положение по вертикали",
+  "values": [
+    {
+      "name": "top",
+      "description": "У верхнего края"
+    },
+    {
+      "name": "center",
+      "description": "По центру"
+    },
+    {
+      "name": "bottom",
+      "description": "У нижнего края"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "ContainerHorizontalAlignment",
+  "type": "enum",
+  "description": "Положение по горизонтали",
+  "values": [
+    {
+      "name": "start",
+      "description": "У начального края: слева при письме слева направо"
+    },
+    {
+      "name": "center",
+      "description": "По центру"
+    },
+    {
+      "name": "end",
+      "description": "У конечного края: справа при письме слева направо"
+    }
+  ]
+}
