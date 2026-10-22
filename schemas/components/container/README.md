@@ -6,7 +6,7 @@
 контейнеров, как макет в Figma — из вложенных фреймов с Auto Layout.
 
 Контейнер наследует базовую модель `Component`: размеры и положение в родителе (`layout`), внутренние отступы
-(`padding`), оформление (`appearance`) и события (`events`). Собственные поля контейнера — способ расположения детей
+(`padding`), оформление (`appearance`, контекст `plain`) и события (`events`). Собственные поля контейнера — способ расположения детей
 (`arrangement`) и сами дети (`children`).
 
 ## Состав
@@ -70,6 +70,8 @@ lineDistribution: oneOf               — строки (колонки) при �
    задаются `counterAxisAlignItems`. Поэтому у `lineDistribution.packed` нет своего положения.
 6. Ограничения числа строк и детей в строке (`maxLines`, `maxItemsInEachRow` в Compose) не поддерживаются: в Figma
    их нет.
+7. В Figma контейнер — фрейм, а не Figma-компонент: он создаётся только при отрисовке модели (`figma-mapping.md`,
+   разделы 3.4 и 10.3).
 
 Пример модели:
 
@@ -97,7 +99,7 @@ data class Container(
     override val id: String? = null,
     override val layout: Layout,
     override val padding: Padding,
-    override val appearance: Appearance,
+    override val appearance: Appearance.Plain,
     override val events: Set<Event>? = null,
     val arrangement: ContainerArrangement,
     val children: List<Component>? = null,
@@ -146,8 +148,6 @@ sealed interface ContainerHorizontalDistribution {
 
 ## Ограничения и открытые вопросы
 
-- Представление в Figma: контейнер — обычный фрейм, а не Figma-компонент. Правило войдёт в `figma-mapping.md` при
-  переносе модели компонентов в спецификацию.
 - Выравнивание по базовой линии текста не поддерживается.
 - В SwiftUI готового переноса нет: генератор поставляет собственный `FlowLayout` на протоколе `Layout`.
 - Значений по умолчанию в формате пока нет, поэтому поля выравнивания и распределения обязательны.

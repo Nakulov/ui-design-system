@@ -2,6 +2,7 @@
   "name": "Container",
   "type": "object",
   "extends": "../../core/component/Component",
+  "appearanceContext": "plain",
   "description": "Контейнер: располагает детей в строку, в колонку (в том числе с переносом) или наложением. В Figma соответствует фрейму: с Auto Layout для строки и колонки, без него для наложения",
   "releaseVersions": {
     "figma": "notReleased",
