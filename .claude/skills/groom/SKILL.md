@@ -43,28 +43,33 @@ description: Груминг задачи дизайн-системы — обс�
 | In review   | `95554372` |
 | Done        | `7f87e422` |
 
-Статус ставь только функцией `board_status`: она добавляет задачу на доску (повторное добавление возвращает тот же
-элемент), ставит статус и проверяет, что задача видна в списке элементов доски.
+Статус ставь только функцией `board_status`: она добавляет задачу на доску, ставит статус и проверяет, что задача видна
+в списке элементов доски.
 
-Список доски (GraphQL `items`, `gh project item-list`, веб-интерфейс) отстаёт от добавления на секунды, а иногда
-элемент остаётся невидимым совсем, хотя задача считает себя на доске (`gh issue view N --json projectItems`). Поэтому
-функция проверяет список несколько раз, а если задачи нет — удаляет элемент и добавляет заново. Оболочка — zsh:
-не разбивай строки через `set -- $var`, передавай номер задачи и статус отдельными аргументами.
+Добавление через GraphQL (`addProjectV2ItemById`) ненадёжно: элемент может навсегда остаться невидимым в списке доски
+(GraphQL `items`, `gh project item-list`, веб-интерфейс), хотя задача считает себя на доске
+(`gh issue view N --json projectItems`); пересоздание через GraphQL помогает не всегда (#10). Поэтому функция добавляет
+задачу через REST API доски. Если задача уже на доске, REST отвечает `422 Content already exists`, и функция берёт
+существующий элемент из `projectItems` задачи. Видимость проверяется и в REST-, и в GraphQL-списке несколько раз; если
+задачи нет — элемент удаляется и добавляется заново. Оболочка — zsh: не разбивай строки через `set -- $var`, передавай
+номер задачи и статус отдельными аргументами.
 
 ```sh
 board_status() {  # board_status <номер задачи> <id статуса>
-  local p=PVT_kwHOASpeKc4BoUwf f=PVTSSF_lAHOASpeKc4BoUwfzhm1ZcE cid item attempt check
-  cid=$(gh issue view "$1" --json id --jq .id) || return 1
+  local p=PVT_kwHOASpeKc4BoUwf f=PVTSSF_lAHOASpeKc4BoUwfzhm1ZcE items=users/Nakulov/projectsV2/8/items rid node attempt check
+  rid=$(gh api "repos/Nakulov/ui-design-system/issues/$1" --jq .id) || return 1
   for attempt in 1 2; do
-    item=$(gh api graphql -f query='mutation($p:ID!,$c:ID!){addProjectV2ItemById(input:{projectId:$p,contentId:$c}){item{id}}}' \
-      -f p=$p -f c="$cid" --jq .data.addProjectV2ItemById.item.id)
-    gh project item-edit --id "$item" --project-id $p --field-id $f --single-select-option-id "$2" >/dev/null
+    node=$(gh api -X POST $items -f type=Issue -F id="$rid" --jq .node_id 2>/dev/null) ||
+      node=$(gh api graphql -F n="$1" -f query='query($n:Int!){repository(owner:"Nakulov",name:"ui-design-system"){issue(number:$n){projectItems(first:20){nodes{id project{number}}}}}}' \
+        --jq '.data.repository.issue.projectItems.nodes[] | select(.project.number == 8) | .id')
+    gh project item-edit --id "$node" --project-id $p --field-id $f --single-select-option-id "$2" >/dev/null || return 1
     for check in 1 2 3 4 5; do
-      gh api graphql -f query='{user(login:"Nakulov"){projectV2(number:8){items(first:100){nodes{id}}}}}' \
-        --jq '.data.user.projectV2.items.nodes[].id' | grep -qx "$item" && return 0
+      gh api "$items?per_page=100" --jq '.[].node_id' | grep -qx "$node" &&
+        gh api graphql -f query='{user(login:"Nakulov"){projectV2(number:8){items(first:100){nodes{id}}}}}' \
+          --jq '.data.user.projectV2.items.nodes[].id' | grep -qx "$node" && return 0
     done
     [ $attempt = 1 ] && gh api graphql -f query='mutation($p:ID!,$i:ID!){deleteProjectV2Item(input:{projectId:$p,itemId:$i}){deletedItemId}}' \
-      -f p=$p -f i="$item" >/dev/null
+      -f p=$p -f i="$node" >/dev/null
   done
   echo "#$1 не видна на доске" >&2
   return 1
