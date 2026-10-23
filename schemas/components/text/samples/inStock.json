@@ -1,0 +1,41 @@
+{
+  "Text": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "content": {
+      "rich": {
+        "spans": [
+          {
+            "icon": {
+              "name": "check",
+              "color": "success"
+            }
+          },
+          {
+            "text": {
+              "value": " В наличии, доставка завтра"
+            }
+          }
+        ]
+      }
+    },
+    "typography": "bodyMedium",
+    "color": {
+      "solid": "onSurface"
+    },
+    "alignment": "start"
+  }
+}
