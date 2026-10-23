@@ -6,8 +6,8 @@
 контейнеров, как макет в Figma — из вложенных фреймов с Auto Layout.
 
 Контейнер наследует базовую модель `Component`: размеры и положение в родителе (`layout`), внутренние отступы
-(`padding`), оформление (`appearance`, контекст `plain`) и события (`events`). Собственные поля контейнера — способ расположения детей
-(`arrangement`) и сами дети (`children`).
+(`padding`), оформление (`appearance`, контексты `plain` и `control`) и события (`events`). Собственные поля
+контейнера — способ расположения детей (`arrangement`) и сами дети (`children`).
 
 ## Состав
 
@@ -85,7 +85,7 @@ lineDistribution: oneOf               — строки (колонки) при �
       "vertical": { "alignment": "start", "distribution": { "packed": { "gap": "s", "position": "top" } } }
     },
     "children": [
-      { "TextLabel": { "...": "..." } },
+      { "Text": { "...": "..." } },
       { "Button": { "...": "..." } }
     ]
   }
@@ -99,7 +99,7 @@ data class Container(
     override val id: String? = null,
     override val layout: Layout,
     override val padding: Padding,
-    override val appearance: Appearance.Plain,
+    override val appearance: Appearance,
     override val events: Set<Event>? = null,
     val arrangement: ContainerArrangement,
     val children: List<Component>? = null,
