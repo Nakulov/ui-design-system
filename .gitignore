@@ -151,3 +151,6 @@ vite.config.ts.timestamp-*
 # idea
 .idea/*
 !.idea/jsonSchemas.xml
+
+# Python
+__pycache__/

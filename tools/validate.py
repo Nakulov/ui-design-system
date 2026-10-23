@@ -11,7 +11,6 @@ import json
 import re
 import subprocess
 import sys
-from pathlib import Path
 
 try:
     from jsonschema import Draft202012Validator
@@ -19,7 +18,8 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-ROOT = Path(__file__).resolve().parent.parent
+from contracts import (APPEARANCE, COMPONENT, ROOT, SCHEMAS, THEMES, Contract, Registry, is_contract,
+                       pascal, ref_path)
 
 # Мета-схемы структуры файлов (schema-format.md, раздел 12).
 CONTRACT_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/contract.schema.json").read_text()))
@@ -36,24 +36,24 @@ VERSION_RE = re.compile(r"^\*\*Версия спецификации:\*\*\s*(\S+
 # Типы, которые Figma не отображает (figma-mapping.md, раздел 4.1, правило 3).
 FIGMA_UNREPRESENTABLE = {"schemas/core/event/Event", "schemas/core/event/EventData"}
 
+PLATFORMS = ("android", "ios", "figma")
 STATUS_RANK = {"released": 0, "notReleased": 1, "willNotBeReleased": 2}
+README_SECTIONS = [
+    "Назначение", "Состав", "Варианты", "Рекомендации по использованию", "Ограничения и открытые вопросы",
+]
+LOWER_CAMEL = re.compile(r"[a-z][A-Za-z0-9]*")
 
-errors = []
+errors = {}
 
 
 def error(path, message):
-    errors.append(f"{path.relative_to(ROOT)}: {message}")
+    errors.setdefault(f"{path.relative_to(ROOT)}: {message}")
 
 
 def json_files():
     for path in sorted(ROOT.rglob("*.json")):
         if not any(part.startswith(".") for part in path.relative_to(ROOT).parts):
             yield path
-
-
-def is_contract(path):
-    """Контракт — <Имя>.json; файлы <Имя>.<вид>.json контрактами не являются (раздел 11.1, правило 5)."""
-    return len(path.suffixes) == 1 and path != ROOT / "spec-versions.json"
 
 
 def check_structure(path, data, validator):
@@ -67,15 +67,6 @@ def check_structure(path, data, validator):
     return not found
 
 
-def resolve(path, ref):
-    """Путь контракта по ссылке без расширения, относительно файла со ссылкой (раздел 6)."""
-    return (path.parent / f"{ref}.json").resolve()
-
-
-def contract_id(file):
-    return file.relative_to(ROOT).with_suffix("").as_posix()
-
-
 def walk(node):
     if isinstance(node, dict):
         yield node
@@ -86,6 +77,15 @@ def walk(node):
             yield from walk(value)
 
 
+def refs(path, data):
+    """Пути всех ссылок файла: $ref, extends."""
+    for node in walk(data):
+        for key in ("$ref", "extends"):
+            ref = node.get(key)
+            if isinstance(ref, str) and not ref.startswith("/") and not ref.endswith(".json"):
+                yield ref_path(path, ref)
+
+
 def check_refs(path, data):
     for node in walk(data):
         for key in ("$ref", "extends"):
@@ -93,56 +93,253 @@ def check_refs(path, data):
             if isinstance(ref, str):
                 if ref.startswith("/") or ref.endswith(".json"):
                     error(path, f"{key} «{ref}»: путь без ведущего / и без .json")
-                elif not resolve(path, ref).is_file():
+                elif not ref_path(path, ref).is_file():
                     error(path, f"{key} «{ref}»: файл не найден")
 
 
-def status(release_versions, platform):
-    value = (release_versions or {}).get(platform)
-    return value.get("status") if isinstance(value, dict) else value
+# Организация файлов (разделы 10, 11).
+
+def check_files(registry, referenced):
+    for contract in registry:
+        if contract.name != contract.path.stem:
+            error(contract.path, f"name «{contract.name}» не совпадает с именем файла")
+        if contract.kind == "helper" and contract.path not in referenced:
+            error(contract.path, "вспомогательное определение, на которое никто не ссылается")
+    for layer in sorted(p for p in SCHEMAS.iterdir() if p.is_dir()):
+        for entity in sorted(p for p in layer.iterdir() if p.is_dir()):
+            if not LOWER_CAMEL.fullmatch(entity.name):
+                error(entity, "имя каталога сущности не в lowerCamelCase")
+            if not (entity / f"{pascal(entity.name)}.json").is_file():
+                error(entity, f"нет публичного контракта {pascal(entity.name)}.json (раздел 11.1, правило 2)")
+            readme = entity / "README.md"
+            if not readme.is_file():
+                error(entity, "нет README.md (раздел 11.2)")
+                continue
+            sections = re.findall(r"^## (.+?)\s*$", readme.read_text(), re.M)
+            if sections != README_SECTIONS:
+                error(readme, f"разделы {sections}, ожидаются {README_SECTIONS} (раздел 11.2)")
+    for theme in sorted(p for p in THEMES.iterdir() if p.is_dir()):
+        if not LOWER_CAMEL.fullmatch(theme.name):
+            error(theme, "имя темы не в lowerCamelCase (раздел 9.4)")
 
 
-def check_release_inheritance(path, data):
-    """Вложенный уровень не доступнее родителя (раздел 8.5, правило 2) — в пределах файла."""
-    parent = data.get("releaseVersions")
-    if not parent:
+# Поддержка платформ (раздел 8).
+
+def parse_status(value):
+    if isinstance(value, str):
+        return value, None
+    version = value.get("version")
+    return value["status"], tuple(int(part) for part in version.split(".")) if version else None
+
+
+def inherit(parent, release_versions):
+    """Действующие статусы вложенного уровня и нарушения ограничений (раздел 8.5)."""
+    result, problems = dict(parent), []
+    for platform, value in (release_versions or {}).items():
+        status, version = parse_status(value)
+        parent_status, parent_version = parent.get(platform, (None, None))
+        if parent_status and STATUS_RANK[status] < STATUS_RANK[parent_status]:
+            problems.append(f"{platform}: {status} доступнее родителя ({parent_status})")
+        if version and parent_version and version < parent_version:
+            problems.append(f"{platform}: версия {value['version']} меньше версии родителя")
+        result[platform] = (status, version or parent_version)
+    return result, problems
+
+
+def check_release_versions(registry):
+    for contract in registry:
+        own = contract.data.get("releaseVersions")
+        if contract.kind == "public" and set(own or {}) != set(PLATFORMS):
+            error(contract.path, "публичный контракт указывает releaseVersions для android, ios и figma")
+        elif contract.kind == "helper" and own:
+            error(contract.path, "вспомогательное определение не указывает releaseVersions на уровне контракта")
+        elif contract.kind == "internal" and any("releaseVersions" in node for node in walk(contract.data)):
+            error(contract.path, "внутренний контракт не указывает releaseVersions (раздел 11.1, правило 7)")
+
+    seen = set()
+
+    def visit(contract, statuses, via):
+        """Уровни контракта относительно родителя; по ссылкам — до публичного контракта (раздел 8.5)."""
+        key = (contract.path, tuple(sorted(statuses.items())))
+        if key in seen:
+            return
+        seen.add(key)
+
+        def level(name, node):
+            result, problems = inherit(statuses, node.get("releaseVersions"))
+            for problem in problems:
+                error(contract.path, f"«{name}»: {problem}" + (f", ссылка {via}" if via else ""))
+            return result
+
+        def follow(ref, result, name, inline=False):
+            target = registry.resolve(contract, ref)
+            if target and (inline or target.kind == "helper"):
+                visit(target, result, f"{contract.name}.{name}")
+
+        for prop in contract.data.get("properties", []):
+            ref = prop.get("$ref") or prop.get("items", {}).get("$ref")
+            follow(ref, level(prop["name"], prop), prop["name"])
+        for value in contract.data.get("values", []):
+            level(value["name"], value)
+        for element in contract.data.get("oneOf", []):
+            name = element.get("name") or element.get("$ref")
+            follow(element.get("$ref"), level(name, element), name, element.get("inline", False))
+
+    for contract in registry:
+        if contract.kind == "public" and "releaseVersions" in contract.data:
+            visit(contract, inherit({}, contract.data["releaseVersions"])[0], None)
+
+
+def check_figma_unrepresentable(registry, contract):
+    for prop in contract.data.get("properties", []):
+        target = registry.resolve(contract, prop.get("$ref") or prop.get("items", {}).get("$ref"))
+        if target and target.id in FIGMA_UNREPRESENTABLE:
+            status = prop.get("releaseVersions", {}).get("figma")
+            if status != "willNotBeReleased":
+                error(contract.path,
+                      f"свойство «{prop['name']}» не отображается в Figma: нужен figma: willNotBeReleased")
+
+
+# Типы по ссылкам, варианты, компоненты (разделы 5, 7).
+
+def duplicates(names):
+    return sorted({name for name in names if names.count(name) > 1})
+
+
+def check_types(registry, contract):
+    for prop in contract.data.get("properties", []):
+        if prop.get("uniqueVariants"):
+            target = registry.resolve(contract, prop["items"].get("$ref"))
+            if target is None or target.type != "oneOf":
+                error(contract.path, f"«{prop['name']}»: uniqueVariants только у массива элементов oneOf (раздел 5.1)")
+    for element in contract.data.get("oneOf", []):
+        target = registry.resolve(contract, element.get("$ref"))
+        if element.get("inline") and target and target.type != "enum":
+            error(contract.path, f"«{element['$ref']}»: inline ссылается только на enum (раздел 7)")
+    for name in duplicates([v.name for v in registry.variants(contract)]):
+        error(contract.path, f"вариант «{name}» после разворачивания встречается больше одного раза")
+    for name in duplicates([p["name"] for p in registry.properties(contract)]):
+        error(contract.path, f"свойство «{name}» встречается больше одного раза (с учётом свойств Component)")
+
+
+def check_component(registry, contract):
+    is_component = contract.kind == "public" and contract.layer == "components"
+    if is_component and "extends" not in contract.data:
+        error(contract.path, "публичный контракт components/ указывает extends и appearanceContext (раздел 5.2)")
+    if not is_component and "extends" in contract.data:
+        error(contract.path, "extends допустим только у публичных контрактов components/ (раздел 5.2)")
+    if "extends" not in contract.data:
         return
-    children = [*data.get("properties", []), *data.get("values", []), *data.get("oneOf", [])]
-    for child in children:
-        for platform in ("android", "ios", "figma"):
-            p, c = status(parent, platform), status(child.get("releaseVersions"), platform)
-            if p in STATUS_RANK and c in STATUS_RANK and STATUS_RANK[c] < STATUS_RANK[p]:
-                error(path, f"«{child.get('name')}»: {platform} {c} доступнее родителя ({p})")
+    if registry.resolve(contract, contract.data["extends"]) is not registry.by_id.get(COMPONENT):
+        error(contract.path, "extends ссылается только на Component (раздел 5.2)")
+    appearance = registry.by_id.get(APPEARANCE)
+    allowed = {v.name for v in registry.variants(appearance)} if appearance else set()
+    for name in contract.data["appearanceContext"]:
+        if name not in allowed:
+            error(contract.path, f"appearanceContext: «{name}» — не вариант Appearance")
+    if "selectable" in contract.data["appearanceContext"]:
+        selected = next((p for p in contract.data.get("properties", []) if p["name"] == "selected"), None)
+        if not selected or selected.get("type") != "boolean" or not selected["required"]:
+            error(contract.path, "при контексте selectable нужно обязательное свойство selected типа boolean")
 
 
-def check_figma_unrepresentable(path, data):
-    for prop in data.get("properties", []):
-        ref = prop.get("$ref") or (prop.get("items") or {}).get("$ref")
-        if not isinstance(ref, str) or not resolve(path, ref).is_file():
+# Файлы значений и темы (раздел 9).
+
+def value_type(path, data, registry):
+    """Тип величин файла: примитив или Contract; None, если ссылка не разрешилась."""
+    kind = data["valueType"]
+    return kind if isinstance(kind, str) else registry.by_path.get(ref_path(path, kind["$ref"]))
+
+
+def values_file(theme_file, target):
+    """Файл значений контракта target для алиаса из theme_file (раздел 9.3, правило 1; раздел 9.4, правило 3)."""
+    if target.kind == "internal":
+        return target.path.with_name(f"{target.name}.values.json")
+    candidate = theme_file.parent / f"{target.name}.values.json"
+    return candidate if candidate.is_file() else THEMES / "default" / candidate.name
+
+
+def check_values(registry, values, path, data):
+    target = registry.by_path.get(ref_path(path, data["$ref"]))
+    if target is None:
+        return
+    if target.kind == "helper":
+        error(path, f"$ref на вспомогательное определение {target.name}, а не на публичный или внутренний контракт")
+    expected = (target.path.parent if target.kind == "internal" else path.parent) / f"{target.name}.values.json"
+    if path != expected or (target.kind == "public" and path.parent.parent != THEMES):
+        error(path, f"файл значений {target.name} располагается в каталоге темы"
+                    f"{' рядом с контрактом' if target.kind == 'internal' else ''} (раздел 9.1)")
+
+    kind = value_type(path, data, registry)
+    if isinstance(kind, Contract) and kind.type != "object":
+        error(path, f"valueType ссылается на {kind.name} типа {kind.type}, а не object")
+        return
+
+    keys = {v.name for v in registry.variants(target) if not v.has_data}
+    for name in duplicates([mode["name"] for mode in data["modes"]]):
+        error(path, f"режим «{name}» встречается больше одного раза")
+    for mode in data["modes"]:
+        present = set(mode["values"])
+        if keys - present:
+            error(path, f"режим «{mode['name']}»: нет величин вариантов {', '.join(sorted(keys - present))}")
+        if present - keys:
+            extra = ", ".join(sorted(present - keys))
+            error(path, f"режим «{mode['name']}»: не варианты без данных {target.name}: {extra}")
+        for key, value in mode["values"].items():
+            at = f"режим «{mode['name']}»: «{key}»"
+            if isinstance(value, dict) and "$ref" in value:
+                check_alias(registry, values, path, mode["name"], value, at)
+            elif kind is not None:
+                for problem in registry.value_errors(value, kind, key):
+                    error(path, f"режим «{mode['name']}»: {problem}")
+
+
+def check_alias(registry, values, path, mode_name, alias, at):
+    """Алиас разрешается, без циклов, с тем же valueType (раздел 9.3)."""
+    origin, kind, seen = path, value_type(path, values[path], registry), set()
+    while True:
+        target = registry.by_path.get(ref_path(path, alias["$ref"]))
+        if target is None:
+            return
+        path = values_file(path, target)
+        if path not in values:
+            error(origin, f"{at}: нет файла значений {path.relative_to(ROOT)}")
+            return
+        data = values[path]
+        mode = next((m for m in data["modes"] if m["name"] == mode_name), data["modes"][0])
+        where = f"{path.relative_to(ROOT)}, режим «{mode['name']}»"
+        if (path, mode["name"], alias["value"]) in seen:
+            error(origin, f"{at}: циклическая ссылка алиасов через {where}")
+            return
+        seen.add((path, mode["name"], alias["value"]))
+        if value_type(path, data, registry) != kind:
+            error(origin, f"{at}: valueType цели алиаса ({where}) отличается")
+            return
+        if alias["value"] not in mode["values"]:
+            error(origin, f"{at}: нет варианта «{alias['value']}» в {where}")
+            return
+        alias = mode["values"][alias["value"]]
+        if not (isinstance(alias, dict) and "$ref" in alias):
+            return
+
+
+def check_themes(registry, values):
+    default = THEMES / "default"
+    for contract in registry:
+        if contract.kind == "public" and contract.layer == "foundation":
+            if default / f"{contract.name}.values.json" not in values:
+                error(contract.path, "нет файла значений в теме default (раздел 9.4, правило 2)")
+    for path, data in values.items():
+        if path.parent.parent != THEMES or path.parent == default:
             continue
-        if contract_id(resolve(path, ref)) in FIGMA_UNREPRESENTABLE:
-            if status(prop.get("releaseVersions"), "figma") != "willNotBeReleased":
-                error(path, f"свойство «{prop.get('name')}» не отображается в Figma: нужен figma: willNotBeReleased")
+        base = values.get(default / path.name)
+        names = {mode["name"] for mode in data["modes"]}
+        missing = [mode["name"] for mode in base["modes"] if mode["name"] not in names] if base else []
+        if missing:
+            error(path, f"нет режимов темы default: {', '.join(missing)} (раздел 9.4, правило 5)")
 
 
-def check_values(path, data):
-    modes = data.get("modes", [])
-    keys = [set(mode.get("values", {})) for mode in modes]
-    for mode, mode_keys in zip(modes[1:], keys[1:]):
-        if mode_keys != keys[0]:
-            error(path, f"режим «{mode.get('name')}»: набор ключей отличается от первого режима (раздел 9.2, правило 5)")
-    for mode in modes:
-        for key, value in mode.get("values", {}).items():
-            if isinstance(value, dict) and "$ref" in value and "value" in value:
-                target = resolve(path, value["$ref"])
-                target_values = target.with_name(f"{target.stem}.values.json")
-                if not target_values.is_file():
-                    error(path, f"«{key}»: у алиаса нет файла значений {target_values.name}")
-                    continue
-                target_modes = json.loads(target_values.read_text()).get("modes", [])
-                if not any(value["value"] in m.get("values", {}) for m in target_modes):
-                    error(path, f"«{key}»: варианта «{value['value']}» нет в {target_values.name}")
-
+# Версии спецификаций (раздел 11.3).
 
 def check_spec_versions():
     path = ROOT / "spec-versions.json"
@@ -176,6 +373,7 @@ def main():
     parser.add_argument("--base", help="git ref, с которым сравниваются спецификации")
     args = parser.parse_args()
 
+    contracts, values, referenced = [], {}, set()
     for path in json_files():
         try:
             data = json.loads(path.read_text())
@@ -185,12 +383,24 @@ def main():
         if path.name.endswith(".schema.json"):
             continue
         check_refs(path, data)
+        referenced.update(refs(path, data))
         if path.name.endswith(".values.json"):
             if check_structure(path, data, VALUES_SCHEMA):
-                check_values(path, data)
+                values[path] = data
         elif is_contract(path) and check_structure(path, data, CONTRACT_SCHEMA):
-            check_release_inheritance(path, data)
-            check_figma_unrepresentable(path, data)
+            contracts.append(Contract(path, data))
+
+    # Смысловые проверки — только для файлов с корректной структурой.
+    registry = Registry(contracts)
+    check_files(registry, referenced)
+    check_release_versions(registry)
+    for contract in registry:
+        check_figma_unrepresentable(registry, contract)
+        check_types(registry, contract)
+        check_component(registry, contract)
+    for path, data in values.items():
+        check_values(registry, values, path, data)
+    check_themes(registry, values)
 
     check_spec_versions()
     if args.base:
