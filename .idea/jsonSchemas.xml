@@ -139,6 +139,10 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="schemas/components/text/TextSpanIcon.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="schemas/components/text/TextSpanText.json" />
                     <option name="mappingKind" value="File" />
                   </Item>

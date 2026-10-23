@@ -1,0 +1,25 @@
+{
+  "name": "TextSpanIcon",
+  "type": "object",
+  "description": "Символ внутри текста: стоит между словами и переносится вместе с ними, размер равен кеглю типографики. Незаданные свойства берутся у Text",
+  "properties": [
+    {
+      "name": "name",
+      "$ref": "../../foundation/icon/Icon",
+      "required": true,
+      "description": "Символ"
+    },
+    {
+      "name": "typography",
+      "$ref": "../../foundation/typographyRole/TypographyRole",
+      "required": false,
+      "description": "Роль типографики, кегль которой задаёт размер символа"
+    },
+    {
+      "name": "color",
+      "$ref": "../../foundation/colorRole/ColorRole",
+      "required": false,
+      "description": "Цвет символа"
+    }
+  ]
+}

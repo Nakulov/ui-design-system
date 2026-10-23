@@ -1,11 +1,15 @@
 {
   "name": "TextSpan",
   "type": "oneOf",
-  "description": "Фрагмент текста. Набор видов фрагментов расширяется: например, иконкой внутри текста",
+  "description": "Фрагмент текста: текст или символ. Набор видов фрагментов расширяется",
   "oneOf": [
     {
       "$ref": "TextSpanText",
       "name": "text"
+    },
+    {
+      "$ref": "TextSpanIcon",
+      "name": "icon"
     }
   ]
 }
