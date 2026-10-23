@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Файл значений",
+  "description": "Структура файла <Имя>.values.json: schema-format.md, разделы 9.1–9.3. Соответствие ключей и величин контракту проверяет tools/validate.py.",
+  "type": "object",
+  "required": ["$ref", "valueType", "modes"],
+  "properties": {
+    "$ref": { "$ref": "#/$defs/ref" },
+    "valueType": {
+      "anyOf": [
+        { "enum": ["string", "boolean", "integer", "float", "color", "payload"] },
+        {
+          "type": "object",
+          "required": ["$ref"],
+          "properties": { "$ref": { "$ref": "#/$defs/ref" } },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "modes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/mode" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "lowerCamelCaseName": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]*$" },
+    "ref": {
+      "description": "Путь относительно файла, без ведущего / и без .json (раздел 6).",
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.json$).+$"
+    },
+    "mode": {
+      "type": "object",
+      "required": ["name", "values"],
+      "properties": {
+        "name": { "$ref": "#/$defs/lowerCamelCaseName" },
+        "values": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/lowerCamelCaseName" },
+          "additionalProperties": { "$ref": "#/$defs/value" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "value": {
+      "description": "Величина (раздел 4.5) или алиас (раздел 9.3).",
+      "not": { "type": "null" },
+      "if": { "type": "object", "required": ["$ref"] },
+      "then": { "$ref": "#/$defs/alias" }
+    },
+    "alias": {
+      "type": "object",
+      "required": ["$ref", "value"],
+      "properties": {
+        "$ref": { "$ref": "#/$defs/ref" },
+        "value": { "$ref": "#/$defs/lowerCamelCaseName" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

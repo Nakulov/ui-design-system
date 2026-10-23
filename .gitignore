@@ -149,4 +149,5 @@ vite.config.ts.timestamp-*
 .turbo
 
 # idea
-.idea
+.idea/*
+!.idea/jsonSchemas.xml
