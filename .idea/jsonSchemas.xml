@@ -259,6 +259,18 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="schemas/foundation/icon/Icon.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/foundation/icon/IconScale.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/foundation/icon/IconValue.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="schemas/foundation/size/Size.json" />
                     <option name="mappingKind" value="File" />
                   </Item>

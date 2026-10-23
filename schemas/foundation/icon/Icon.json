@@ -1,0 +1,16 @@
+{
+  "name": "Icon",
+  "type": "oneOf",
+  "description": "Символ — одноцветный векторный рисунок из словаря темы. Цвет задаёт место использования, размер — собственный размер рисунка или раскладка",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "oneOf": [
+    {
+      "$ref": "IconScale",
+      "inline": true
+    }
+  ]
+}

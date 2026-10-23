@@ -1,0 +1,17 @@
+{
+  "$ref": "../../schemas/foundation/icon/Icon",
+  "valueType": { "$ref": "../../schemas/foundation/icon/IconValue" },
+  "modes": [
+    {
+      "name": "default",
+      "values": {
+        "image": { "source": "icons/image.svg", "mirrored": false },
+        "brokenImage": { "source": "icons/brokenImage.svg", "mirrored": false },
+        "close": { "source": "icons/close.svg", "mirrored": false },
+        "check": { "source": "icons/check.svg", "mirrored": false },
+        "chevronDown": { "source": "icons/chevronDown.svg", "mirrored": false },
+        "arrowBack": { "source": "icons/arrowBack.svg", "mirrored": true }
+      }
+    }
+  ]
+}
