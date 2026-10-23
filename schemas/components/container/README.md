@@ -227,6 +227,7 @@ data class Container(
     override val layout: Layout,
     override val padding: Padding,
     override val appearance: Appearance,
+    override val indicators: List<ComponentIndicator>? = null,
     override val events: Set<Event>? = null,
     val arrangement: ContainerArrangement,
     val children: List<Component>? = null,

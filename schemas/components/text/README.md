@@ -195,6 +195,7 @@ data class Text(
     override val layout: Layout,
     override val padding: Padding,
     override val appearance: Appearance,
+    override val indicators: List<ComponentIndicator>? = null,
     override val events: Set<Event>? = null,
     val content: TextContent,
     val typography: TypographyRole,

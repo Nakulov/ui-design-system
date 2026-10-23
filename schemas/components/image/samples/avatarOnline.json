@@ -1,0 +1,84 @@
+{
+  "Image": {
+    "layout": {
+      "width": {
+        "sizing": {
+          "fixed": "xl"
+        }
+      },
+      "height": {
+        "sizing": {
+          "fixed": "xl"
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface2"
+        },
+        "cornerRadius": "full",
+        "clip": true
+      }
+    },
+    "indicators": [
+      {
+        "anchor": "bottomEnd",
+        "content": {
+          "Container": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": "xs2"
+                }
+              },
+              "height": {
+                "sizing": {
+                  "fixed": "xs2"
+                }
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "success"
+                },
+                "cornerRadius": "full"
+              }
+            },
+            "arrangement": {
+              "overlay": {
+                "horizontal": "center",
+                "vertical": "center"
+              }
+            }
+          }
+        },
+        "gap": "xs2"
+      }
+    ],
+    "source": {
+      "remote": {
+        "origin": {
+          "url": "https://cdn.example.com/users/42/avatar.jpg"
+        },
+        "scale": "crop",
+        "alignment": "center",
+        "placeholder": {
+          "icon": {
+            "name": "image",
+            "color": "onSurfaceMuted"
+          }
+        }
+      }
+    }
+  }
+}
