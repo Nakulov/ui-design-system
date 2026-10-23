@@ -1,0 +1,19 @@
+{
+  "name": "IconValue",
+  "type": "object",
+  "description": "Рисунок символа в теме: файл SVG и отражение при письме справа налево",
+  "properties": [
+    {
+      "name": "source",
+      "type": "string",
+      "required": true,
+      "description": "Путь к файлу SVG относительно каталога темы"
+    },
+    {
+      "name": "mirrored",
+      "type": "boolean",
+      "required": true,
+      "description": "Отражать ли рисунок по горизонтали при письме справа налево: стрелки направления — да, симметричные и предметные символы — нет"
+    }
+  ]
+}

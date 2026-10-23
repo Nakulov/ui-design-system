@@ -12,6 +12,7 @@ import json
 import re
 import subprocess
 import sys
+import xml.etree.ElementTree as ElementTree
 
 try:
     from jsonschema import Draft202012Validator
@@ -35,6 +36,11 @@ SPECS = {
     "documentationManifest": "specifications/documentation-manifest.md",
 }
 VERSION_RE = re.compile(r"^\*\*Версия спецификации:\*\*\s*(\S+)", re.M)
+
+# Символы: рисунки в теме проверяются как одноцветные SVG (foundation Icon, README).
+ICON = "schemas/foundation/icon/Icon"
+SVG_PAINTS = ("fill", "stroke", "stop-color", "color")
+SVG_NO_PAINT = {"none", "currentcolor", "inherit", "transparent"}
 
 # Типы, которые Figma не отображает (figma-mapping.md, раздел 4.1, правило 3).
 FIGMA_UNREPRESENTABLE = {"schemas/core/event/Event", "schemas/core/event/EventData"}
@@ -369,6 +375,44 @@ def check_values(registry, values, path, data):
             elif kind is not None:
                 for problem in registry.value_errors(value, kind, key):
                     error(path, f"режим «{mode['name']}»: {problem}")
+                if isinstance(value, dict) and isinstance(value.get("source"), str):
+                    check_resource(path, value["source"], target.id == ICON, at)
+
+
+def check_resource(path, source, is_icon, at):
+    """Файл ресурса темы существует (раздел 9.4, правило 6); рисунок символа — одноцветный SVG."""
+    file = path.parent / source
+    if not file.is_file():
+        error(path, f"{at}: нет файла {source}")
+    elif is_icon:
+        for problem in svg_problems(file):
+            error(path, f"{at}: {source}: {problem}")
+
+
+def svg_problems(file):
+    try:
+        root = ElementTree.parse(file).getroot()
+    except ElementTree.ParseError as e:
+        return [f"некорректный SVG: {e}"]
+    problems, colors = [], set()
+    box = (root.get("viewBox") or "").replace(",", " ").split()
+    if len(box) != 4 or box[2] != box[3]:
+        problems.append(f"viewBox «{root.get('viewBox')}» не квадратный")
+    for node in root.iter():
+        tag = node.tag.rsplit("}", 1)[-1]
+        if tag == "image":
+            problems.append("растровая вставка <image>")
+        if tag in ("linearGradient", "radialGradient", "pattern"):
+            problems.append(f"заливка <{tag}>: рисунок символа одноцветный")
+        style = dict(part.split(":", 1) for part in (node.get("style") or "").split(";") if ":" in part)
+        style = {key.strip(): value.strip() for key, value in style.items()}
+        for paint in SVG_PAINTS:
+            value = (node.get(paint) or style.get(paint) or "").strip().lower()
+            if value and value not in SVG_NO_PAINT:
+                colors.add(value)
+    if len(colors) > 1:
+        problems.append(f"несколько цветов: {', '.join(sorted(colors))}")
+    return list(dict.fromkeys(problems))
 
 
 def check_alias(registry, values, path, mode_name, alias, at):
