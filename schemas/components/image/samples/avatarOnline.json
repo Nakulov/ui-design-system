@@ -29,7 +29,7 @@
       {
         "anchor": "bottomEnd",
         "content": {
-          "Container": {
+          "Badge": {
             "layout": {
               "width": {
                 "sizing": {
@@ -52,12 +52,6 @@
                   "solid": "success"
                 },
                 "cornerRadius": "full"
-              }
-            },
-            "arrangement": {
-              "overlay": {
-                "horizontal": "center",
-                "vertical": "center"
               }
             }
           }

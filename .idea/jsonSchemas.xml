@@ -11,6 +11,18 @@
               <option name="patterns">
                 <list>
                   <Item>
+                    <option name="path" value="schemas/components/badge/Badge.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/badge/BadgeContent.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/badge/BadgeText.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="schemas/components/container/Container.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
