@@ -1,0 +1,11 @@
+{
+  "name": "ImageResource",
+  "type": "oneOf",
+  "description": "Ресурс темы или приложения, доступный без загрузки",
+  "oneOf": [
+    {
+      "$ref": "ImageResourceIcon",
+      "name": "icon"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "ImageSource",
+  "type": "oneOf",
+  "description": "Источник изображения: ресурс показывается сразу, удалённая картинка загружается",
+  "oneOf": [
+    {
+      "$ref": "ImageResource",
+      "name": "resource"
+    },
+    {
+      "$ref": "ImageRemote",
+      "name": "remote"
+    }
+  ]
+}

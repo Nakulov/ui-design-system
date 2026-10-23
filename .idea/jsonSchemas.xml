@@ -79,6 +79,38 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="schemas/components/image/Image.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/image/ImageAlignment.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/image/ImageOrigin.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/image/ImageRemote.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/image/ImageResource.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/image/ImageResourceIcon.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/image/ImageScale.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/components/image/ImageSource.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="schemas/components/text/Text.json" />
                     <option name="mappingKind" value="File" />
                   </Item>

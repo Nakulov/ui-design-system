@@ -1,0 +1,37 @@
+{
+  "name": "ImageRemote",
+  "type": "object",
+  "description": "Картинка, которая загружается: адрес, вписывание в компонент, заглушка и ошибка",
+  "properties": [
+    {
+      "name": "origin",
+      "$ref": "ImageOrigin",
+      "required": true,
+      "description": "Откуда загрузить картинку"
+    },
+    {
+      "name": "scale",
+      "$ref": "ImageScale",
+      "required": true,
+      "description": "Как картинка заполняет компонент; размер компонента не меняется"
+    },
+    {
+      "name": "alignment",
+      "$ref": "ImageAlignment",
+      "required": true,
+      "description": "Положение картинки в компоненте: при fit — где остаются поля, при crop — какая часть сохраняется"
+    },
+    {
+      "name": "placeholder",
+      "$ref": "ImageResource",
+      "required": false,
+      "description": "Что показать, пока картинка загружается: ресурс в собственном размере по центру. Если не задано, компонент пуст, виден фон из appearance"
+    },
+    {
+      "name": "error",
+      "$ref": "ImageResource",
+      "required": false,
+      "description": "Что показать, если картинка не загрузилась: ресурс в собственном размере по центру. Если не задано, показывается placeholder"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "Image": {
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": "xl3"
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface2"
+        },
+        "cornerRadius": "m",
+        "clip": true
+      }
+    },
+    "source": {
+      "remote": {
+        "origin": {
+          "url": "https://cdn.example.com/items/42.jpg"
+        },
+        "scale": "crop",
+        "alignment": "center",
+        "placeholder": {
+          "icon": {
+            "name": "image",
+            "color": "onSurfaceMuted"
+          }
+        },
+        "error": {
+          "icon": {
+            "name": "brokenImage",
+            "color": "onSurfaceMuted"
+          }
+        }
+      }
+    }
+  }
+}
