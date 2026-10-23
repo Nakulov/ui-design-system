@@ -12,17 +12,18 @@
 
 ## Состав
 
-| Файл                  | Роль                                                   |
-|-----------------------|--------------------------------------------------------|
-| `Text.json`           | Публичный контракт: содержимое и стиль всего текста.   |
-| `TextContent.json`    | Содержимое: `plain` (строка) или `rich` (фрагменты).   |
-| `TextRich.json`       | Текст из фрагментов.                                   |
-| `TextSpan.json`       | Фрагмент: пока только `text`; набор видов расширяется. |
-| `TextSpanText.json`   | Текстовый фрагмент: значение, стиль, нажатие.          |
-| `TextColor.json`      | Заливка текста: `solid`; набор видов расширяется.      |
-| `TextDecoration.json` | Линия: `underline`, `strikethrough`.                   |
-| `TextAlignment.json`  | Выравнивание строк: `start`, `center`, `end`.          |
-| `TextTruncation.json` | Место многоточия: `start`, `middle`, `end`.            |
+| Файл                  | Роль                                                           |
+|-----------------------|----------------------------------------------------------------|
+| `Text.json`           | Публичный контракт: содержимое и стиль всего текста.           |
+| `TextContent.json`    | Содержимое: `plain` (строка) или `rich` (фрагменты).           |
+| `TextRich.json`       | Текст из фрагментов.                                           |
+| `TextSpan.json`       | Фрагмент: пока только `text`; набор видов расширяется.         |
+| `TextSpanText.json`   | Текстовый фрагмент: значение, стиль, нажатие.                  |
+| `TextColor.json`      | Заливка текста: `solid`; набор видов расширяется.              |
+| `TextDecoration.json` | Линия: `underline`, `strikethrough`.                           |
+| `TextAlignment.json`  | Выравнивание строк: `start`, `center`, `end`.                  |
+| `TextTruncation.json` | Место многоточия: `start`, `middle`, `end`.                    |
+| `samples/`            | Примеры моделей: `min.json`, `max.json`, `priceWithLink.json`. |
 
 ## Варианты
 
@@ -58,32 +59,248 @@ TextSpan: oneOf
    другого положения задайте `Text` высоту `hug` и выровняйте его в `Container`.
 5. Регистр (например, все заглавные) задаётся ролью типографики: в Figma он входит в текстовый стиль.
 
-Пример модели — старая и новая цена со ссылкой:
+Минимальная модель — только обязательные свойства:
 
+<!-- sample: samples/min.json -->
 ```json
 {
   "Text": {
-    "layout": { "width": { "sizing": "fill" }, "height": { "sizing": "hug" }, "position": "flow" },
-    "padding": { "all": "zero" },
-    "appearance": { "plain": {} },
-    "content": {
-      "rich": {
-        "spans": [
-          { "text": { "value": "1 990 ₽", "decoration": "strikethrough", "color": "onSurfaceMuted" } },
-          { "text": { "value": " 1 490 ₽ " } },
-          { "text": { "value": "Условия", "decoration": "underline", "color": "primary",
-                      "click": { "payload": { "action": "openTerms" } } } }
-        ]
-      }
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
     },
-    "typography": "bodyMedium",
-    "color": { "solid": "onSurface" },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "content": {
+      "plain": "plain"
+    },
+    "typography": "displayLarge",
+    "color": {
+      "solid": "primary"
+    },
     "alignment": "start"
   }
 }
 ```
 
-Простой текст: `"content": { "plain": "Оплата прошла успешно" }`.
+Полная модель — все свойства:
+
+<!-- sample: samples/max.json -->
+```json
+{
+  "Text": {
+    "id": "id",
+    "layout": {
+      "width": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 1
+            }
+          }
+        },
+        "min": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "max": {
+          "custom": {
+            "value": 1
+          }
+        }
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 1
+            }
+          }
+        },
+        "min": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "max": {
+          "custom": {
+            "value": 1
+          }
+        }
+      },
+      "position": {
+        "pinned": {
+          "horizontal": {
+            "start": {
+              "offset": {
+                "custom": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "vertical": {
+            "top": {
+              "offset": {
+                "custom": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "relativeTo": "edge"
+        }
+      }
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "vertical": {
+          "custom": {
+            "value": 1
+          }
+        }
+      }
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "primary"
+        },
+        "shadow": {
+          "custom": {
+            "offsetX": 1,
+            "offsetY": 1,
+            "blur": 1,
+            "spread": 1,
+            "color": "#000000"
+          }
+        },
+        "cornerRadius": "zero",
+        "stroke": {
+          "width": {
+            "custom": {
+              "value": 1
+            }
+          },
+          "color": "primary"
+        },
+        "clip": true
+      }
+    },
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "payload"
+          }
+        }
+      }
+    ],
+    "content": {
+      "rich": {
+        "spans": [
+          {
+            "text": {
+              "value": "value",
+              "typography": "displayLarge",
+              "color": "primary",
+              "decoration": "underline",
+              "click": {
+                "payload": {
+                  "action": "payload"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "typography": "displayLarge",
+    "color": {
+      "solid": "primary"
+    },
+    "decoration": "underline",
+    "alignment": "start",
+    "maxLines": 1,
+    "truncation": "start"
+  }
+}
+```
+
+Старая и новая цена со ссылкой:
+
+<!-- sample: samples/priceWithLink.json -->
+```json
+{
+  "Text": {
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "content": {
+      "rich": {
+        "spans": [
+          {
+            "text": {
+              "value": "1 990 ₽",
+              "decoration": "strikethrough",
+              "color": "onSurfaceMuted"
+            }
+          },
+          {
+            "text": {
+              "value": " 1 490 ₽ "
+            }
+          },
+          {
+            "text": {
+              "value": "Условия",
+              "decoration": "underline",
+              "color": "primary",
+              "click": {
+                "payload": {
+                  "action": "openTerms"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "typography": "bodyMedium",
+    "color": {
+      "solid": "onSurface"
+    },
+    "alignment": "start"
+  }
+}
+```
 
 Ожидаемая модель на Kotlin:
 

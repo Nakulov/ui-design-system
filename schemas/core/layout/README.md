@@ -10,21 +10,22 @@
 
 ## Состав
 
-| Файл                              | Роль                                                              |
-|-----------------------------------|-------------------------------------------------------------------|
-| `Layout.json`                     | Публичный контракт: ширина, высота, положение.                    |
-| `LayoutDimension.json`            | Размер по оси: способ задания, минимум, максимум.                 |
-| `LayoutSizing.json`               | Способ задания размера: `hug`, `fill` или `fixed`.                |
-| `LayoutSizingMode.json`           | Перечисление способов без величины: `hug`, `fill`.                |
-| `LayoutPosition.json`             | Положение: `flow` или `pinned`.                                   |
-| `LayoutPositionMode.json`         | Перечисление положений без параметров: `flow`.                    |
-| `LayoutPinned.json`               | Закрепление относительно родителя.                                |
-| `LayoutPinHorizontal.json`        | Закрепление по горизонтали: `start`, `end`, `center`, `stretch`.  |
-| `LayoutPinVertical.json`          | Закрепление по вертикали: `top`, `bottom`, `center`, `stretch`.   |
-| `LayoutPinOffset.json`            | Закрепление к стороне или центру со смещением.                    |
-| `LayoutPinStretchHorizontal.json` | Растяжение между левой и правой сторонами.                        |
-| `LayoutPinStretchVertical.json`   | Растяжение между верхней и нижней сторонами.                      |
-| `LayoutPinReference.json`         | Точка отсчёта смещений: `edge`, `content`.                        |
+| Файл                              | Роль                                                             |
+|-----------------------------------|------------------------------------------------------------------|
+| `Layout.json`                     | Публичный контракт: ширина, высота, положение.                   |
+| `LayoutDimension.json`            | Размер по оси: способ задания, минимум, максимум.                |
+| `LayoutSizing.json`               | Способ задания размера: `hug`, `fill` или `fixed`.               |
+| `LayoutSizingMode.json`           | Перечисление способов без величины: `hug`, `fill`.               |
+| `LayoutPosition.json`             | Положение: `flow` или `pinned`.                                  |
+| `LayoutPositionMode.json`         | Перечисление положений без параметров: `flow`.                   |
+| `LayoutPinned.json`               | Закрепление относительно родителя.                               |
+| `LayoutPinHorizontal.json`        | Закрепление по горизонтали: `start`, `end`, `center`, `stretch`. |
+| `LayoutPinVertical.json`          | Закрепление по вертикали: `top`, `bottom`, `center`, `stretch`.  |
+| `LayoutPinOffset.json`            | Закрепление к стороне или центру со смещением.                   |
+| `LayoutPinStretchHorizontal.json` | Растяжение между левой и правой сторонами.                       |
+| `LayoutPinStretchVertical.json`   | Растяжение между верхней и нижней сторонами.                     |
+| `LayoutPinReference.json`         | Точка отсчёта смещений: `edge`, `content`.                       |
+| `samples/`                        | Примеры значений: `min.json`, `max.json`.                        |
 
 ## Варианты
 
@@ -44,6 +45,90 @@
 - `pinned` — закреплён относительно родителя: абсолютная позиция с констрейнтами в Figma, `Box` с `align` в Compose,
   `ZStack` с `alignment` в SwiftUI. Смещения задаются величинами `Spacing`; `relativeTo` определяет, отсчитываются
   ли они от края родителя (`edge`) или от области содержимого внутри его отступов (`content`).
+
+Минимальная модель — только обязательные свойства:
+
+<!-- sample: samples/min.json -->
+```json
+{
+  "width": {
+    "sizing": "hug"
+  },
+  "height": {
+    "sizing": "hug"
+  },
+  "position": "flow"
+}
+```
+
+Полная модель — все свойства:
+
+<!-- sample: samples/max.json -->
+```json
+{
+  "width": {
+    "sizing": {
+      "fixed": {
+        "custom": {
+          "value": 1
+        }
+      }
+    },
+    "min": {
+      "custom": {
+        "value": 1
+      }
+    },
+    "max": {
+      "custom": {
+        "value": 1
+      }
+    }
+  },
+  "height": {
+    "sizing": {
+      "fixed": {
+        "custom": {
+          "value": 1
+        }
+      }
+    },
+    "min": {
+      "custom": {
+        "value": 1
+      }
+    },
+    "max": {
+      "custom": {
+        "value": 1
+      }
+    }
+  },
+  "position": {
+    "pinned": {
+      "horizontal": {
+        "start": {
+          "offset": {
+            "custom": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "vertical": {
+        "top": {
+          "offset": {
+            "custom": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "relativeTo": "edge"
+    }
+  }
+}
+```
 
 Ожидаемая модель на Kotlin:
 

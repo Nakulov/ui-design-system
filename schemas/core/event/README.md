@@ -12,10 +12,11 @@
 
 ## Состав
 
-| Файл             | Роль                                  |
-|------------------|---------------------------------------|
-| `Event.json`     | Публичный контракт: варианты событий. |
-| `EventData.json` | Данные события: `payload`.            |
+| Файл             | Роль                                              |
+|------------------|---------------------------------------------------|
+| `Event.json`     | Публичный контракт: варианты событий.             |
+| `EventData.json` | Данные события: `payload`.                        |
+| `samples/`       | Примеры значений: `click.json`, `longPress.json`. |
 
 ## Варианты
 
@@ -24,15 +25,28 @@
 | `click`     | нажатие        | `Modifier.clickable` / `onClick`          | `.onTapGesture` / `Button` |
 | `longPress` | долгое нажатие | `Modifier.combinedClickable(onLongClick)` | `.onLongPressGesture`      |
 
-Пример модели с сервера:
+Значения `Event` — элементы массива `events` компонента:
 
+<!-- sample: samples/click.json -->
 ```json
 {
-  "id": "profile.avatar",
-  "events": [
-    { "click": { "payload": { "action": "openProfile", "userId": "42" } } },
-    { "longPress": { "payload": { "action": "copyLink" } } }
-  ]
+  "click": {
+    "payload": {
+      "action": "openProfile",
+      "userId": "42"
+    }
+  }
+}
+```
+
+<!-- sample: samples/longPress.json -->
+```json
+{
+  "longPress": {
+    "payload": {
+      "action": "copyLink"
+    }
+  }
 }
 ```
 

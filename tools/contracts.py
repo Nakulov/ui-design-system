@@ -3,6 +3,7 @@
 schema-format.md, разделы 4.5, 6, 7, 11.
 """
 
+import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,8 +25,20 @@ PRIMITIVES = {
 
 
 def is_contract(path):
-    """Контракт — <Имя>.json; файлы <Имя>.<вид>.json контрактами не являются (раздел 11.1, правило 5)."""
-    return len(path.suffixes) == 1 and path != ROOT / "spec-versions.json"
+    """Контракт — <Имя>.json вне samples/; <Имя>.<вид>.json — не контракты (раздел 11.1, правила 5, 8)."""
+    return len(path.suffixes) == 1 and path != ROOT / "spec-versions.json" and not is_sample(path)
+
+
+def is_sample(path):
+    return path.parent.name == "samples"
+
+
+def load_registry():
+    """Контракты репозитория без проверки структуры — для инструментов, работающих с проверенным репозиторием."""
+    paths = [p for p in sorted(ROOT.rglob("*.json")) if is_contract(p)
+             and not any(part.startswith(".") for part in p.relative_to(ROOT).parts)
+             and not p.relative_to(ROOT).parts[0] == "specifications"]
+    return Registry([Contract(p, json.loads(p.read_text())) for p in paths])
 
 
 def ref_path(file, ref):
@@ -95,8 +108,13 @@ class Registry:
 
     def properties(self, contract):
         """Свойства объекта; у компонента — сначала свойства Component (раздел 5.2)."""
+        return [prop for _, prop in self.declared_properties(contract)]
+
+    def declared_properties(self, contract):
+        """Пары (контракт, где объявлено свойство; свойство): ссылки свойства разрешаются от его контракта."""
         base = self.by_id.get(COMPONENT) if "extends" in contract.data else None
-        return [*(base.data["properties"] if base else []), *contract.data.get("properties", [])]
+        inherited = [(base, prop) for prop in base.data["properties"]] if base else []
+        return [*inherited, *((contract, prop) for prop in contract.data.get("properties", []))]
 
     def variants(self, contract):
         if contract.type == "enum":
@@ -123,6 +141,9 @@ class Registry:
 
     def value_errors(self, value, kind, at):
         """Ошибки записи значения типа kind — примитива или контракта (раздел 4.5)."""
+        if value is None:
+            yield f"{at}: null не используется"
+            return
         if isinstance(kind, str):
             if not PRIMITIVES[kind](value):
                 yield f"{at}: {value!r} — не {kind}"
@@ -138,14 +159,20 @@ class Registry:
             if not isinstance(value, dict):
                 yield f"{at}: ожидается объект {kind.name}"
                 return
-            properties = self.properties(kind)
-            for extra in value.keys() - {p["name"] for p in properties}:
+            properties = self.declared_properties(kind)
+            for extra in value.keys() - {p["name"] for _, p in properties}:
                 yield f"{at}: поле «{extra}» не определено в {kind.name}"
-            for prop in properties:
+            for owner, prop in properties:
                 if prop["name"] in value:
-                    yield from self.property_value_errors(kind, prop, value[prop["name"]], f"{at}.{prop['name']}")
+                    yield from self.property_value_errors(owner, prop, value[prop["name"]], f"{at}.{prop['name']}")
                 elif prop["required"]:
                     yield f"{at}: нет обязательного поля «{prop['name']}»"
+            appearance = value.get("appearance")
+            context = kind.data.get("appearanceContext")
+            if context and isinstance(appearance, dict) and len(appearance) == 1:
+                variant = next(iter(appearance))
+                if variant not in context:
+                    yield f"{at}.appearance: «{variant}» вне appearanceContext {kind.name} ({', '.join(context)})"
         else:
             variants = {v.name: v for v in self.variants(kind)}
             if isinstance(value, str):
@@ -179,3 +206,33 @@ class Registry:
             names = [next(iter(item)) if isinstance(item, dict) else item for item in value]
             for name in {n for n in names if names.count(n) > 1}:
                 yield f"{at}: вариант «{name}» встречается больше одного раза"
+
+    def objects(self, value, kind, at, inside_component=False):
+        """Объекты значения вместе с контрактами; вложенные компоненты не обходятся (правила min и max)."""
+        if isinstance(kind, str) or kind is None or value is None:
+            return
+        if kind.id == COMPONENT:
+            if inside_component or not (isinstance(value, dict) and len(value) == 1):
+                return
+            name, data = next(iter(value.items()))
+            yield from self.objects(data, self.components().get(name), f"{at}.{name}", True)
+        elif kind.type == "object":
+            if not isinstance(value, dict):
+                return
+            yield kind, value, at
+            for owner, prop in self.declared_properties(kind):
+                if prop["name"] not in value:
+                    continue
+                child, child_at = value[prop["name"]], f"{at}.{prop['name']}"
+                ref = prop.get("$ref") or prop.get("items", {}).get("$ref")
+                target = self.resolve(owner, ref)
+                if prop.get("type") == "array" and isinstance(child, list):
+                    for i, item in enumerate(child):
+                        yield from self.objects(item, target, f"{child_at}[{i}]", inside_component)
+                else:
+                    yield from self.objects(child, target, child_at, inside_component)
+        elif isinstance(value, dict) and len(value) == 1:
+            name, data = next(iter(value.items()))
+            variant = next((v for v in self.variants(kind) if v.name == name), None)
+            if variant and variant.has_data:
+                yield from self.objects(data, variant.target, f"{at}.{name}", inside_component)
