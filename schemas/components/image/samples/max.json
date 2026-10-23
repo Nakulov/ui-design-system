@@ -107,6 +107,43 @@
         "clip": true
       }
     },
+    "indicators": [
+      {
+        "anchor": "topStart",
+        "content": {
+          "Image": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "source": {
+              "resource": {
+                "icon": {
+                  "name": "image",
+                  "color": "primary"
+                }
+              }
+            }
+          }
+        },
+        "gap": {
+          "custom": {
+            "value": 1
+          }
+        }
+      }
+    ],
     "events": [
       {
         "click": {

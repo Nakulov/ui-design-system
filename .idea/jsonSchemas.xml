@@ -183,6 +183,14 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="schemas/core/component/ComponentIndicator.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="schemas/core/component/ComponentIndicatorAnchor.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="schemas/core/event/Event.json" />
                     <option name="mappingKind" value="File" />
                   </Item>

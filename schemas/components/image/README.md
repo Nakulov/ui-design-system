@@ -26,7 +26,7 @@
 | `ImageOrigin.json`       | Откуда загружается: пока только `url`; набор способов расширяется.         |
 | `ImageScale.json`        | Вписывание: `fit`, `crop`.                                                 |
 | `ImageAlignment.json`    | Положение картинки: девять точек от `topStart` до `bottomEnd`.             |
-| `samples/`               | Примеры моделей: `min.json`, `max.json`, `icon.json`, `productPhoto.json`. |
+| `samples/`               | Примеры: `min`, `max`, `icon`, `productPhoto`, `avatarOnline`.             |
 
 ## Варианты
 
@@ -69,6 +69,7 @@ data class Image(
     override val layout: Layout,
     override val padding: Padding,
     override val appearance: Appearance,
+    override val indicators: List<ComponentIndicator>? = null,
     override val events: Set<Event>? = null,
     val source: ImageSource,
 ) : Component
@@ -176,6 +177,96 @@ sealed interface ImageOrigin {
         "error": {
           "icon": {
             "name": "brokenImage",
+            "color": "onSurfaceMuted"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Аватар с точкой «в сети»: индикатор у нижнего угла вырезает аватар с зазором (README `Component`, «Индикаторы»):
+
+<!-- sample: samples/avatarOnline.json -->
+```json
+{
+  "Image": {
+    "layout": {
+      "width": {
+        "sizing": {
+          "fixed": "xl"
+        }
+      },
+      "height": {
+        "sizing": {
+          "fixed": "xl"
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface2"
+        },
+        "cornerRadius": "full",
+        "clip": true
+      }
+    },
+    "indicators": [
+      {
+        "anchor": "bottomEnd",
+        "content": {
+          "Container": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": "xs2"
+                }
+              },
+              "height": {
+                "sizing": {
+                  "fixed": "xs2"
+                }
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "success"
+                },
+                "cornerRadius": "full"
+              }
+            },
+            "arrangement": {
+              "overlay": {
+                "horizontal": "center",
+                "vertical": "center"
+              }
+            }
+          }
+        },
+        "gap": "xs2"
+      }
+    ],
+    "source": {
+      "remote": {
+        "origin": {
+          "url": "https://cdn.example.com/users/42/avatar.jpg"
+        },
+        "scale": "crop",
+        "alignment": "center",
+        "placeholder": {
+          "icon": {
+            "name": "image",
             "color": "onSurfaceMuted"
           }
         }

@@ -1,0 +1,25 @@
+{
+  "name": "ComponentIndicator",
+  "type": "object",
+  "description": "Индикатор у угла носителя: рисуется поверх, может выступать за границы и не меняет размер носителя в раскладке",
+  "properties": [
+    {
+      "name": "anchor",
+      "$ref": "ComponentIndicatorAnchor",
+      "required": true,
+      "description": "Угол формы носителя, в точку которого ставится центр индикатора"
+    },
+    {
+      "name": "content",
+      "$ref": "Component",
+      "required": true,
+      "description": "Индикатор: любой компонент с размером hug или fixed"
+    },
+    {
+      "name": "gap",
+      "$ref": "../../foundation/spacing/Spacing",
+      "required": false,
+      "description": "Зазор выреза: носитель вырезает форму индикатора, расширенную на зазор. Если не задан, выреза нет"
+    }
+  ]
+}

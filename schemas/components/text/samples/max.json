@@ -107,6 +107,43 @@
         "clip": true
       }
     },
+    "indicators": [
+      {
+        "anchor": "topStart",
+        "content": {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "plain"
+            },
+            "typography": "displayLarge",
+            "color": {
+              "solid": "primary"
+            },
+            "alignment": "start"
+          }
+        },
+        "gap": {
+          "custom": {
+            "value": 1
+          }
+        }
+      }
+    ],
     "events": [
       {
         "click": {
