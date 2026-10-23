@@ -1,0 +1,63 @@
+{
+  "width": {
+    "sizing": {
+      "fixed": {
+        "custom": {
+          "value": 1
+        }
+      }
+    },
+    "min": {
+      "custom": {
+        "value": 1
+      }
+    },
+    "max": {
+      "custom": {
+        "value": 1
+      }
+    }
+  },
+  "height": {
+    "sizing": {
+      "fixed": {
+        "custom": {
+          "value": 1
+        }
+      }
+    },
+    "min": {
+      "custom": {
+        "value": 1
+      }
+    },
+    "max": {
+      "custom": {
+        "value": 1
+      }
+    }
+  },
+  "position": {
+    "pinned": {
+      "horizontal": {
+        "start": {
+          "offset": {
+            "custom": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "vertical": {
+        "top": {
+          "offset": {
+            "custom": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "relativeTo": "edge"
+    }
+  }
+}

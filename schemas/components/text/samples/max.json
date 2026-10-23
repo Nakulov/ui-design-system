@@ -1,0 +1,144 @@
+{
+  "Text": {
+    "id": "id",
+    "layout": {
+      "width": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 1
+            }
+          }
+        },
+        "min": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "max": {
+          "custom": {
+            "value": 1
+          }
+        }
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 1
+            }
+          }
+        },
+        "min": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "max": {
+          "custom": {
+            "value": 1
+          }
+        }
+      },
+      "position": {
+        "pinned": {
+          "horizontal": {
+            "start": {
+              "offset": {
+                "custom": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "vertical": {
+            "top": {
+              "offset": {
+                "custom": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "relativeTo": "edge"
+        }
+      }
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "vertical": {
+          "custom": {
+            "value": 1
+          }
+        }
+      }
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "primary"
+        },
+        "shadow": {
+          "custom": {
+            "offsetX": 1,
+            "offsetY": 1,
+            "blur": 1,
+            "spread": 1,
+            "color": "#000000"
+          }
+        },
+        "cornerRadius": "zero",
+        "stroke": {
+          "width": {
+            "custom": {
+              "value": 1
+            }
+          },
+          "color": "primary"
+        },
+        "clip": true
+      }
+    },
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "payload"
+          }
+        }
+      }
+    ],
+    "content": {
+      "rich": {
+        "spans": [
+          {
+            "text": {
+              "value": "value",
+              "typography": "displayLarge",
+              "color": "primary",
+              "decoration": "underline",
+              "click": {
+                "payload": {
+                  "action": "payload"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "typography": "displayLarge",
+    "color": {
+      "solid": "primary"
+    },
+    "decoration": "underline",
+    "alignment": "start",
+    "maxLines": 1,
+    "truncation": "start"
+  }
+}

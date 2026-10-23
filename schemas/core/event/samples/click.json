@@ -1,0 +1,8 @@
+{
+  "click": {
+    "payload": {
+      "action": "openProfile",
+      "userId": "42"
+    }
+  }
+}

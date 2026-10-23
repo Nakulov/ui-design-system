@@ -1,0 +1,54 @@
+{
+  "Text": {
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "content": {
+      "rich": {
+        "spans": [
+          {
+            "text": {
+              "value": "1 990 ₽",
+              "decoration": "strikethrough",
+              "color": "onSurfaceMuted"
+            }
+          },
+          {
+            "text": {
+              "value": " 1 490 ₽ "
+            }
+          },
+          {
+            "text": {
+              "value": "Условия",
+              "decoration": "underline",
+              "color": "primary",
+              "click": {
+                "payload": {
+                  "action": "openTerms"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "typography": "bodyMedium",
+    "color": {
+      "solid": "onSurface"
+    },
+    "alignment": "start"
+  }
+}

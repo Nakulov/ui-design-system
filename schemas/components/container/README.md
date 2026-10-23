@@ -30,6 +30,7 @@
 | `ContainerHorizontalAlignment.json`    | Положение по горизонтали: `start`, `center`, `end`.                        |
 | `ContainerVerticalAlignment.json`      | Положение по вертикали: `top`, `center`, `bottom`.                         |
 | `ContainerRowAlignment.json`           | Выравнивание в строке: `top`, `center`, `bottom`, `baseline`.              |
+| `samples/`                             | Примеры моделей: `min.json`, `max.json`.                                   |
 
 ## Варианты
 
@@ -81,20 +82,197 @@ lineDistribution: oneOf               — строки (колонки) при �
 9. При `baseline` ребёнок без текста (иконка, плашка) выравнивается нижним краем, как в SwiftUI и Figma; в Compose —
    `Modifier.alignBy { it.measuredHeight }`. Вложенный контейнер выравнивается по базовой линии своего первого текста.
 
-Пример модели:
+Минимальная модель — только обязательные свойства:
 
+<!-- sample: samples/min.json -->
 ```json
 {
   "Container": {
-    "layout": { "width": { "sizing": "fill" }, "height": { "sizing": "hug" }, "position": "flow" },
-    "padding": { "all": "m" },
-    "appearance": { "plain": { "background": { "solid": "surface" } } },
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
     "arrangement": {
-      "vertical": { "alignment": "start", "distribution": { "packed": { "gap": "s", "position": "top" } } }
+      "horizontal": {
+        "alignment": "top",
+        "distribution": "spaceBetween"
+      }
+    }
+  }
+}
+```
+
+Полная модель — все свойства:
+
+<!-- sample: samples/max.json -->
+```json
+{
+  "Container": {
+    "id": "id",
+    "layout": {
+      "width": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 1
+            }
+          }
+        },
+        "min": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "max": {
+          "custom": {
+            "value": 1
+          }
+        }
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 1
+            }
+          }
+        },
+        "min": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "max": {
+          "custom": {
+            "value": 1
+          }
+        }
+      },
+      "position": {
+        "pinned": {
+          "horizontal": {
+            "start": {
+              "offset": {
+                "custom": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "vertical": {
+            "top": {
+              "offset": {
+                "custom": {
+                  "value": 1
+                }
+              }
+            }
+          },
+          "relativeTo": "edge"
+        }
+      }
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": {
+          "custom": {
+            "value": 1
+          }
+        },
+        "vertical": {
+          "custom": {
+            "value": 1
+          }
+        }
+      }
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "primary"
+        },
+        "shadow": {
+          "custom": {
+            "offsetX": 1,
+            "offsetY": 1,
+            "blur": 1,
+            "spread": 1,
+            "color": "#000000"
+          }
+        },
+        "cornerRadius": "zero",
+        "stroke": {
+          "width": {
+            "custom": {
+              "value": 1
+            }
+          },
+          "color": "primary"
+        },
+        "clip": true
+      }
+    },
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "payload"
+          }
+        }
+      }
+    ],
+    "arrangement": {
+      "horizontal": {
+        "alignment": "top",
+        "distribution": {
+          "packed": {
+            "gap": {
+              "custom": {
+                "value": 1
+              }
+            },
+            "position": "start"
+          }
+        }
+      }
     },
     "children": [
-      { "Text": { "...": "..." } },
-      { "Button": { "...": "..." } }
+      {
+        "Container": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "arrangement": {
+            "horizontal": {
+              "alignment": "top",
+              "distribution": "spaceBetween"
+            }
+          }
+        }
+      }
     ]
   }
 }

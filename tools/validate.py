@@ -7,6 +7,7 @@
 """
 
 import argparse
+import difflib
 import json
 import re
 import subprocess
@@ -18,8 +19,10 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, COMPONENT, ROOT, SCHEMAS, THEMES, Contract, Registry, is_contract,
+from contracts import (APPEARANCE, COMPONENT, ROOT, SCHEMAS, THEMES, Contract, Registry, is_contract, is_sample,
                        pascal, ref_path)
+import idea
+from samples import dumps, generate, render, required_samples
 
 # Мета-схемы структуры файлов (schema-format.md, раздел 12).
 CONTRACT_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/contract.schema.json").read_text()))
@@ -42,6 +45,7 @@ README_SECTIONS = [
     "Назначение", "Состав", "Варианты", "Рекомендации по использованию", "Ограничения и открытые вопросы",
 ]
 LOWER_CAMEL = re.compile(r"[a-z][A-Za-z0-9]*")
+DIFF_LINES = 40  # строк диффа на файл в сообщении об устаревшем файле
 
 errors = {}
 
@@ -121,6 +125,76 @@ def check_files(registry, referenced):
     for theme in sorted(p for p in THEMES.iterdir() if p.is_dir()):
         if not LOWER_CAMEL.fullmatch(theme.name):
             error(theme, "имя темы не в lowerCamelCase (раздел 9.4)")
+
+
+# Примеры моделей (раздел 11.1, правило 8; раздел 11.2).
+
+def mismatch(path, actual, expected, message):
+    """Ошибка расхождения файла с ожидаемым текстом и дифф, ограниченный DIFF_LINES строками."""
+    name = path.relative_to(ROOT)
+    diff = list(difflib.unified_diff(actual.splitlines(), expected.splitlines(),
+                                     f"{name} (в ветке)", f"{name} (ожидается)", lineterm=""))
+    if len(diff) > DIFF_LINES:
+        diff = diff[:DIFF_LINES] + [f"… ещё {len(diff) - DIFF_LINES} строк"]
+    error(path, "\n".join([message, *diff]))
+
+
+def check_samples(registry):
+    for contract in registry:
+        if contract.kind != "public":
+            continue
+        directory = contract.path.parent / "samples"
+        samples = {p.stem: p for p in sorted(directory.glob("*.json"))} if directory.is_dir() else {}
+        for name in required_samples(contract):
+            path = directory / f"{name}.json"
+            expected = dumps(generate(registry, contract, name))
+            if not path.is_file():
+                error(path, "нет примера: python3 tools/sync.py")
+            elif path.read_text() != expected:
+                mismatch(path, path.read_text(), expected, "пример устарел: python3 tools/sync.py")
+        kind = registry.by_id.get(COMPONENT) if "extends" in contract.data else contract
+        for name, path in samples.items():
+            if not LOWER_CAMEL.fullmatch(name):
+                error(path, "имя примера не в lowerCamelCase")
+            try:
+                value = json.loads(path.read_text())
+            except json.JSONDecodeError as e:
+                error(path, f"некорректный JSON: {e}")
+                continue
+            if kind is not contract and not (isinstance(value, dict) and list(value) == [contract.name]):
+                error(path, f"пример компонента записывается объектом с ключом «{contract.name}»")
+                continue
+            if path.read_text() != dumps(value):
+                mismatch(path, path.read_text(), dumps(value),
+                         "формат примера не канонический: отступ 2, каждое поле на своей строке")
+            for problem in registry.value_errors(value, kind, "модель"):
+                error(path, problem)
+            for owner, node, at in registry.objects(value, kind, "модель"):
+                names = [p["name"] for p in registry.properties(owner)]
+                if name == "min":
+                    optional = [p["name"] for p in registry.properties(owner)
+                                if not p["required"] and p["name"] in node]
+                    if optional:
+                        error(path, f"{at}: в min только обязательные свойства, лишние: {', '.join(optional)}")
+                elif name == "max" and set(names) - set(node):
+                    missing = [n for n in names if n not in node]
+                    error(path, f"{at}: в max все свойства, нет: {', '.join(missing)}")
+        readme = contract.path.parent / "README.md"
+        if readme.is_file():
+            text, problems = render(readme)
+            for problem in problems:
+                error(readme, problem)
+            if not problems and text != readme.read_text():
+                mismatch(readme, readme.read_text(), text,
+                         "блок примера не совпадает с файлом: python3 tools/sync.py")
+
+
+def check_idea(registry):
+    """Сопоставление схем в IDE перечисляет все контракты (раздел 12)."""
+    expected = idea.json_schemas(registry)
+    actual = idea.PATH.read_text() if idea.PATH.is_file() else ""
+    if actual != expected:
+        mismatch(idea.PATH, actual, expected, "сопоставление схем в IDE устарело: python3 tools/sync.py")
 
 
 # Поддержка платформ (раздел 8).
@@ -380,7 +454,7 @@ def main():
         except json.JSONDecodeError as e:
             error(path, f"некорректный JSON: {e}")
             continue
-        if path.name.endswith(".schema.json"):
+        if path.name.endswith(".schema.json") or is_sample(path):
             continue
         check_refs(path, data)
         referenced.update(refs(path, data))
@@ -401,6 +475,8 @@ def main():
     for path, data in values.items():
         check_values(registry, values, path, data)
     check_themes(registry, values)
+    check_samples(registry)
+    check_idea(registry)
 
     check_spec_versions()
     if args.base:
