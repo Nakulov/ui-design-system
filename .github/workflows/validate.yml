@@ -1,0 +1,22 @@
+name: validate
+
+on:
+  pull_request:
+    branches: [dev]
+  push:
+    branches: [dev]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Контракты, значения, версии спецификаций
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python3 tools/validate.py --base "origin/${{ github.base_ref }}"
+          else
+            python3 tools/validate.py
+          fi
