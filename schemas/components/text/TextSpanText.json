@@ -29,7 +29,7 @@
     },
     {
       "name": "click",
-      "$ref": "../../core/events/EventData",
+      "$ref": "../../core/event/EventData",
       "required": false,
       "description": "Нажатие на фрагмент (ссылка): данные о том, что нужно сделать",
       "releaseVersions": {
