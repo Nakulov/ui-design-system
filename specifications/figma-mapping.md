@@ -1,7 +1,7 @@
 # Отображение контрактов в Figma
 
 **Статус:** Черновик для согласования  
-**Версия спецификации:** 0.12
+**Версия спецификации:** 0.13
 
 ## 1. Назначение
 
@@ -335,19 +335,25 @@ Skill оставляет variant-свойствами только измере�
 
 Поля базовой модели задают свойства корня instance или фрейма контейнера:
 
-| Поле                            | Figma                                                                                                                                                                                                                                        |
-|---------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`                            | `sharedPluginData`, пространство имён `uiContracts`, ключ `id`. Дизайнер его не видит.                                                                                                                                                       |
-| `layout.width`, `layout.height` | `layoutSizingHorizontal` / `layoutSizingVertical`: `hug` — HUG, `fill` — FILL, `fixed` — FIXED с размером из `Size`. `min` и `max` — `minWidth`, `maxWidth`, `minHeight`, `maxHeight`.                                                       |
-| `layout.position: flow`         | `layoutPositioning = AUTO`.                                                                                                                                                                                                                  |
-| `layout.position: pinned`       | `layoutPositioning = ABSOLUTE`, констрейнты: `start`/`top` — MIN, `end`/`bottom` — MAX, `center` — CENTER, `stretch` — STRETCH; смещения переводятся в координаты.                                                                           |
-| `padding`                       | `paddingLeft`, `paddingTop`, `paddingRight`, `paddingBottom`; `start` — left, `end` — right.                                                                                                                                                 |
-| `appearance`                    | Оформление показанного состояния (`plain`, для состояний — вариант по разделу 10.1): fill с цветом `ColorRole`, effect style `Elevation`, `cornerRadius`, stroke inside (`strokeWeight` из `BorderWidth`, цвет `ColorRole`), `clipsContent`. |
-| `events`                        | Не отображается (`willNotBeReleased`).                                                                                                                                                                                                       |
+| Поле                            | Figma                                                                                                                                                                                                                                                               |
+|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`                            | `sharedPluginData`, пространство имён `uiContracts`, ключ `id`. Дизайнер его не видит.                                                                                                                                                                              |
+| `layout.width`, `layout.height` | `layoutSizingHorizontal` / `layoutSizingVertical`: `hug` — HUG, `fill` — FILL, `fixed` — FIXED с размером из `Size`. `min` и `max` — `minWidth`, `maxWidth`, `minHeight`, `maxHeight`.                                                                              |
+| `layout.position: flow`         | `layoutPositioning = AUTO`.                                                                                                                                                                                                                                         |
+| `layout.position: pinned`       | `layoutPositioning = ABSOLUTE`, констрейнты: `start`/`top` — MIN, `end`/`bottom` — MAX, `center` — CENTER, `stretch` — STRETCH; смещения переводятся в координаты.                                                                                                  |
+| `padding`                       | `paddingLeft`, `paddingTop`, `paddingRight`, `paddingBottom`; `start` — left, `end` — right.                                                                                                                                                                        |
+| `appearance`                    | Оформление показанного состояния (`plain`, для состояний — вариант по разделу 10.1): fill с цветом `ColorRole`, effect style `Elevation`, `cornerRadius`, stroke inside (`strokeWeight` из `BorderWidth`, цвет `ColorRole`), `clipsContent`, наложение (правило 3). |
+| `events`                        | Не отображается (`willNotBeReleased`).                                                                                                                                                                                                                              |
 
 1. При `relativeTo: content` плагин прибавляет к смещению `padding` родителя: в Figma абсолютные дети отсчитываются от
    края фрейма.
 2. Figma поддерживает только письмо слева направо: `start` всегда соответствует левой стороне.
+3. Наложение (`overlay`) — верхний дочерний слой корня: прямоугольник с `layoutPositioning = ABSOLUTE`, констрейнтами
+   STRETCH по обеим осям, `cornerRadius` корня и fill с переменной `ColorRole`. Слой виден, только если наложение
+   задано, и хранит в `sharedPluginData` (`uiContracts`, ключ `role`) значение `overlay`, чтобы плагин находил его
+   при повторной отрисовке. Обводка корня (stroke inside) рисуется поверх детей, поэтому порядок слоёв совпадает с
+   платформами. У Figma-компонентов с состояниями слой наложения входит в `structure` каждого варианта (раздел 3.5,
+   правило 4).
 
 ### 10.3. Контейнер
 
