@@ -181,6 +181,9 @@ def check_samples(registry):
                     error(path, f"{at}: в max все свойства, нет: {', '.join(missing)}")
         readme = contract.path.parent / "README.md"
         if readme.is_file():
+            for name in required_samples(contract):
+                if f"](samples/{name}.json)" not in readme.read_text():
+                    error(readme, f"нет ссылки на samples/{name}.json (раздел 11.2)")
             text, problems = render(readme)
             for problem in problems:
                 error(readme, problem)
