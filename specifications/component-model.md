@@ -147,11 +147,11 @@ payload: Payload                   — тип задаёт приложение
 
 ```
 appearance:
-  plain:      { background?, shadow?, cornerRadius?, stroke?, clip? }
+  plain:      { background?, shadow?, cornerRadius?, stroke?, overlay?, clip? }
   control:    { default: plain, pressed: plain, disabled: plain }          — кнопка
   selectable: { unselected: control, selected: control }                   — чип, чекбокс, таб
   focusable:  { default: plain, focused: plain, disabled: plain }          — поле ввода
-background: solid(ColorRole)
+background, overlay: AppearanceFill = solid(ColorRole)
 stroke:     { width: BorderWidth, color: ColorRole }                       — только внутренняя
 ```
 
@@ -161,14 +161,16 @@ stroke:     { width: BorderWidth, color: ColorRole }                       — �
 | `shadow`       | `Elevation`                 | Effect style  | `shadow`             | `.shadow`       |
 | `cornerRadius` | `CornerRadius`              | Corner radius | `RoundedCornerShape` | `.clipShape`    |
 | `stroke`       | `BorderWidth` + `ColorRole` | Stroke inside | `border`             | `.strokeBorder` |
+| `overlay`      | `solid(ColorRole)`          | верхний слой  | `drawWithContent`    | `.overlay`      |
 | `clip`         | `boolean`                   | Clip content  | `clip`               | `.clipped()`    |
 
-1. Поля `plain` необязательны: отсутствие означает прозрачный фон, отсутствие тени и обводки, прямые углы и содержимое
-   без обрезки.
+1. Поля `plain` необязательны: отсутствие означает прозрачный фон, отсутствие тени, обводки и наложения, прямые углы и
+   содержимое без обрезки.
 2. Сочетания состояний выражаются вложением контекстов: нажатый выбранный чип оформлен `selected.pressed`.
 3. `Appearance` описывает только вид состояний. Состояние определяют поля компонента (доступность, выбор) и
    взаимодействие пользователя (нажатие, фокус).
-4. Фон — `oneOf`, чтобы градиент (`gradient`) добавился вариантом без несовместимого изменения.
+4. Фон и наложение — один тип `AppearanceFill` (`oneOf`), чтобы градиент (`gradient`) добавился вариантом без
+   несовместимого изменения сразу в обе заливки.
 5. Обводка только внутренняя: не меняет размер компонента; в Compose `border` рисует внутри, в Figma — Stroke inside.
 6. Контракт компонента объявляет допустимые контексты полем `appearanceContext` (`schema-format.md`, раздел 5.2):
    свойство `appearance` компонента принимает только эти варианты. Кликабельность от контекста не зависит: её задаёт
@@ -177,6 +179,11 @@ stroke:     { width: BorderWidth, color: ColorRole }                       — �
 7. В Figma `plain` соответствует оформлению корня instance (fill, effect style, corner radius, stroke, clip content),
    контекст — variant-свойствам `state` и `selected` в Component Set (`figma-mapping.md`, разделы 3.5 и 10.2).
 8. Каждое состояние задаёт оформление полностью; повтор общих полей предполагается решить пресетами оформления.
+9. Наложение (`overlay`) — заливка поверх содержимого: слои корня снизу вверх — тень, фон, содержимое, наложение,
+   обводка. Повторяет форму корня и обрезается по ней независимо от `clip`, нажатия не перехватывает. Нужно, когда
+   содержимое закрывает фон: отклик на нажатие картинки или баннера (`overlayPressed` в `pressed`).
+10. Картинки в `appearance` нет: адрес — данные, а не оформление, в состояниях он повторялся бы, а смена при нажатии
+    перезагружала бы картинку. Картинка на фоне — `Container` с раскладкой `overlay` и `Image` первым ребёнком.
 
 ## 9. Контейнер
 
@@ -296,7 +303,8 @@ source: oneOf
 5. Размера у символа нет: собственный размер вектора при `hug`, вписывание в `fixed` и `fill`. Заглушка и ошибка — в
    собственном размере по центру.
 6. Нет полей `tint`, `alpha`, индикаторов и картинки-фона: цвет — внутри символа, прозрачности нет и в базовой модели,
-   индикаторы с вырезом и фон — отдельные задачи. Подпись для диктора — с доступностью всех компонентов.
+   индикаторы с вырезом — отдельная задача, картинка на фоне — композиция `Container` (раздел 8, правило 10). Отклик
+   на нажатие поверх картинки — наложение `overlay`. Подпись для диктора — с доступностью всех компонентов.
 7. В Figma `Image` — Figma-компонент со слоем символа и слоем картинки (`figma-mapping.md`, раздел 4.1, правило 12).
 
 ## 12. Открытые вопросы

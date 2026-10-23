@@ -101,6 +101,9 @@
           },
           "color": "primary"
         },
+        "overlay": {
+          "solid": "primary"
+        },
         "clip": true
       }
     },

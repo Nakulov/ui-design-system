@@ -82,8 +82,142 @@ lineDistribution: oneOf               — строки (колонки) при �
 9. При `baseline` ребёнок без текста (иконка, плашка) выравнивается нижним краем, как в SwiftUI и Figma; в Compose —
    `Modifier.alignBy { it.measuredHeight }`. Вложенный контейнер выравнивается по базовой линии своего первого текста.
 
+**Картинка на фоне.** Баннер или карточка с обложкой — контейнер с раскладкой `overlay`: первый ребёнок — `Image` с
+`fill` по обеим осям и `crop`, поверх — содержимое. Скругление и `clip` задаёт контейнер. Картинка закрывает фон
+контейнера, поэтому нажатие показывает наложение `overlay` в `appearance.control.pressed`.
+
 Сгенерированные примеры: [минимальная модель](samples/min.json) — только обязательные свойства,
 [полная модель](samples/max.json) — все свойства.
+
+Промо-баннер с картинкой на фоне:
+
+<!-- sample: samples/promoBanner.json -->
+```json
+{
+  "Container": {
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": "xl3"
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "control": {
+        "default": {
+          "background": {
+            "solid": "surface2"
+          },
+          "cornerRadius": "l",
+          "clip": true
+        },
+        "pressed": {
+          "background": {
+            "solid": "surface2"
+          },
+          "cornerRadius": "l",
+          "overlay": {
+            "solid": "overlayPressed"
+          },
+          "clip": true
+        },
+        "disabled": {
+          "background": {
+            "solid": "surface2"
+          },
+          "cornerRadius": "l",
+          "clip": true
+        }
+      }
+    },
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "openPromo"
+          }
+        }
+      }
+    ],
+    "arrangement": {
+      "overlay": {
+        "horizontal": "start",
+        "vertical": "bottom"
+      }
+    },
+    "children": [
+      {
+        "Image": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "fill"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "source": {
+            "remote": {
+              "origin": {
+                "url": "https://cdn.example.com/promo/autumn.jpg"
+              },
+              "scale": "crop",
+              "alignment": "center",
+              "placeholder": {
+                "icon": {
+                  "name": "image",
+                  "color": "onSurfaceMuted"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "l"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Осенняя распродажа"
+          },
+          "typography": "headlineSmall",
+          "color": {
+            "solid": "inverseOnSurface"
+          },
+          "alignment": "start"
+        }
+      }
+    ]
+  }
+}
+```
 
 Ожидаемая модель на Kotlin:
 

@@ -155,11 +155,11 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/AppearanceBackground.json" />
+                    <option name="path" value="schemas/core/appearance/AppearanceControl.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/AppearanceControl.json" />
+                    <option name="path" value="schemas/core/appearance/AppearanceFill.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>

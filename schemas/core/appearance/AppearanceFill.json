@@ -1,0 +1,11 @@
+{
+  "name": "AppearanceFill",
+  "type": "oneOf",
+  "description": "Заливка формы корня: фон под содержимым или наложение поверх него",
+  "oneOf": [
+    {
+      "$ref": "../../foundation/colorRole/ColorRole",
+      "name": "solid"
+    }
+  ]
+}

@@ -5,7 +5,7 @@
   "properties": [
     {
       "name": "background",
-      "$ref": "AppearanceBackground",
+      "$ref": "AppearanceFill",
       "required": false,
       "description": "Фон. Если не задан, фон прозрачный"
     },
@@ -26,6 +26,12 @@
       "$ref": "AppearanceStroke",
       "required": false,
       "description": "Внутренняя обводка. Если не задана, обводки нет"
+    },
+    {
+      "name": "overlay",
+      "$ref": "AppearanceFill",
+      "required": false,
+      "description": "Наложение поверх содержимого в форме корня, под обводкой; не перехватывает касания. Например, отклик на нажатие поверх картинки. Если не задано, наложения нет"
     },
     {
       "name": "clip",
