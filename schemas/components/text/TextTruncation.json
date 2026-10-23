@@ -1,0 +1,25 @@
+{
+  "name": "TextTruncation",
+  "type": "enum",
+  "description": "Место многоточия в тексте, который не поместился",
+  "values": [
+    {
+      "name": "start",
+      "description": "В начале. Только для одной строки",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
+    },
+    {
+      "name": "middle",
+      "description": "В середине. Только для одной строки",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
+    },
+    {
+      "name": "end",
+      "description": "В конце"
+    }
+  ]
+}

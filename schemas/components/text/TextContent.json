@@ -1,0 +1,15 @@
+{
+  "name": "TextContent",
+  "type": "oneOf",
+  "description": "Содержимое текста",
+  "oneOf": [
+    {
+      "name": "plain",
+      "type": "string"
+    },
+    {
+      "$ref": "TextRich",
+      "name": "rich"
+    }
+  ]
+}

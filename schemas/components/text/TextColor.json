@@ -1,0 +1,11 @@
+{
+  "name": "TextColor",
+  "type": "oneOf",
+  "description": "Заливка текста",
+  "oneOf": [
+    {
+      "$ref": "../../foundation/colorRole/ColorRole",
+      "name": "solid"
+    }
+  ]
+}

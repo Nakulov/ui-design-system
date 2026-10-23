@@ -1,0 +1,15 @@
+{
+  "name": "TextDecoration",
+  "type": "enum",
+  "description": "Линия на тексте. В Figma линии взаимоисключающие, поэтому значение одно",
+  "values": [
+    {
+      "name": "underline",
+      "description": "Подчёркивание"
+    },
+    {
+      "name": "strikethrough",
+      "description": "Зачёркивание"
+    }
+  ]
+}

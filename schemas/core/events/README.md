@@ -54,7 +54,7 @@ interface Payload
 data class OpenProfile(val userId: String) : Payload
 data object CopyLink : Payload
 
-TextLabelModel(
+Text(
     events = setOf(
         Event.Click(payload = OpenProfile(userId)),
         Event.LongPress(payload = CopyLink),

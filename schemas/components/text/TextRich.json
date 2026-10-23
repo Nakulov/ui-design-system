@@ -1,0 +1,16 @@
+{
+  "name": "TextRich",
+  "type": "object",
+  "description": "Текст из фрагментов, идущих подряд",
+  "properties": [
+    {
+      "name": "spans",
+      "type": "array",
+      "items": {
+        "$ref": "TextSpan"
+      },
+      "required": true,
+      "description": "Фрагменты в порядке следования"
+    }
+  ]
+}
