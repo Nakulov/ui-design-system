@@ -1,7 +1,7 @@
 # Отображение контрактов в Figma
 
 **Статус:** Черновик для согласования  
-**Версия спецификации:** 0.8
+**Версия спецификации:** 0.9
 
 ## 1. Назначение
 
@@ -342,7 +342,7 @@ Skill оставляет variant-свойствами только измере�
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `horizontal`, `vertical`         | `layoutMode = HORIZONTAL` / `VERTICAL`, `layoutWrap = NO_WRAP`.                                                                                         |
 | `horizontalWrap`, `verticalWrap` | `layoutMode = HORIZONTAL` / `VERTICAL`, `layoutWrap = WRAP`.                                                                                            |
-| `alignment`                      | `counterAxisAlignItems`: `start`/`top` — MIN, `center` — CENTER, `end`/`bottom` — MAX.                                                                  |
+| `alignment`                      | `counterAxisAlignItems`: `start`/`top` — MIN, `center` — CENTER, `end`/`bottom` — MAX, `baseline` — BASELINE (с Wrap не проверено; если нет — MIN).     |
 | `distribution: packed`           | `itemSpacing` = `gap`, `primaryAxisAlignItems` по `position`: MIN, CENTER, MAX.                                                                         |
 | `distribution: spaceBetween`     | `primaryAxisAlignItems = SPACE_BETWEEN`.                                                                                                                |
 | `lineDistribution: packed`       | `counterAxisAlignContent = AUTO`, `counterAxisSpacing` = `gap`.                                                                                         |
@@ -372,4 +372,3 @@ Skill оставляет variant-свойствами только измере�
    переменными тех же имён.
 10. Состояние `disabled` при отрисовке модели: выбор по полю компонента, задающему недоступность; такие поля пока не
     согласованы.
-11. Выравнивание контейнера по базовой линии текста (`counterAxisAlignItems = BASELINE`).

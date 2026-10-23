@@ -5,9 +5,9 @@
   "properties": [
     {
       "name": "alignment",
-      "$ref": "ContainerVerticalAlignment",
+      "$ref": "ContainerRowAlignment",
       "required": true,
-      "description": "Выравнивание детей по вертикали"
+      "description": "Выравнивание детей по вертикали, в том числе по базовой линии текста"
     },
     {
       "name": "distribution",

@@ -29,16 +29,17 @@
 | `ContainerDistributionMode.json`       | Перечисление распределений без параметров: `spaceBetween`.                 |
 | `ContainerHorizontalAlignment.json`    | Положение по горизонтали: `start`, `center`, `end`.                        |
 | `ContainerVerticalAlignment.json`      | Положение по вертикали: `top`, `center`, `bottom`.                         |
+| `ContainerRowAlignment.json`           | Выравнивание в строке: `top`, `center`, `bottom`, `baseline`.              |
 
 ## Варианты
 
 ```
 arrangement: oneOf
-  horizontal { alignment: top | center | bottom,    distribution }
-  vertical   { alignment: start | center | end,     distribution }
-  horizontalWrap { alignment: top | center | bottom, distribution, lineDistribution }
-  verticalWrap   { alignment: start | center | end,  distribution, lineDistribution }
-  overlay    { horizontal: start | center | end,    vertical: top | center | bottom }
+  horizontal     { alignment: top | center | bottom | baseline, distribution }
+  vertical       { alignment: start | center | end,             distribution }
+  horizontalWrap { alignment: top | center | bottom | baseline, distribution, lineDistribution }
+  verticalWrap   { alignment: start | center | end,             distribution, lineDistribution }
+  overlay        { horizontal: start | center | end,            vertical: top | center | bottom }
 
 distribution: oneOf
   packed { gap: Spacing, position }    — position по оси контейнера
@@ -67,11 +68,18 @@ lineDistribution: oneOf               — строки (колонки) при �
    `position = pinned` располагаются по своему закреплению. В Figma плагин переводит положение в констрейнты.
 4. `spaceAround` и `spaceEvenly` не поддерживаются: в Figma их нет.
 5. При переносе один `alignment` выравнивает и детей внутри строки, и группу строк в контейнере: в Figma оба
-   задаются `counterAxisAlignItems`. Поэтому у `lineDistribution.packed` нет своего положения.
+   задаются `counterAxisAlignItems`. Поэтому у `lineDistribution.packed` нет своего положения. Исключение —
+   `baseline`: дети в строке выравниваются по базовой линии, а строки прижаты к верху.
 6. Ограничения числа строк и детей в строке (`maxLines`, `maxItemsInEachRow` в Compose) не поддерживаются: в Figma
    их нет.
 7. В Figma контейнер — фрейм, а не Figma-компонент: он создаётся только при отрисовке модели (`figma-mapping.md`,
    разделы 3.4 и 10.3).
+8. `baseline` есть только у строки (`horizontal`, `horizontalWrap`): в Figma `BASELINE` только у горизонтального
+   Auto Layout, у `Column` в Compose его нет. Используется первая базовая линия: другой в Figma нет, многострочный
+   текст выравнивается по первой строке. Compose — `Modifier.alignByBaseline()`, SwiftUI — `.firstTextBaseline`, в
+   `FlowLayout` — по `ViewDimensions[.firstTextBaseline]`.
+9. При `baseline` ребёнок без текста (иконка, плашка) выравнивается нижним краем, как в SwiftUI и Figma; в Compose —
+   `Modifier.alignBy { it.measuredHeight }`. Вложенный контейнер выравнивается по базовой линии своего первого текста.
 
 Пример модели:
 
@@ -107,7 +115,7 @@ data class Container(
 
 sealed interface ContainerArrangement {
     data class Horizontal(
-        val alignment: ContainerVerticalAlignment,
+        val alignment: ContainerRowAlignment,
         val distribution: ContainerHorizontalDistribution,
     ) : ContainerArrangement
 
@@ -117,7 +125,7 @@ sealed interface ContainerArrangement {
     ) : ContainerArrangement
 
     data class HorizontalWrap(
-        val alignment: ContainerVerticalAlignment,
+        val alignment: ContainerRowAlignment,
         val distribution: ContainerHorizontalDistribution,
         val lineDistribution: ContainerLineDistribution,
     ) : ContainerArrangement
@@ -145,9 +153,11 @@ sealed interface ContainerHorizontalDistribution {
 - Сложные раскладки собирайте вложенными контейнерами: связей между соседними детьми в модели нет.
 - Для отступа между детьми используйте `gap`, а не `padding` детей.
 - Для растяжения ребёнка поперёк оси задавайте ему `fill` в `layout`.
+- Для строки из текстов разного размера используйте `baseline`, а не `center`: подписи встанут на одну линию.
 
 ## Ограничения и открытые вопросы
 
-- Выравнивание по базовой линии текста не поддерживается.
+- `baseline` с переносом (`layoutWrap = WRAP`) в Figma требует проверки; если не поддерживается, при отрисовке
+  используется `top`.
 - В SwiftUI готового переноса нет: генератор поставляет собственный `FlowLayout` на протоколе `Layout`.
 - Значений по умолчанию в формате пока нет, поэтому поля выравнивания и распределения обязательны.

@@ -185,11 +185,11 @@ stroke:     { width: BorderWidth, color: ColorRole }                       — �
 
 ```
 arrangement: oneOf
-  horizontal { alignment: top | center | bottom,    distribution }
-  vertical   { alignment: start | center | end,     distribution }
-  horizontalWrap { alignment: top | center | bottom, distribution, lineDistribution }
-  verticalWrap   { alignment: start | center | end,  distribution, lineDistribution }
-  overlay    { horizontal: start | center | end,    vertical: top | center | bottom }
+  horizontal     { alignment: top | center | bottom | baseline, distribution }
+  vertical       { alignment: start | center | end,             distribution }
+  horizontalWrap { alignment: top | center | bottom | baseline, distribution, lineDistribution }
+  verticalWrap   { alignment: start | center | end,             distribution, lineDistribution }
+  overlay        { horizontal: start | center | end,            vertical: top | center | bottom }
 distribution: oneOf
   packed { gap: Spacing, position }               — position по оси контейнера
   spaceBetween
@@ -223,6 +223,10 @@ children?: [Component]                            — любой компоне�
 8. Перенос — отдельные варианты `horizontalWrap` и `verticalWrap`, а не флаг: у переноса есть промежуток между
    строками, а оси задают типы выравнивания. Один `alignment` выравнивает и детей в строке, и группу строк: в Figma
    оба задаются `counterAxisAlignItems`. `maxLines` и `maxItemsInEachRow` не используются: в Figma их нет.
+9. `baseline` — выравнивание детей строки по первой базовой линии текста (`ContainerRowAlignment`), только у
+   `horizontal` и `horizontalWrap`: в Figma `BASELINE` только у горизонтального Auto Layout, у `Column` в Compose его
+   нет. Последней базовой линии нет: в Figma её нет. Ребёнок без текста выравнивается нижним краем, вложенный
+   контейнер — по базовой линии своего первого текста. При переносе строки прижаты к верху.
 
 ## 10. `Text`
 
@@ -268,13 +272,12 @@ TextSpan: oneOf
 ## 11. Открытые вопросы
 
 1. Остальные поля `Component`.
-2. Контейнер: выравнивание по базовой линии текста.
-3. Изменения `schema-format.md`: набор поддерживаемых событий у компонента, значения по умолчанию.
-4. Закреплённые дети в потоковых контейнерах (вне контейнера наложения).
-5. Оформление: пресеты, градиент и изображение фона. Выбор состояния `disabled` по полю компонента.
-6. Контекст `expandable` (`collapsed`, `expanded`, в каждом — `control`) — вместе с первым аккордеоном, если его корень
+2. Изменения `schema-format.md`: набор поддерживаемых событий у компонента, значения по умолчанию.
+3. Закреплённые дети в потоковых контейнерах (вне контейнера наложения).
+4. Оформление: пресеты, градиент и изображение фона. Выбор состояния `disabled` по полю компонента.
+5. Контекст `expandable` (`collapsed`, `expanded`, в каждом — `control`) — вместе с первым аккордеоном, если его корень
    выглядит по-разному в этих положениях.
-7. Состояния загрузки контента (изображение, файл): загрузка, ошибка, готово. Относятся к содержимому компонента, а не к
+6. Состояния загрузки контента (изображение, файл): загрузка, ошибка, готово. Относятся к содержимому компонента, а не к
    `appearance`.
-8. Неизвестные клиенту варианты `oneOf` в модели с сервера (например, новый вид фрагмента `TextSpan` у старого
+7. Неизвестные клиенту варианты `oneOf` в модели с сервера (например, новый вид фрагмента `TextSpan` у старого
    клиента): правило отображения вместо ошибки.

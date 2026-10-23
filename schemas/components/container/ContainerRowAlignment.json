@@ -1,0 +1,23 @@
+{
+  "name": "ContainerRowAlignment",
+  "type": "enum",
+  "description": "Выравнивание детей строки по вертикали",
+  "values": [
+    {
+      "name": "top",
+      "description": "По верхнему краю"
+    },
+    {
+      "name": "center",
+      "description": "По центру"
+    },
+    {
+      "name": "bottom",
+      "description": "По нижнему краю"
+    },
+    {
+      "name": "baseline",
+      "description": "По первой базовой линии текста. Ребёнок без текста выравнивается нижним краем, вложенный контейнер — по базовой линии своего первого текста"
+    }
+  ]
+}
