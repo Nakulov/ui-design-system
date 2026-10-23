@@ -29,7 +29,7 @@
 | `layout`     | Согласовано (раздел 4) | `schemas/core/layout/Layout`         |
 | `padding`    | Согласовано (раздел 6) | `schemas/core/padding/Padding`       |
 | `appearance` | Согласовано (раздел 8) | `schemas/core/appearance/Appearance` |
-| `events`     | Согласовано (раздел 7) | `schemas/core/events/Event`          |
+| `events`     | Согласовано (раздел 7) | `schemas/core/event/Event`           |
 
 Базовая модель: `schemas/core/component/Component`.
 

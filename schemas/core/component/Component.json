@@ -36,7 +36,7 @@
       "name": "events",
       "type": "array",
       "items": {
-        "$ref": "../events/Event"
+        "$ref": "../event/Event"
       },
       "uniqueVariants": true,
       "required": false,

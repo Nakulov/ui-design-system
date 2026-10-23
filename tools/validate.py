@@ -34,7 +34,7 @@ SPECS = {
 VERSION_RE = re.compile(r"^\*\*Версия спецификации:\*\*\s*(\S+)", re.M)
 
 # Типы, которые Figma не отображает (figma-mapping.md, раздел 4.1, правило 3).
-FIGMA_UNREPRESENTABLE = {"schemas/core/events/Event", "schemas/core/events/EventData"}
+FIGMA_UNREPRESENTABLE = {"schemas/core/event/Event", "schemas/core/event/EventData"}
 
 STATUS_RANK = {"released": 0, "notReleased": 1, "willNotBeReleased": 2}
 
