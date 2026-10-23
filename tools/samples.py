@@ -65,6 +65,8 @@ def generate(registry, contract, mode):
     return {contract.name: data} if "extends" in contract.data else data
 
 MARKER = re.compile(r"<!-- sample: (samples/[A-Za-z0-9]+\.json) -->")
+LINK = re.compile(r"\]\((samples/[^)]+)\)")
+GENERATED = ("min", "max")
 
 
 def render(readme):
@@ -79,7 +81,12 @@ def render(readme):
             problems.append(f"строка {i + 1}: блок ```json без пометки <!-- sample: … --> (раздел 11.2)")
         elif marker:
             sample = readme.parent / marker.group(1)
-            if i + 1 >= len(lines) or lines[i + 1].strip() != "```json":
+            if sample.stem in GENERATED:
+                problems.append(f"строка {i + 1}: {marker.group(1)} показывается ссылкой, а не блоком (раздел 11.2)")
+                if i + 1 < len(lines) and lines[i + 1].strip() == "```json":
+                    result.append(lines[i + 1])
+                    i += 1
+            elif i + 1 >= len(lines) or lines[i + 1].strip() != "```json":
                 problems.append(f"строка {i + 1}: после пометки нет блока ```json")
             elif not sample.is_file():
                 problems.append(f"строка {i + 1}: нет файла {marker.group(1)}")
@@ -93,4 +100,8 @@ def render(readme):
                     result += ["```json", *sample.read_text().rstrip("\n").split("\n"), "```"]
                     i = end
         i += 1
+    for number, line in enumerate(lines, 1):
+        for target in LINK.findall(line):
+            if not (readme.parent / target).is_file():
+                problems.append(f"строка {number}: ссылка на несуществующий пример {target}")
     return "\n".join(result), problems
