@@ -17,8 +17,12 @@ Platform-independent UI design system contracts, schemas, and AI-assisted compon
 Проверка контрактов, файлов значений и версий спецификаций запускается в PR и локально:
 
 ```sh
+python3 -m pip install -r tools/requirements.txt   # один раз
 python3 tools/validate.py --base origin/dev
 ```
+
+Структура контрактов и файлов значений описана мета-схемами `specifications/contract.schema.json` и
+`specifications/values.schema.json`; в Android Studio и других IDE JetBrains они подключены для подсказок через `.idea/jsonSchemas.xml`.
 
 Для работы с ассистентом в `.claude/skills/` есть скиллы: `contract-authoring` (проектирование контрактов), `groom`
 («давай погрумим …») и `take` («берём в работу #N»).

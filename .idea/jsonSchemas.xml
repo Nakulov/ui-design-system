@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="Контракт">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Контракт" />
+              <option name="relativePathToSchema" value="specifications/contract.schema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="directory" value="true" />
+                    <option name="path" value="schemas" />
+                    <option name="mappingKind" value="Directory" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="Файл значений">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Файл значений" />
+              <option name="relativePathToSchema" value="specifications/values.schema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="*.values.json" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>

@@ -3,7 +3,7 @@
 
 Запуск: python3 tools/validate.py [--base <git ref>]
 С --base дополнительно проверяется, что изменённые спецификации повысили версию.
-Выход 1, если найдены ошибки.
+Выход 1, если найдены ошибки. Зависимости: pip install -r tools/requirements.txt.
 """
 
 import argparse
@@ -13,7 +13,17 @@ import subprocess
 import sys
 from pathlib import Path
 
+try:
+    from jsonschema import Draft202012Validator
+    from jsonschema.exceptions import best_match
+except ImportError:
+    sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
+
 ROOT = Path(__file__).resolve().parent.parent
+
+# Мета-схемы структуры файлов (schema-format.md, раздел 12).
+CONTRACT_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/contract.schema.json").read_text()))
+VALUES_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/values.schema.json").read_text()))
 
 # Спецификации с версией в spec-versions.json (schema-format.md, раздел 11.3).
 SPECS = {
@@ -39,6 +49,22 @@ def json_files():
     for path in sorted(ROOT.rglob("*.json")):
         if not any(part.startswith(".") for part in path.relative_to(ROOT).parts):
             yield path
+
+
+def is_contract(path):
+    """Контракт — <Имя>.json; файлы <Имя>.<вид>.json контрактами не являются (раздел 11.1, правило 5)."""
+    return len(path.suffixes) == 1 and path != ROOT / "spec-versions.json"
+
+
+def check_structure(path, data, validator):
+    """Структура по мета-схеме; True, если ошибок нет."""
+    found = sorted(validator.iter_errors(data), key=lambda e: [str(part) for part in e.path])
+    for e in found:
+        e = best_match(e.context) if e.context else e
+        location = "/".join(str(part) for part in e.absolute_path) or "корень"
+        forbidden = e.validator_value.get("required") if e.validator == "not" else None
+        error(path, f"{location}: " + (f"поле «{forbidden[0]}» здесь не допускается" if forbidden else e.message))
+    return not found
 
 
 def resolve(path, ref):
@@ -156,10 +182,13 @@ def main():
         except json.JSONDecodeError as e:
             error(path, f"некорректный JSON: {e}")
             continue
+        if path.name.endswith(".schema.json"):
+            continue
         check_refs(path, data)
         if path.name.endswith(".values.json"):
-            check_values(path, data)
-        elif isinstance(data, dict):
+            if check_structure(path, data, VALUES_SCHEMA):
+                check_values(path, data)
+        elif is_contract(path) and check_structure(path, data, CONTRACT_SCHEMA):
             check_release_inheritance(path, data)
             check_figma_unrepresentable(path, data)
 
