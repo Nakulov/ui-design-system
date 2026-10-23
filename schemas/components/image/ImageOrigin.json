@@ -1,0 +1,11 @@
+{
+  "name": "ImageOrigin",
+  "type": "oneOf",
+  "description": "Откуда загружается картинка",
+  "oneOf": [
+    {
+      "name": "url",
+      "type": "string"
+    }
+  ]
+}

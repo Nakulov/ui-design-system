@@ -1,0 +1,16 @@
+{
+  "name": "ImageAlignment",
+  "type": "enum",
+  "description": "Положение картинки в компоненте",
+  "values": [
+    { "name": "topStart", "description": "Сверху в начале строки" },
+    { "name": "topCenter", "description": "Сверху по центру" },
+    { "name": "topEnd", "description": "Сверху в конце строки" },
+    { "name": "centerStart", "description": "По центру в начале строки" },
+    { "name": "center", "description": "По центру" },
+    { "name": "centerEnd", "description": "По центру в конце строки" },
+    { "name": "bottomStart", "description": "Снизу в начале строки" },
+    { "name": "bottomCenter", "description": "Снизу по центру" },
+    { "name": "bottomEnd", "description": "Снизу в конце строки" }
+  ]
+}
