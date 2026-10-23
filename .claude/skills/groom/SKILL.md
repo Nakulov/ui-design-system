@@ -24,7 +24,7 @@ description: Груминг задачи дизайн-системы — обс�
    первый — `python3 tools/validate.py` проходит.
 5. **Создание** — только после одобрения черновика:
    - `gh issue create --title … --label … --body-file …`;
-   - добавь на доску и поставь статус Groomed (идентификаторы — в разделе «Доска»);
+   - добавь на доску и поставь статус Groomed функцией `board_status` (раздел «Доска»);
    - подзадачу эпика привяжи: `gh api repos/{owner}/{repo}/issues/<эпик>/sub_issues -F sub_issue_id=<id задачи>`.
 6. Сообщи номер и ссылку на задачу.
 
@@ -43,11 +43,39 @@ description: Груминг задачи дизайн-системы — обс�
 | In review   | `95554372` |
 | Done        | `7f87e422` |
 
+Статус ставь только функцией `board_status`: она добавляет задачу на доску (повторное добавление возвращает тот же
+элемент), ставит статус и проверяет, что задача видна в списке элементов доски.
+
+Список доски (GraphQL `items`, `gh project item-list`, веб-интерфейс) отстаёт от добавления на секунды, а иногда
+элемент остаётся невидимым совсем, хотя задача считает себя на доске (`gh issue view N --json projectItems`). Поэтому
+функция проверяет список несколько раз, а если задачи нет — удаляет элемент и добавляет заново. Оболочка — zsh:
+не разбивай строки через `set -- $var`, передавай номер задачи и статус отдельными аргументами.
+
 ```sh
-item=$(gh project item-add 8 --owner Nakulov --url <issue url> --format json --jq .id)
-gh project item-edit --id "$item" --project-id PVT_kwHOASpeKc4BoUwf \
-  --field-id PVTSSF_lAHOASpeKc4BoUwfzhm1ZcE --single-select-option-id ae278317
+board_status() {  # board_status <номер задачи> <id статуса>
+  local p=PVT_kwHOASpeKc4BoUwf f=PVTSSF_lAHOASpeKc4BoUwfzhm1ZcE cid item attempt check
+  cid=$(gh issue view "$1" --json id --jq .id) || return 1
+  for attempt in 1 2; do
+    item=$(gh api graphql -f query='mutation($p:ID!,$c:ID!){addProjectV2ItemById(input:{projectId:$p,contentId:$c}){item{id}}}' \
+      -f p=$p -f c="$cid" --jq .data.addProjectV2ItemById.item.id)
+    gh project item-edit --id "$item" --project-id $p --field-id $f --single-select-option-id "$2" >/dev/null
+    for check in 1 2 3 4 5; do
+      gh api graphql -f query='{user(login:"Nakulov"){projectV2(number:8){items(first:100){nodes{id}}}}}' \
+        --jq '.data.user.projectV2.items.nodes[].id' | grep -qx "$item" && return 0
+    done
+    [ $attempt = 1 ] && gh api graphql -f query='mutation($p:ID!,$i:ID!){deleteProjectV2Item(input:{projectId:$p,itemId:$i}){deletedItemId}}' \
+      -f p=$p -f i="$item" >/dev/null
+  done
+  echo "#$1 не видна на доске" >&2
+  return 1
+}
+
+board_status 7 ae278317   # задача #7 → Groomed
 ```
+
+Если функция вернула ошибку, сообщи пользователю: задача создана, но на доске не видна.
+
+Список читает первые 100 элементов; когда задач станет больше, проверку нужно перевести на постраничное чтение.
 
 Метки: `component`, `foundation`, `spec`, `process`, `epic`.
 
