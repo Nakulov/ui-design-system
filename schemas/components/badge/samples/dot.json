@@ -1,0 +1,28 @@
+{
+  "Badge": {
+    "layout": {
+      "width": {
+        "sizing": {
+          "fixed": "xs2"
+        }
+      },
+      "height": {
+        "sizing": {
+          "fixed": "xs2"
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "error"
+        },
+        "cornerRadius": "full"
+      }
+    }
+  }
+}

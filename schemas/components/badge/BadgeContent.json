@@ -1,0 +1,15 @@
+{
+  "name": "BadgeContent",
+  "type": "oneOf",
+  "description": "Содержимое бейджа",
+  "oneOf": [
+    {
+      "$ref": "BadgeText",
+      "name": "text"
+    },
+    {
+      "$ref": "../image/ImageSource",
+      "name": "image"
+    }
+  ]
+}

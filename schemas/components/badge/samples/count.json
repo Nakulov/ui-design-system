@@ -1,0 +1,36 @@
+{
+  "Badge": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": {
+          "fixed": "xs"
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": "xs",
+        "vertical": "zero"
+      }
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "error"
+        },
+        "cornerRadius": "full"
+      }
+    },
+    "content": {
+      "text": {
+        "value": "99+",
+        "typography": "labelSmall",
+        "color": "onError"
+      }
+    }
+  }
+}

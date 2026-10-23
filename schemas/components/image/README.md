@@ -221,7 +221,7 @@ sealed interface ImageOrigin {
       {
         "anchor": "bottomEnd",
         "content": {
-          "Container": {
+          "Badge": {
             "layout": {
               "width": {
                 "sizing": {
@@ -244,12 +244,6 @@ sealed interface ImageOrigin {
                   "solid": "success"
                 },
                 "cornerRadius": "full"
-              }
-            },
-            "arrangement": {
-              "overlay": {
-                "horizontal": "center",
-                "vertical": "center"
               }
             }
           }
