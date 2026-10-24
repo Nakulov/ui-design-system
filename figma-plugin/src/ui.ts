@@ -1,4 +1,4 @@
-// Окно плагина: выбор набора, сводка, построение foundation и отчёт.
+// Окно плагина: выбор набора, сводка, построение foundation, отрисовка примеров и отчёт.
 import type { Summary } from "./bundle";
 import type { ToPlugin, ToUi } from "./messages";
 import type { ReportData } from "./report";
@@ -19,6 +19,7 @@ const status = element<HTMLDivElement>("status");
 const summary = element<HTMLTableElement>("summary");
 const report = element<HTMLDivElement>("report");
 const foundation = element<HTMLButtonElement>("foundation");
+const samples = element<HTMLButtonElement>("samples");
 
 function send(message: ToPlugin) {
   parent.postMessage({ pluginMessage: message }, "*");
@@ -63,6 +64,7 @@ function showReport(title: string, data: ReportData) {
 
 element<HTMLButtonElement>("open").onclick = () => file.click();
 foundation.onclick = () => send({ type: "buildFoundation" });
+samples.onclick = () => send({ type: "renderSamples" });
 
 file.onchange = async () => {
   const chosen = file.files?.[0];
@@ -74,7 +76,7 @@ onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => {
   const message = event.data.pluginMessage;
   error.hidden = message.type !== "error";
   status.hidden = message.type !== "busy";
-  foundation.disabled = message.type === "busy" || (message.type === "error" && summary.hidden === true);
+  foundation.disabled = samples.disabled = message.type === "busy" || (message.type === "error" && summary.hidden === true);
   if (message.type === "error") {
     error.textContent = message.message;
   } else if (message.type === "busy") {
@@ -82,7 +84,7 @@ onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => {
   } else if (message.type === "loaded") {
     report.hidden = true;
     showSummary(message.summary);
-    foundation.disabled = false;
+    foundation.disabled = samples.disabled = false;
   } else {
     showReport(message.title, message.report);
   }

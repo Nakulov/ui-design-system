@@ -2,6 +2,8 @@
 import { type Bundle, readBundle } from "./bundle";
 import { FoundationBuilder } from "./foundation";
 import type { ToPlugin, ToUi } from "./messages";
+import type { Report } from "./report";
+import { SamplesBuilder } from "./samples";
 
 /** Открытый набор. */
 let bundle: Bundle | undefined;
@@ -14,21 +16,22 @@ function send(message: ToUi) {
 
 figma.ui.onmessage = async (message: ToPlugin) => {
   if (message.type === "load") load(message.text);
-  else if (message.type === "buildFoundation") await buildFoundation();
+  else if (message.type === "buildFoundation") await run("Строится foundation…", "Foundation построен", "Foundation не построен", (b) => new FoundationBuilder(b).build());
+  else if (message.type === "renderSamples") await run("Рисуются примеры…", "Примеры отрисованы", "Примеры не отрисованы", (b) => new SamplesBuilder(b).build());
 };
 
-async function buildFoundation() {
+async function run(busy: string, done: string, failed: string, build: (bundle: Bundle) => Promise<Report>) {
   if (!bundle) {
     send({ type: "error", message: "Сначала откройте набор данных" });
     return;
   }
-  send({ type: "busy", message: "Строится foundation…" });
+  send({ type: "busy", message: busy });
   try {
-    const report = await new FoundationBuilder(bundle).build();
-    send({ type: "report", title: "Foundation построен", report: report.data() });
-    figma.notify("Foundation построен");
+    const report = await build(bundle);
+    send({ type: "report", title: done, report: report.data() });
+    figma.notify(done);
   } catch (e) {
-    send({ type: "error", message: `Foundation не построен: ${(e as Error).message}` });
+    send({ type: "error", message: `${failed}: ${(e as Error).message}` });
   }
 }
 

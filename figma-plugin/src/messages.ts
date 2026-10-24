@@ -2,7 +2,7 @@
 import type { Summary } from "./bundle";
 import type { ReportData } from "./report";
 
-export type ToPlugin = { type: "load"; text: string } | { type: "buildFoundation" };
+export type ToPlugin = { type: "load"; text: string } | { type: "buildFoundation" } | { type: "renderSamples" };
 
 export type ToUi =
   | { type: "loaded"; summary: Summary }

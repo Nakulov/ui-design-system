@@ -1,10 +1,8 @@
 // Построение foundation в Figma: коллекции переменных, текстовые стили, стили эффектов, компоненты символов
 // (specifications/figma-mapping.md, разделы 3.1, 6.3, 7).
 import type { Bundle, Id, Values } from "./bundle";
+import { ICON, mark, prefix, ref, rgba } from "./ids";
 import { Report } from "./report";
-
-const NAMESPACE = "uiContracts";
-const ICON = "schemas/foundation/icon/Icon";
 
 type Kind = "COLOR" | "FLOAT" | "STRING" | "BOOLEAN";
 type Raw = number | string | boolean | { alias: Id };
@@ -44,25 +42,6 @@ const ELEVATION: { param: string; field: VariableBindableEffectField; kind: Kind
 
 type Typography = { fontFamily: string; fontWeight: number; fontSize: number; lineHeight: number; letterSpacing?: number };
 type Elevation = { offsetX: number; offsetY: number; blur: number; spread?: number; color: string };
-
-function ref(node: { getSharedPluginData(namespace: string, key: string): string }, key = "ref"): string {
-  return node.getSharedPluginData(NAMESPACE, key);
-}
-
-function mark(node: { setSharedPluginData(namespace: string, key: string, value: string): void }, value: string, key = "ref") {
-  node.setSharedPluginData(NAMESPACE, key, value);
-}
-
-/** Префикс имён в Figma: имя контракта в lowerCamelCase без суффикса Role (`spacing/xs2`, `color/primary`). */
-function prefix(contractName: string): string {
-  const name = contractName.replace(/Role$/, "");
-  return name[0].toLowerCase() + name.slice(1);
-}
-
-function rgba(hex: string): RGBA {
-  const channel = (i: number) => parseInt(hex.slice(i, i + 2), 16) / 255;
-  return { r: channel(1), g: channel(3), b: channel(5), a: hex.length > 7 ? channel(7) : 1 };
-}
 
 /** Значение переменной в Figma; алиас — ссылкой на переменную по идентификатору. */
 function figmaValue(raw: Raw, kind: Kind, variables: Map<Id, Variable>): VariableValue {
