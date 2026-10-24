@@ -20,7 +20,7 @@
       "name": "max",
       "$ref": "../../foundation/size/Size",
       "required": false,
-      "sample": "xl3",
+      "sample": { "custom": { "value": 240 } },
       "description": "Максимальный размер"
     }
   ]

@@ -551,17 +551,21 @@ export class Renderer {
     }
     if (model.decoration) node.textDecoration = DECORATION[model.decoration as string];
     node.textAlignHorizontal = TEXT_ALIGN[model.alignment as string];
+    if (model.layout.width.sizing === "hug") {
+      node.textAutoResize = "WIDTH_AND_HEIGHT";
+      // Текст по содержимому переносится по максимальной ширине корня за вычетом отступов, как на платформах.
+      if (frame.maxWidth !== null) node.maxWidth = Math.max(frame.maxWidth - frame.paddingLeft - frame.paddingRight, 1);
+    } else {
+      node.textAutoResize = "HEIGHT";
+      node.layoutSizingHorizontal = "FILL";
+    }
+    // Обрезка — после режима размера: смена textAutoResize сбрасывает её.
     if (model.maxLines !== undefined) {
       node.textTruncation = "ENDING";
       node.maxLines = model.maxLines as number;
       if (model.truncation !== undefined && model.truncation !== "end") {
         this.warn(at, `обрезка «${model.truncation}» показана многоточием в конце: Figma поддерживает только его`);
       }
-    }
-    if (model.layout.width.sizing === "hug") node.textAutoResize = "WIDTH_AND_HEIGHT";
-    else {
-      node.textAutoResize = "HEIGHT";
-      node.layoutSizingHorizontal = "FILL";
     }
     // Символы по краям: строка из трёх слоёв, размер символа — кегль роли (раздел 10.5, правило 2).
     for (const [span, index] of [[leading, 0], [trailing, -1]] as const) {

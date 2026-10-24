@@ -5,12 +5,20 @@
       "width": {
         "sizing": "hug",
         "min": "xs",
-        "max": "xl3"
+        "max": {
+          "custom": {
+            "value": 240
+          }
+        }
       },
       "height": {
         "sizing": "hug",
         "min": "xs",
-        "max": "xl3"
+        "max": {
+          "custom": {
+            "value": 240
+          }
+        }
       },
       "position": "flow"
     },
