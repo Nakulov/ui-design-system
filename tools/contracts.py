@@ -13,6 +13,7 @@ SCHEMAS = ROOT / "schemas"
 THEMES = ROOT / "themes"
 COMPONENT = "schemas/core/component/Component"
 APPEARANCE = "schemas/core/appearance/Appearance"
+SKIPPED = {"build", "figma-plugin"}  # верхние каталоги без контрактов
 
 PRIMITIVES = {
     "string": lambda v: isinstance(v, str),
@@ -33,10 +34,15 @@ def is_sample(path):
     return path.parent.name == "samples"
 
 
+def is_skipped(path):
+    """Не файлы репозитория контрактов: скрытые каталоги, производный build/ и плагин со своими JSON (npm, manifest)."""
+    parts = path.relative_to(ROOT).parts
+    return any(part.startswith(".") for part in parts) or parts[0] in SKIPPED
+
+
 def load_registry():
     """Контракты репозитория без проверки структуры — для инструментов, работающих с проверенным репозиторием."""
-    paths = [p for p in sorted(ROOT.rglob("*.json")) if is_contract(p)
-             and not any(part.startswith(".") for part in p.relative_to(ROOT).parts)
+    paths = [p for p in sorted(ROOT.rglob("*.json")) if is_contract(p) and not is_skipped(p)
              and not p.relative_to(ROOT).parts[0] == "specifications"]
     return Registry([Contract(p, json.loads(p.read_text())) for p in paths])
 

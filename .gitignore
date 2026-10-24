@@ -154,3 +154,7 @@ vite.config.ts.timestamp-*
 
 # Python
 __pycache__/
+
+# Сборка: набор данных плагина и плагин Figma
+build/
+figma-plugin/dist/

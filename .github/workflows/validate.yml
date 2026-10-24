@@ -22,3 +22,16 @@ jobs:
           else
             python3 tools/validate.py
           fi
+      - name: Набор данных плагина
+        run: python3 tools/bundle.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: figma-plugin/.nvmrc
+          cache: npm
+          cache-dependency-path: figma-plugin/package-lock.json
+      - name: Плагин Figma
+        working-directory: figma-plugin
+        run: |
+          npm ci
+          npm run typecheck
+          npm run build

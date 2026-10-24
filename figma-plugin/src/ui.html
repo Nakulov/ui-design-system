@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin: 0; padding: 12px; font: 12px/16px Inter, system-ui, sans-serif; color: var(--figma-color-text); background: var(--figma-color-bg); }
+  h1 { margin: 0 0 8px; font-size: 13px; font-weight: 600; }
+  p { margin: 0 0 12px; color: var(--figma-color-text-secondary); }
+  button { padding: 6px 12px; border: 0; border-radius: 6px; font: inherit; font-weight: 500; color: var(--figma-color-text-onbrand); background: var(--figma-color-bg-brand); cursor: pointer; }
+  table { width: 100%; margin-top: 12px; border-collapse: collapse; }
+  th, td { padding: 4px 0; text-align: left; border-bottom: 1px solid var(--figma-color-border); }
+  th { font-weight: 400; color: var(--figma-color-text-secondary); }
+  td { text-align: right; font-variant-numeric: tabular-nums; }
+  .error { margin-top: 12px; padding: 8px; border-radius: 6px; color: var(--figma-color-text-danger); background: var(--figma-color-bg-danger-tertiary); }
+  [hidden] { display: none; }
+</style>
+</head>
+<body>
+  <h1>UI Design System</h1>
+  <p>Откройте набор данных, собранный командой <code>python3 tools/bundle.py</code> (<code>build/bundle.json</code>).</p>
+  <button id="open">Открыть набор…</button>
+  <input id="file" type="file" accept=".json,application/json" hidden>
+  <div id="error" class="error" hidden></div>
+  <table id="summary" hidden></table>
+  <!-- script -->
+</body>
+</html>
