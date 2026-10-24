@@ -31,6 +31,13 @@ python3 tools/validate.py --base origin/dev
 python3 tools/sync.py
 ```
 
+Плагин Figma получает данные набором `build/bundle.json` (`specifications/bundle-format.md`); сборка набора включает
+проверку репозитория. Сборка и запуск плагина — в `figma-plugin/README.md`:
+
+```sh
+python3 tools/bundle.py
+```
+
 Модель, например полученную с сервера, можно проверить по контрактам:
 
 ```sh

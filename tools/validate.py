@@ -21,7 +21,7 @@ except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
 from contracts import (APPEARANCE, COMPONENT, ROOT, SCHEMAS, THEMES, Contract, Registry, is_contract, is_sample,
-                       pascal, ref_path)
+                       is_skipped, pascal, ref_path)
 import idea
 from samples import dumps, generate, render, required_samples
 
@@ -34,6 +34,7 @@ SPECS = {
     "schemaFormat": "specifications/schema-format.md",
     "figmaMapping": "specifications/figma-mapping.md",
     "documentationManifest": "specifications/documentation-manifest.md",
+    "bundleFormat": "specifications/bundle-format.md",
 }
 VERSION_RE = re.compile(r"^\*\*Версия спецификации:\*\*\s*(\S+)", re.M)
 
@@ -62,7 +63,7 @@ def error(path, message):
 
 def json_files():
     for path in sorted(ROOT.rglob("*.json")):
-        if not any(part.startswith(".") for part in path.relative_to(ROOT).parts):
+        if not is_skipped(path):
             yield path
 
 
