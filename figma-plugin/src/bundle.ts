@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.1";
+export const SUPPORTED_FORMAT = "0.2";
 
 /** Идентификатор сущности: путь от корня репозитория без .json; вариант — после «#» (раздел 2). */
 export type Id = string;
@@ -28,11 +28,15 @@ export type Values = {
 
 export type Icon = { svg: string; mirrored: boolean };
 
+/** Содержимое <Имя>.figma.json без $ref (раздел 3.6); у foundation-сущности — figma-mapping.md, раздел 6.3. */
+export type FigmaProject = { scopes?: string[]; publish?: boolean; [field: string]: unknown };
+
 export type Bundle = {
   specVersions: Record<string, string>;
   theme: string;
   contracts: Record<Id, Contract>;
   values: Record<Id, Values>;
+  figma: Record<Id, FigmaProject>;
   samples: Record<Id, unknown>;
   icons: Record<Id, Icon>;
   /** Разделы README: заголовок → исходный Markdown. */
@@ -42,10 +46,10 @@ export type Bundle = {
 export type Summary = {
   specVersions: Record<string, string>;
   theme: string;
-  counts: Record<"contracts" | "values" | "samples" | "icons" | "texts", number>;
+  counts: Record<(typeof SECTIONS)[number], number>;
 };
 
-const SECTIONS = ["contracts", "values", "samples", "icons", "texts"] as const;
+const SECTIONS = ["contracts", "values", "figma", "samples", "icons", "texts"] as const;
 
 /** Совпадает основная версия, а до 1.0 — и дополнительная (раздел 4, правило 1). */
 export function isSupported(version: string): boolean {

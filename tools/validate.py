@@ -46,6 +46,17 @@ SVG_NO_PAINT = {"none", "currentcolor", "inherit", "transparent"}
 # Типы, которые Figma не отображает (figma-mapping.md, раздел 4.1, правило 3).
 FIGMA_UNREPRESENTABLE = {"schemas/core/event/Event", "schemas/core/event/EventData"}
 
+# Области применения переменных Figma по типу переменной (figma-mapping.md, раздел 6.3).
+FIGMA_SCOPES = {
+    "COLOR": {"ALL_FILLS", "FRAME_FILL", "SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR", "EFFECT_COLOR"},
+    "FLOAT": {"CORNER_RADIUS", "WIDTH_HEIGHT", "GAP", "STROKE_FLOAT", "EFFECT_FLOAT", "OPACITY", "FONT_WEIGHT",
+              "FONT_SIZE", "LINE_HEIGHT", "LETTER_SPACING", "PARAGRAPH_SPACING", "PARAGRAPH_INDENT"},
+    "STRING": {"TEXT_CONTENT", "FONT_FAMILY", "FONT_STYLE"},
+    "BOOLEAN": set(),
+}
+FIGMA_VARIABLE_TYPE = {"color": "COLOR", "integer": "FLOAT", "float": "FLOAT", "string": "STRING", "boolean": "BOOLEAN"}
+FIGMA_FOUNDATION_FIELDS = {"$ref", "scopes", "publish"}
+
 PLATFORMS = ("android", "ios", "figma")
 STATUS_RANK = {"released": 0, "notReleased": 1, "willNotBeReleased": 2}
 README_SECTIONS = [
@@ -461,6 +472,44 @@ def check_themes(registry, values):
             error(path, f"нет режимов темы default: {', '.join(missing)} (раздел 9.4, правило 5)")
 
 
+def check_figma_foundation(registry, values, figma):
+    """<Имя>.figma.json foundation-сущностей с примитивным valueType (figma-mapping.md, раздел 6.3)."""
+    default = THEMES / "default"
+    for contract in registry:
+        if contract.kind != "public" or contract.layer != "foundation":
+            continue
+        data = values.get(default / f"{contract.name}.values.json")
+        path = contract.path.with_name(f"{contract.name}.figma.json")
+        primitive = data is not None and isinstance(data["valueType"], str)
+        if not primitive:
+            if path in figma:
+                error(path, "файл нужен только сущности с примитивным valueType (figma-mapping.md, раздел 6.3)")
+            continue
+        if path not in figma:
+            error(contract.path, f"нет {path.name}: scopes переменных (figma-mapping.md, раздел 6.3)")
+            continue
+        project = figma[path]
+        if not isinstance(project, dict):
+            error(path, "ожидается объект")
+            continue
+        for extra in sorted(project.keys() - FIGMA_FOUNDATION_FIELDS):
+            error(path, f"поле «{extra}» не определено (figma-mapping.md, раздел 6.3)")
+        if project.get("$ref") != contract.name:
+            error(path, f"$ref «{project.get('$ref')}», ожидается «{contract.name}»")
+        kind = FIGMA_VARIABLE_TYPE[data["valueType"]]
+        scopes = project.get("scopes")
+        if not (isinstance(scopes, list) and scopes and all(isinstance(scope, str) for scope in scopes)):
+            error(path, "scopes — непустой список строк")
+        else:
+            for scope in duplicates(scopes):
+                error(path, f"scope «{scope}» встречается больше одного раза")
+            for scope in scopes:
+                if scope not in FIGMA_SCOPES[kind]:
+                    error(path, f"scope «{scope}» недопустим для переменных {kind}")
+        if "publish" in project and not isinstance(project["publish"], bool):
+            error(path, "publish — boolean")
+
+
 # Версии спецификаций (раздел 11.3).
 
 def check_spec_versions():
@@ -495,7 +544,7 @@ def main():
     parser.add_argument("--base", help="git ref, с которым сравниваются спецификации")
     args = parser.parse_args()
 
-    contracts, values, referenced = [], {}, set()
+    contracts, values, figma, referenced = [], {}, {}, set()
     for path in json_files():
         try:
             data = json.loads(path.read_text())
@@ -506,7 +555,9 @@ def main():
             continue
         check_refs(path, data)
         referenced.update(refs(path, data))
-        if path.name.endswith(".values.json"):
+        if path.name.endswith(".figma.json"):
+            figma[path] = data
+        elif path.name.endswith(".values.json"):
             if check_structure(path, data, VALUES_SCHEMA):
                 values[path] = data
         elif is_contract(path) and check_structure(path, data, CONTRACT_SCHEMA):
@@ -523,6 +574,7 @@ def main():
     for path, data in values.items():
         check_values(registry, values, path, data)
     check_themes(registry, values)
+    check_figma_foundation(registry, values, figma)
     check_samples(registry)
     check_idea(registry)
 

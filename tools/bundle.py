@@ -63,6 +63,15 @@ def collect_values(theme_dir):
     return result
 
 
+def collect_figma():
+    """Файлы <Имя>.figma.json по идентификатору контракта, без $ref (раздел 3.6)."""
+    result = {}
+    for file in sorted(SCHEMAS.rglob("*.figma.json")):
+        data = json.loads(file.read_text())
+        result[ident(ref_path(file, data["$ref"]))] = rewrite_refs({k: v for k, v in data.items() if k != "$ref"}, file)
+    return result
+
+
 def collect_samples(registry):
     result = {}
     for file in sorted(SCHEMAS.rglob("samples/*.json")):
@@ -116,6 +125,9 @@ def dangling(bundle):
 
     for key, contract in contracts.items():
         yield from walk(contract, key)
+    for key in bundle["figma"]:
+        if key not in contracts:
+            yield f"figma: {key} — нет контракта"
     for key, data in values.items():
         if key not in contracts:
             yield f"values: {key} — нет контракта"
@@ -148,6 +160,7 @@ def main():
         "theme": THEME,
         "contracts": {c.id: rewrite_refs(c.data, c.path) for c in sorted(registry, key=lambda c: c.id)},
         "values": values,
+        "figma": collect_figma(),
         "samples": collect_samples(registry),
         "icons": collect_icons(values, theme_dir),
         "texts": collect_texts(registry),
@@ -162,7 +175,7 @@ def main():
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(bundle, ensure_ascii=False, indent=2) + "\n")
-    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "samples", "icons", "texts"))
+    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "icons", "texts"))
     print(f"Набор собран: {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({counts})")
     return 0
 

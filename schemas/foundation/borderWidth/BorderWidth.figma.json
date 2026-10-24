@@ -1,0 +1,4 @@
+{
+  "$ref": "BorderWidth",
+  "scopes": ["STROKE_FLOAT"]
+}
