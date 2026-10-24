@@ -1,0 +1,4 @@
+{
+  "$ref": "ColorRole",
+  "scopes": ["ALL_FILLS", "STROKE_COLOR", "EFFECT_COLOR"]
+}

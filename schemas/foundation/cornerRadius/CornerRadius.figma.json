@@ -1,0 +1,4 @@
+{
+  "$ref": "CornerRadius",
+  "scopes": ["CORNER_RADIUS"]
+}
