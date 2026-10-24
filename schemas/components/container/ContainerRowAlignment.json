@@ -2,6 +2,7 @@
   "name": "ContainerRowAlignment",
   "type": "enum",
   "description": "Выравнивание детей строки по вертикали",
+  "sample": "center",
   "values": [
     {
       "name": "top",

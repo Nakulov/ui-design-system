@@ -219,6 +219,486 @@ lineDistribution: oneOf               — строки (колонки) при �
 }
 ```
 
+Карточка товара: фото, название и цена в столбец, кнопка закрытия закреплена в правом верхнем углу внутри отступов
+(`pinned`, `relativeTo: content`):
+
+<!-- sample: samples/productCard.json -->
+```json
+{
+  "Container": {
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "m"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        },
+        "shadow": "m",
+        "cornerRadius": "l",
+        "stroke": {
+          "width": "s",
+          "color": "outline"
+        },
+        "clip": true
+      }
+    },
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "openProduct"
+          }
+        }
+      }
+    ],
+    "arrangement": {
+      "vertical": {
+        "alignment": "start",
+        "distribution": {
+          "packed": {
+            "gap": "s",
+            "position": "top"
+          }
+        }
+      }
+    },
+    "children": [
+      {
+        "Image": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl3"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "surface2"
+              },
+              "cornerRadius": "m",
+              "clip": true
+            }
+          },
+          "source": {
+            "remote": {
+              "origin": {
+                "url": "https://cdn.example.com/items/42.jpg"
+              },
+              "scale": "crop",
+              "alignment": "center",
+              "placeholder": {
+                "icon": {
+                  "name": "image",
+                  "color": "onSurfaceMuted"
+                }
+              },
+              "error": {
+                "icon": {
+                  "name": "brokenImage",
+                  "color": "onSurfaceMuted"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Кружка керамическая, 350 мл"
+          },
+          "typography": "titleSmall",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "start"
+        }
+      },
+      {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "1 490 ₽"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "primary"
+          },
+          "alignment": "start"
+        }
+      },
+      {
+        "Image": {
+          "id": "close",
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": {
+              "pinned": {
+                "horizontal": {
+                  "end": {
+                    "offset": "s"
+                  }
+                },
+                "vertical": {
+                  "top": {
+                    "offset": "s"
+                  }
+                },
+                "relativeTo": "content"
+              }
+            }
+          },
+          "padding": {
+            "all": "xs2"
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "surface"
+              },
+              "cornerRadius": "full"
+            }
+          },
+          "events": [
+            {
+              "click": {
+                "payload": {
+                  "action": "dismiss"
+                }
+              }
+            }
+          ],
+          "source": {
+            "resource": {
+              "icon": {
+                "name": "close",
+                "color": "onSurface"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+Облако меток с переносом строк: расстояние между метками вне шкалы (`custom`), между строками — `s`:
+
+<!-- sample: samples/tagCloud.json -->
+```json
+{
+  "Container": {
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "arrangement": {
+      "horizontalWrap": {
+        "alignment": "center",
+        "distribution": {
+          "packed": {
+            "gap": {
+              "custom": {
+                "value": 6
+              }
+            },
+            "position": "start"
+          }
+        },
+        "lineDistribution": {
+          "packed": {
+            "gap": "s"
+          }
+        }
+      }
+    },
+    "children": [
+      {
+        "Badge": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": {
+                "fixed": "s"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "s",
+              "vertical": "zero"
+            }
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "secondaryContainer"
+              },
+              "cornerRadius": "full"
+            }
+          },
+          "content": {
+            "text": {
+              "value": "Новинка",
+              "typography": "labelMedium",
+              "color": "onSecondaryContainer"
+            }
+          }
+        }
+      },
+      {
+        "Badge": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": {
+                "fixed": "s"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "s",
+              "vertical": "zero"
+            }
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "secondaryContainer"
+              },
+              "cornerRadius": "full"
+            }
+          },
+          "content": {
+            "text": {
+              "value": "Хит продаж",
+              "typography": "labelMedium",
+              "color": "onSecondaryContainer"
+            }
+          }
+        }
+      },
+      {
+        "Badge": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": {
+                "fixed": "s"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "s",
+              "vertical": "zero"
+            }
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "secondaryContainer"
+              },
+              "cornerRadius": "full"
+            }
+          },
+          "content": {
+            "text": {
+              "value": "Бесплатная доставка",
+              "typography": "labelMedium",
+              "color": "onSecondaryContainer"
+            }
+          }
+        }
+      },
+      {
+        "Badge": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": {
+                "fixed": "s"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "s",
+              "vertical": "zero"
+            }
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "secondaryContainer"
+              },
+              "cornerRadius": "full"
+            }
+          },
+          "content": {
+            "text": {
+              "value": "Скидка 20%",
+              "typography": "labelMedium",
+              "color": "onSecondaryContainer"
+            }
+          }
+        }
+      },
+      {
+        "Badge": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": {
+                "fixed": "s"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "s",
+              "vertical": "zero"
+            }
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "secondaryContainer"
+              },
+              "cornerRadius": "full"
+            }
+          },
+          "content": {
+            "text": {
+              "value": "Керамика",
+              "typography": "labelMedium",
+              "color": "onSecondaryContainer"
+            }
+          }
+        }
+      },
+      {
+        "Badge": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": {
+                "fixed": "s"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "s",
+              "vertical": "zero"
+            }
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "secondaryContainer"
+              },
+              "cornerRadius": "full"
+            }
+          },
+          "content": {
+            "text": {
+              "value": "Ручная работа",
+              "typography": "labelMedium",
+              "color": "onSecondaryContainer"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
 Ожидаемая модель на Kotlin:
 
 ```kotlin

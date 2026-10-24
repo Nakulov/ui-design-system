@@ -29,6 +29,7 @@
       "name": "color",
       "$ref": "TextColor",
       "required": true,
+      "sample": { "solid": "onSurface" },
       "description": "Заливка всего текста"
     },
     {
@@ -47,6 +48,7 @@
       "name": "maxLines",
       "type": "integer",
       "required": false,
+      "sample": 2,
       "description": "Наибольшее число строк, не меньше 1. Не поместившийся текст обрезается многоточием. Если не задано, число строк не ограничено"
     },
     {

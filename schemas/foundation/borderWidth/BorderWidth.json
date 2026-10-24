@@ -2,6 +2,7 @@
   "name": "BorderWidth",
   "type": "oneOf",
   "description": "Толщина обводки или разделителя. Значения задаются в условных единицах: dp на Android, pt на iOS, px в Figma",
+  "sample": "s",
   "releaseVersions": {
     "figma": "notReleased",
     "android": "notReleased",

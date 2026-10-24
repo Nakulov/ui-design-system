@@ -2,6 +2,7 @@
   "name": "ImageAlignment",
   "type": "enum",
   "description": "Положение картинки в компоненте",
+  "sample": "center",
   "values": [
     { "name": "topStart", "description": "Сверху в начале строки" },
     { "name": "topCenter", "description": "Сверху по центру" },

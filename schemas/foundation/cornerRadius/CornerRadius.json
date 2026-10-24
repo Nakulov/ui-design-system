@@ -2,6 +2,7 @@
   "name": "CornerRadius",
   "type": "oneOf",
   "description": "Радиус скругления углов элемента. Значения задаются в условных единицах: dp на Android, pt на iOS, px в Figma. Какие углы скругляются, определяет компонент",
+  "sample": "m",
   "releaseVersions": {
     "figma": "notReleased",
     "android": "notReleased",

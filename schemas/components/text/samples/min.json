@@ -10,17 +10,17 @@
       "position": "flow"
     },
     "padding": {
-      "all": "zero"
+      "all": "m"
     },
     "appearance": {
       "plain": {}
     },
     "content": {
-      "plain": "plain"
+      "plain": "Осенняя распродажа"
     },
-    "typography": "displayLarge",
+    "typography": "bodyMedium",
     "color": {
-      "solid": "primary"
+      "solid": "onSurface"
     },
     "alignment": "start"
   }

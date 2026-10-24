@@ -214,8 +214,9 @@ class Registry:
                 yield f"{at}: вариант «{name}» встречается больше одного раза"
 
     def objects(self, value, kind, at, inside_component=False):
-        """Объекты значения вместе с контрактами; вложенные компоненты не обходятся (правила min и max)."""
-        if isinstance(kind, str) or kind is None or value is None:
+        """Объекты значения вместе с контрактами для правил min и max: вложенные компоненты и значения, совпадающие
+        с подсказкой sample типа или свойства, не обходятся (раздел 11.1, правила 2, 4)."""
+        if isinstance(kind, str) or kind is None or value is None or value == kind.data.get("sample"):
             return
         if kind.id == COMPONENT:
             if inside_component or not (isinstance(value, dict) and len(value) == 1):
@@ -227,7 +228,7 @@ class Registry:
                 return
             yield kind, value, at
             for owner, prop in self.declared_properties(kind):
-                if prop["name"] not in value:
+                if prop["name"] not in value or value[prop["name"]] == prop.get("sample"):
                     continue
                 child, child_at = value[prop["name"]], f"{at}.{prop['name']}"
                 ref = prop.get("$ref") or prop.get("items", {}).get("$ref")

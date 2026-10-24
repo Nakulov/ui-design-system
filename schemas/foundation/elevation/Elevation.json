@@ -2,6 +2,7 @@
   "name": "Elevation",
   "type": "oneOf",
   "description": "Уровень приподнятости элемента над поверхностью, передаваемый тенью. Параметры тени задаются темой",
+  "sample": "s",
   "releaseVersions": {
     "figma": "notReleased",
     "android": "notReleased",

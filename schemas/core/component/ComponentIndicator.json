@@ -7,6 +7,7 @@
       "name": "anchor",
       "$ref": "ComponentIndicatorAnchor",
       "required": true,
+      "sample": "topEnd",
       "description": "Угол формы носителя, в точку которого ставится центр индикатора"
     },
     {
@@ -19,6 +20,7 @@
       "name": "gap",
       "$ref": "../../foundation/spacing/Spacing",
       "required": false,
+      "sample": "xs2",
       "description": "Зазор выреза: носитель вырезает форму индикатора, расширенную на зазор. Если не задан, выреза нет"
     }
   ]

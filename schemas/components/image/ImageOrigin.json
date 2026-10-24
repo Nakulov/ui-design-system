@@ -5,7 +5,8 @@
   "oneOf": [
     {
       "name": "url",
-      "type": "string"
+      "type": "string",
+      "sample": "https://cdn.example.com/items/42.jpg"
     }
   ]
 }

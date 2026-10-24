@@ -2,6 +2,7 @@
   "name": "TextTruncation",
   "type": "enum",
   "description": "Место многоточия в тексте, который не поместился",
+  "sample": "end",
   "values": [
     {
       "name": "start",

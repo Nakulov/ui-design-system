@@ -10,14 +10,14 @@
       "position": "flow"
     },
     "padding": {
-      "all": "zero"
+      "all": "m"
     },
     "appearance": {
       "plain": {}
     },
     "arrangement": {
       "horizontal": {
-        "alignment": "top",
+        "alignment": "center",
         "distribution": "spaceBetween"
       }
     }
