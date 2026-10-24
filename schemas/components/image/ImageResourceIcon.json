@@ -13,6 +13,7 @@
       "name": "color",
       "$ref": "../../foundation/colorRole/ColorRole",
       "required": true,
+      "sample": "onSurfaceMuted",
       "description": "Цвет символа"
     }
   ]

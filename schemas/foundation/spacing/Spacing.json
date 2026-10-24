@@ -2,6 +2,7 @@
   "name": "Spacing",
   "type": "oneOf",
   "description": "Отступ между компонентами или внутренний отступ компонента. Значения задаются в условных единицах: dp на Android, pt на iOS, px в Figma",
+  "sample": "m",
   "releaseVersions": {
     "figma": "notReleased",
     "android": "notReleased",

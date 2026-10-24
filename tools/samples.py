@@ -8,7 +8,7 @@ import re
 
 from contracts import COMPONENT
 
-# Величины-заглушки примитивов; name — имя ближайшего свойства или варианта (раздел 11.1, правило 8).
+# Величины-заглушки примитивов без подсказки sample; name — имя ближайшего свойства или варианта (раздел 11.1, правило 8).
 PLACEHOLDERS = {
     "string": lambda name: name,
     "boolean": lambda name: True,
@@ -32,18 +32,27 @@ def required_samples(contract):
 
 
 def generate(registry, contract, mode):
-    """Пример min или max публичного контракта; компонент — объектом с ключом-именем."""
-    def value(kind, name):
+    """Пример min или max публичного контракта; компонент — объектом с ключом-именем.
+
+    Подсказка sample свойства, варианта или типа подставляется как есть вместо выбора значения.
+    """
+    def value(kind, name, hint=None):
+        if hint is not None:
+            return hint
         if isinstance(kind, str):
             return PLACEHOLDERS[kind](name)
         if kind.id == COMPONENT:
             return {root.name: generate(registry, root, "min")[root.name]} if "extends" in root.data else None
+        if "sample" in kind.data:
+            return kind.data["sample"]
         if kind.type == "object":
             result = {}
             for owner, prop in registry.declared_properties(kind):
                 if mode == "min" and not prop["required"]:
                     continue
-                if prop.get("type") == "array":
+                if "sample" in prop:
+                    result[prop["name"]] = prop["sample"]
+                elif prop.get("type") == "array":
                     items = prop["items"]
                     item = registry.resolve(owner, items["$ref"]) if "$ref" in items else items["type"]
                     result[prop["name"]] = [value(item, prop["name"])]
@@ -58,7 +67,8 @@ def generate(registry, contract, mode):
             variant = (plain or variants)[0]
         else:
             variant = (objects or [v for v in variants if v.has_data] or variants)[0]
-        return variant.name if not variant.has_data else {variant.name: value(variant.target, variant.name)}
+        return variant.name if not variant.has_data else {
+            variant.name: value(variant.target, variant.name, variant.element.get("sample"))}
 
     root = contract
     data = value(contract, contract.name)

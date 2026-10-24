@@ -10,7 +10,7 @@
       "position": "flow"
     },
     "padding": {
-      "all": "zero"
+      "all": "m"
     },
     "appearance": {
       "plain": {}
@@ -19,7 +19,7 @@
       "resource": {
         "icon": {
           "name": "image",
-          "color": "primary"
+          "color": "onSurfaceMuted"
         }
       }
     }

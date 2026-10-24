@@ -2,6 +2,7 @@
   "name": "LayoutSizing",
   "type": "oneOf",
   "description": "Способ задания размера по оси",
+  "sample": "hug",
   "oneOf": [
     {
       "$ref": "LayoutSizingMode",

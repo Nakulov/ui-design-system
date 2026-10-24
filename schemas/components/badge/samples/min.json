@@ -10,7 +10,7 @@
       "position": "flow"
     },
     "padding": {
-      "all": "zero"
+      "all": "m"
     },
     "appearance": {
       "plain": {}

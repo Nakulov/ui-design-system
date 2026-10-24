@@ -297,6 +297,21 @@ def check_figma_unrepresentable(registry, contract):
 
 # Типы по ссылкам, варианты, компоненты (разделы 5, 7).
 
+def check_sample_hints(registry, contract):
+    """Подсказки sample — допустимые значения своего типа (раздел 11.1, правило 4)."""
+    if "sample" in contract.data:
+        for problem in registry.value_errors(contract.data["sample"], contract, "sample"):
+            error(contract.path, problem)
+    for prop in contract.data.get("properties", []):
+        if "sample" in prop:
+            for problem in registry.property_value_errors(contract, prop, prop["sample"], f"«{prop['name']}».sample"):
+                error(contract.path, problem)
+    for element in contract.data.get("oneOf", []):
+        if "sample" in element:
+            for problem in registry.value_errors(element["sample"], element["type"], f"«{element['name']}».sample"):
+                error(contract.path, problem)
+
+
 def duplicates(names):
     return sorted({name for name in names if names.count(name) > 1})
 
@@ -570,6 +585,7 @@ def main():
     for contract in registry:
         check_figma_unrepresentable(registry, contract)
         check_types(registry, contract)
+        check_sample_hints(registry, contract)
         check_component(registry, contract)
     for path, data in values.items():
         check_values(registry, values, path, data)

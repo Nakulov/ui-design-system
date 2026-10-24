@@ -2,6 +2,7 @@
   "name": "TypographyRole",
   "type": "oneOf",
   "description": "Семантическая роль текста: назначение стиля текста в интерфейсе. Параметры стиля (шрифт, размер, межстрочный интервал) задаются темой",
+  "sample": "bodyMedium",
   "releaseVersions": {
     "figma": "notReleased",
     "android": "notReleased",

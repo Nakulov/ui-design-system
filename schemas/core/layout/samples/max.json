@@ -1,63 +1,21 @@
 {
   "width": {
-    "sizing": {
-      "fixed": {
-        "custom": {
-          "value": 1
-        }
-      }
-    },
-    "min": {
-      "custom": {
-        "value": 1
-      }
-    },
+    "sizing": "hug",
+    "min": "xs",
     "max": {
       "custom": {
-        "value": 1
+        "value": 240
       }
     }
   },
   "height": {
-    "sizing": {
-      "fixed": {
-        "custom": {
-          "value": 1
-        }
-      }
-    },
-    "min": {
-      "custom": {
-        "value": 1
-      }
-    },
+    "sizing": "hug",
+    "min": "xs",
     "max": {
       "custom": {
-        "value": 1
+        "value": 240
       }
     }
   },
-  "position": {
-    "pinned": {
-      "horizontal": {
-        "start": {
-          "offset": {
-            "custom": {
-              "value": 1
-            }
-          }
-        }
-      },
-      "vertical": {
-        "top": {
-          "offset": {
-            "custom": {
-              "value": 1
-            }
-          }
-        }
-      },
-      "relativeTo": "edge"
-    }
-  }
+  "position": "flow"
 }

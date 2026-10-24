@@ -2,6 +2,7 @@
   "name": "LayoutPosition",
   "type": "oneOf",
   "description": "Положение компонента относительно родителя",
+  "sample": "flow",
   "oneOf": [
     {
       "$ref": "LayoutPositionMode",

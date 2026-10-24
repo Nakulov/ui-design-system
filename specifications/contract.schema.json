@@ -34,6 +34,7 @@
       "uniqueItems": true,
       "items": { "enum": ["plain", "control", "selectable", "focusable"] }
     },
+    "sample": { "$ref": "#/$defs/sample" },
     "releaseVersions": { "$ref": "#/$defs/releaseVersions" }
   },
   "additionalProperties": false,
@@ -44,7 +45,13 @@
   "allOf": [
     {
       "if": { "properties": { "type": { "const": "object" } } },
-      "then": { "allOf": [{ "not": { "required": ["values"] } }, { "not": { "required": ["oneOf"] } }] }
+      "then": {
+        "allOf": [
+          { "not": { "required": ["values"] } },
+          { "not": { "required": ["oneOf"] } },
+          { "not": { "required": ["sample"] } }
+        ]
+      }
     },
     {
       "if": { "properties": { "type": { "const": "enum" } } },
@@ -76,6 +83,10 @@
     "lowerCamelCaseName": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]*$" },
     "description": { "type": "string", "minLength": 1 },
     "primitiveType": { "enum": ["string", "boolean", "integer", "float", "color", "payload"] },
+    "sample": {
+      "description": "Подсказка генератору примеров: значение по разделу 4.5; допустимость для типа проверяет tools/validate.py (раздел 11.1).",
+      "not": { "type": "null" }
+    },
     "ref": {
       "description": "Путь относительно файла, без ведущего / и без .json (раздел 6).",
       "type": "string",
@@ -93,6 +104,7 @@
         "required": { "type": "boolean" },
         "items": { "$ref": "#/$defs/arrayItems" },
         "uniqueVariants": { "type": "boolean" },
+        "sample": { "$ref": "#/$defs/sample" },
         "releaseVersions": { "$ref": "#/$defs/releaseVersions" }
       },
       "additionalProperties": false,
@@ -130,6 +142,7 @@
         "type": { "$ref": "#/$defs/primitiveType" },
         "inline": { "type": "boolean" },
         "name": { "$ref": "#/$defs/lowerCamelCaseName" },
+        "sample": { "$ref": "#/$defs/sample" },
         "releaseVersions": { "$ref": "#/$defs/releaseVersions" }
       },
       "additionalProperties": false,
@@ -137,7 +150,8 @@
       "allOf": [
         {
           "if": { "required": ["type"] },
-          "then": { "required": ["name"], "allOf": [{ "not": { "required": ["inline"] } }] }
+          "then": { "required": ["name"], "allOf": [{ "not": { "required": ["inline"] } }] },
+          "else": { "not": { "required": ["sample"] } }
         },
         {
           "if": { "properties": { "inline": { "const": true } }, "required": ["inline"] },
