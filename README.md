@@ -1,6 +1,8 @@
 # ui-design-system
 Platform-independent UI design system contracts, schemas, and AI-assisted component generation
 
+Видение, границы, текущее состояние и этапы развития — в [ROADMAP.md](ROADMAP.md).
+
 ## Процесс
 
 Задачи ведутся в [GitHub Issues](https://github.com/Nakulov/ui-design-system/issues) и на доске
