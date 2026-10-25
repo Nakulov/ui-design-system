@@ -1,0 +1,53 @@
+{
+  "$ref": "Image",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview",
+      "examples": [
+        {
+          "id": "main",
+          "sample": "avatarOnline",
+          "caption": "Аватар с точкой «в сети»"
+        }
+      ]
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "variants",
+      "type": "variants",
+      "title": "Variants",
+      "examples": [
+        {
+          "id": "icon",
+          "sample": "icon",
+          "caption": "Символ"
+        },
+        {
+          "id": "appIcon",
+          "sample": "appIcon",
+          "caption": "Иконка приложения со счётчиком"
+        },
+        {
+          "id": "avatarOnline",
+          "sample": "avatarOnline",
+          "caption": "Аватар с точкой «в сети»"
+        },
+        {
+          "id": "productPhoto",
+          "sample": "productPhoto",
+          "caption": "Фото товара по адресу"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    }
+  ]
+}

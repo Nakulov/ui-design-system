@@ -115,14 +115,24 @@ def collect_documentation():
     return {ident(file): json.loads(file.read_text()) for file in files}
 
 
+def example_source(registry, owner, example):
+    """demo — идентификатор демонстрации, sample — ключ примера в samples (раздел 3.8, правило 2)."""
+    if "demo" in example:
+        return {**example, "demo": ident(DEMOS / example["demo"])}
+    contract, _, name = example["sample"].rpartition("#")
+    if contract:
+        owner = next(c for c in registry if c.kind == "public" and c.layer == "components" and c.name == contract)
+    return {**example, "sample": f"{owner.id}#{name}"}
+
+
 def collect_manifests(registry):
-    """Манифесты документации по идентификатору контракта; demo — идентификатор демонстрации (раздел 3.8)."""
+    """Манифесты документации по идентификатору контракта; примеры — идентификаторами (раздел 3.8)."""
     result = {}
     for file in sorted(SCHEMAS.glob("*/*/*.docs.json")):
         data = json.loads(file.read_text())
         owner = registry.by_path[ref_path(file, data["$ref"])]
         result[owner.id] = {"sections": [
-            {**section, "examples": [{**example, "demo": ident(DEMOS / example["demo"])} for example in section["examples"]]}
+            {**section, "examples": [example_source(registry, owner, example) for example in section["examples"]]}
             if "examples" in section else section
             for section in data["sections"]
         ]}
@@ -152,8 +162,10 @@ def dangling(bundle):
     for key, manifest in bundle["manifests"].items():
         for section in manifest["sections"]:
             for example in section.get("examples", []):
-                if example["demo"] not in bundle["documentation"]:
+                if "demo" in example and example["demo"] not in bundle["documentation"]:
                     yield f"manifests: {key} — демонстрация «{example['demo']}» не найдена"
+                if "sample" in example and example["sample"] not in bundle["samples"]:
+                    yield f"manifests: {key} — пример «{example['sample']}» не найден"
     for key, data in values.items():
         if key not in contracts:
             yield f"values: {key} — нет контракта"

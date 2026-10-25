@@ -1,5 +1,5 @@
-// Страницы документации: описание системы, страницы foundation и core (figma-documentation.md, разделы 3, 5).
-import type { Bundle, Contract, Element, Id, ManifestSection } from "./bundle";
+// Страницы документации: описание системы, страницы foundation, core и компонентов (figma-documentation.md, разделы 3, 5).
+import type { Bundle, Contract, Element, Id, ManifestExample, ManifestSection } from "./bundle";
 import { mark, ref } from "./ids";
 import { Renderer, Tokens } from "./render";
 import { Report } from "./report";
@@ -62,12 +62,14 @@ export class DocumentationBuilder {
     const foundation = Object.entries(this.bundle.contracts)
       .filter(([id]) => id.startsWith("schemas/foundation/") && id.split("/").length === 4 && this.bundle.values[id])
       .sort(([, a], [, b]) => a.name.localeCompare(b.name));
-    // Страницы core — у сущностей с манифестом (documentation-manifest.md, раздел 2).
-    const core = Object.entries(this.bundle.contracts)
-      .filter(([id]) => id.startsWith("schemas/core/") && this.bundle.manifests[id])
+    // Страницы core и компонентов — у сущностей с манифестом (documentation-manifest.md, раздел 2).
+    const manifested = (layer: string) => Object.entries(this.bundle.contracts)
+      .filter(([id]) => id.startsWith(layer) && this.bundle.manifests[id])
       .sort(([, a], [, b]) => a.name.localeCompare(b.name));
+    const core = manifested("schemas/core/");
+    const components = manifested("schemas/components/");
     const overview = await this.page((p) => ref(p, "role") === "overview", "Overview", (p) => mark(p, "overview", "role"));
-    await this.draw(overview, "overview", this.overview(foundation.map(([id]) => id), core.map(([id]) => id)));
+    await this.draw(overview, "overview", this.overview(foundation.map(([id]) => id), core.map(([id]) => id), components.map(([id]) => id)));
     const pages = async (entities: [Id, Contract][], build: (id: Id) => Model) => {
       const result: PageNode[] = [];
       for (const [id, contract] of entities) {
@@ -78,8 +80,9 @@ export class DocumentationBuilder {
       return result;
     };
     const foundationPages = await pages(foundation, (id) => this.entity(id));
-    const corePages = await pages(core, (id) => this.core(id));
-    this.order(overview, foundationPages, corePages);
+    const corePages = await pages(core, (id) => this.manifest(id));
+    const componentPages = await pages(components, (id) => this.manifest(id));
+    this.order(overview, foundationPages, corePages, componentPages);
     await figma.setCurrentPageAsync(overview);
     return this.report;
   }
@@ -112,8 +115,8 @@ export class DocumentationBuilder {
     return this.element(`${ELEMENTS}section`, { title, content });
   }
 
-  /** Описание системы: разделы `docs/overview.md` и оглавления foundation и core. */
-  private overview(foundation: Id[], core: Id[]): Model {
+  /** Описание системы: разделы `docs/overview.md` и оглавления foundation, core и компонентов. */
+  private overview(foundation: Id[], core: Id[], components: Id[]): Model {
     const sections = Object.entries(this.bundle.texts[OVERVIEW] ?? {}).map(([title, text]) => this.section(title, this.markdown(text)));
     const contents = (ids: Id[]) => ids.map((id) => this.element(`${ELEMENTS}listItem`, {
       marker: "•", text: [{ text: { value: this.bundle.contracts[id].name, typography: "code" } }, { text: { value: ` — ${this.bundle.contracts[id].description}` } }],
@@ -122,12 +125,13 @@ export class DocumentationBuilder {
       sections: [
         this.element(`${ELEMENTS}heading`, { text: "UI Design System" }), ...sections,
         this.section("Foundation", contents(foundation)), ...(core.length ? [this.section("Core", contents(core))] : []),
+        ...(components.length ? [this.section("Components", contents(components))] : []),
       ],
     });
   }
 
-  /** Страница core по манифесту: Overview, Properties, демонстрации, Usage (figma-documentation.md, раздел 3.3). */
-  private core(id: Id): Model {
+  /** Страница core или компонента по манифесту: Overview, Properties, примеры, Usage (figma-documentation.md, разделы 3.3, 3.4). */
+  private manifest(id: Id): Model {
     const contract = this.bundle.contracts[id];
     return this.element(`${ELEMENTS}page`, {
       sections: this.bundle.manifests[id].sections.flatMap((section) => this.manifestSection(id, contract, section)),
@@ -138,20 +142,43 @@ export class DocumentationBuilder {
     const title = section.title ?? "";
     switch (section.type) {
       case "overview":
-        return [this.element(`${ELEMENTS}heading`, { text: contract.name }), this.element(`${ELEMENTS}description`, { text: contract.description })];
+        // Основной пример — только у компонентов.
+        return [this.element(`${ELEMENTS}heading`, { text: contract.name }), this.element(`${ELEMENTS}description`, { text: contract.description }),
+          ...(section.examples ? [this.grid(section.examples)] : [])];
       case "properties":
-        return [this.section(title, [this.element(`${ELEMENTS}table`, { rows: this.properties(id, contract) })])];
+        return [this.section(title, [this.element(`${ELEMENTS}table`, { rows: [...this.properties(id, contract), ...this.base(contract)] })])];
       case "usage": {
         const usage = this.markdown(this.bundle.texts[id]?.[USAGE]);
         return usage.length ? [this.section(title, usage)] : [];
       }
-      default: {
-        const items = (section.examples ?? []).map((example) => this.element(`${ELEMENTS}example`, {
-          preview: this.element(example.demo, {}), caption: example.caption ?? "",
-        }));
-        return [this.section(title, [this.element(`${ELEMENTS}grid`, { items })])];
-      }
+      default:
+        return [this.section(title, [this.grid(section.examples ?? [])])];
     }
+  }
+
+  /** Примеры: превью — демонстрация core или модель из `samples/` компонента, подпись — `caption`. Модель с шириной
+   *  `fill` рисуется в карточке `exampleWide` ширины карточки Samples: у `example` её ширину задала бы подпись. */
+  private grid(examples: ManifestExample[]): Model {
+    const items = examples.map((example) => {
+      const preview = (example.demo ? this.element(example.demo, {}) : this.bundle.samples[example.sample!]) as Model;
+      const root = Object.values(preview)[0] as { layout?: { width?: { sizing?: unknown } } };
+      const element = root.layout?.width?.sizing === "fill" ? "exampleWide" : "example";
+      return this.element(`${ELEMENTS}${element}`, { preview, caption: example.caption ?? "" });
+    });
+    return this.element(`${ELEMENTS}grid`, { items });
+  }
+
+  /** Строка `Component` у компонента: поля базовой модели, у `appearance` — контексты (documentation-manifest.md, раздел 4.2). */
+  private base(contract: Contract): Model[] {
+    const base = contract.extends ? this.bundle.contracts[contract.extends] : undefined;
+    if (!base) return [];
+    const context = (contract.appearanceContext ?? []) as string[];
+    const fields = (base.properties as Record<string, unknown>[]).map((prop) =>
+      prop.name === "appearance" && context.length ? `appearance (${context.join(", ")})` : String(prop.name));
+    return [this.element(`${ELEMENTS}propertyRow`, {
+      name: base.name, type: base.name, description: `Базовая модель: ${fields.join(", ")}`,
+      platforms: this.platforms((base.releaseVersions ?? {}) as Record<string, string>),
+    })];
   }
 
   /** Строки Properties: поля объекта или варианты `oneOf`; платформы — по наследованию `releaseVersions`. */
@@ -262,8 +289,8 @@ export class DocumentationBuilder {
     }
   }
 
-  /** Порядок страниц: Overview, Foundation, Core, затем библиотека (раздел 3.2). */
-  private order(overview: PageNode, foundation: PageNode[], core: PageNode[]) {
+  /** Порядок страниц: Overview, Foundation, Core, Components, затем библиотека (раздел 3.2). */
+  private order(overview: PageNode, foundation: PageNode[], core: PageNode[], components: PageNode[]) {
     const separator = (role: string, name: string) => {
       let page = figma.root.children.find((p) => ref(p, "role") === role);
       if (!page) {
@@ -275,7 +302,9 @@ export class DocumentationBuilder {
     };
     const library = ["components", "samples"].map((role) => figma.root.children.find((p) => ref(p, "role") === role)).filter((p): p is PageNode => !!p);
     const ordered = [overview, separator("separator:foundation", "——— Foundation ———"), ...foundation,
-      ...(core.length ? [separator("separator:core", "——— Core ———"), ...core] : []), separator("separator:library", "——— Library ———"), ...library];
+      ...(core.length ? [separator("separator:core", "——— Core ———"), ...core] : []),
+      ...(components.length ? [separator("separator:components", "——— Components ———"), ...components] : []),
+      separator("separator:library", "——— Library ———"), ...library];
     ordered.forEach((page, index) => figma.root.insertChild(index, page));
   }
 }

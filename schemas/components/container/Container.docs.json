@@ -1,0 +1,48 @@
+{
+  "$ref": "Container",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview",
+      "examples": [
+        {
+          "id": "main",
+          "sample": "productCard",
+          "caption": "Карточка товара"
+        }
+      ]
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "variants",
+      "type": "variants",
+      "title": "Variants",
+      "examples": [
+        {
+          "id": "productCard",
+          "sample": "productCard",
+          "caption": "Карточка товара: закреплённая кнопка закрытия"
+        },
+        {
+          "id": "promoBanner",
+          "sample": "promoBanner",
+          "caption": "Промо-баннер с картинкой на фоне"
+        },
+        {
+          "id": "tagCloud",
+          "sample": "tagCloud",
+          "caption": "Облако меток с переносом строк"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    }
+  ]
+}
