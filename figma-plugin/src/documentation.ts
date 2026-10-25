@@ -14,6 +14,17 @@ const PLATFORMS: [string, string][] = [["android", "Android"], ["ios", "iOS"], [
 
 type Span = { text: { value: string; typography?: string; color?: string; decoration?: string } };
 type Model = Record<string, unknown>;
+type Release = Record<string, { status: string; version?: string }>;
+
+/** Итоговые статусы уровня: свои поверх родительских; версия — своя или ближайшего предка (schema-format.md, раздел 8.5). */
+function inherit(parent: Release, own: unknown): Release {
+  const result = { ...parent };
+  for (const [key, value] of Object.entries((own ?? {}) as Record<string, unknown>)) {
+    const { status, version } = (typeof value === "string" ? { status: value } : value) as { status: string; version?: string };
+    result[key] = { status, version: version ?? parent[key]?.version };
+  }
+  return result;
+}
 
 /** Фрагменты строки по подмножеству Markdown: код, жирный, ссылка (schema-format.md, раздел 11.2). */
 function inline(text: string): Span[] {
@@ -177,15 +188,15 @@ export class DocumentationBuilder {
       prop.name === "appearance" && context.length ? `appearance (${context.join(", ")})` : String(prop.name));
     return [this.element(`${ELEMENTS}propertyRow`, {
       name: base.name, type: base.name, description: `Базовая модель: ${fields.join(", ")}`,
-      platforms: this.platforms((base.releaseVersions ?? {}) as Record<string, string>),
+      platforms: this.platforms(inherit({}, base.releaseVersions)),
     })];
   }
 
   /** Строки Properties: поля объекта или варианты `oneOf`; платформы — по наследованию `releaseVersions`. */
   private properties(id: Id, contract: Contract): Model[] {
-    const release = (contract.releaseVersions ?? {}) as Record<string, string>;
+    const release = inherit({}, contract.releaseVersions);
     const row = (name: string, type: string, description: string, own: unknown) => this.element(`${ELEMENTS}propertyRow`, {
-      name, type, description, platforms: this.platforms({ ...release, ...((own ?? {}) as Record<string, string>) }),
+      name, type, description, platforms: this.platforms(inherit(release, own)),
     });
     const target = (ref: unknown) => (typeof ref === "string" ? this.bundle.contracts[ref] : undefined);
     if (contract.type === "object") {
@@ -207,9 +218,10 @@ export class DocumentationBuilder {
     });
   }
 
-  /** Выпущенные платформы через « · »; если нигде не выпущено — «не выпущено». */
-  private platforms(release: Record<string, string>): string {
-    const released = PLATFORMS.filter(([key]) => release[key] === "released").map(([, name]) => name);
+  /** Выпущенные платформы с версией через « · »; если нигде не выпущено — «не выпущено». */
+  private platforms(release: Release): string {
+    const released = PLATFORMS.filter(([key]) => release[key]?.status === "released")
+      .map(([key, name]) => (release[key].version ? `${name} ${release[key].version}` : name));
     return released.length ? released.join(" · ") : "не выпущено";
   }
 
