@@ -1,0 +1,105 @@
+{
+  "holes": {
+    "title": {
+      "kind": "text",
+      "sample": "Values"
+    },
+    "content": {
+      "kind": "items",
+      "sample": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "Содержимое секции"
+            },
+            "typography": "bodyMedium",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "l"
+      },
+      "appearance": {
+        "plain": {
+          "background": {
+            "solid": "surface1"
+          },
+          "cornerRadius": "m"
+        }
+      },
+      "arrangement": {
+        "vertical": {
+          "alignment": "start",
+          "distribution": {
+            "packed": {
+              "gap": "m",
+              "position": "top"
+            }
+          }
+        }
+      },
+      "children": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "fill"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "$title"
+            },
+            "typography": "titleMedium",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        },
+        "$content"
+      ]
+    }
+  }
+}

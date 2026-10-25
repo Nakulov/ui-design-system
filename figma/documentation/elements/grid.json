@@ -1,0 +1,128 @@
+{
+  "holes": {
+    "items": {
+      "kind": "items",
+      "sample": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "Пример 1"
+            },
+            "typography": "bodyMedium",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "Пример 2"
+            },
+            "typography": "bodyMedium",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "Пример 3"
+            },
+            "typography": "bodyMedium",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "zero"
+      },
+      "appearance": {
+        "plain": {}
+      },
+      "arrangement": {
+        "horizontalWrap": {
+          "alignment": "top",
+          "distribution": {
+            "packed": {
+              "gap": "m",
+              "position": "start"
+            }
+          },
+          "lineDistribution": {
+            "packed": {
+              "gap": "m"
+            }
+          }
+        }
+      },
+      "children": [
+        "$items"
+      ]
+    }
+  }
+}

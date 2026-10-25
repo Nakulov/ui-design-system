@@ -13,7 +13,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from contracts import ROOT, SCHEMAS, THEMES, is_sample, is_skipped, load_registry, pascal, ref_path
+from contracts import ELEMENTS, ROOT, SCHEMAS, THEMES, is_sample, is_skipped, load_registry, pascal, ref_path
 
 THEME = "default"
 ICON = "schemas/foundation/icon/Icon"
@@ -108,6 +108,11 @@ def collect_texts(registry):
     return result
 
 
+def collect_documentation():
+    """Элементы оформления документации по пути без .json (раздел 3.7)."""
+    return {ident(file): json.loads(file.read_text()) for file in sorted(ELEMENTS.glob("*.json"))}
+
+
 def dangling(bundle):
     """Ссылки набора на отсутствующие сущности (раздел 5, правило 3)."""
     contracts, values = bundle["contracts"], bundle["values"]
@@ -164,6 +169,7 @@ def main():
         "samples": collect_samples(registry),
         "icons": collect_icons(values, theme_dir),
         "texts": collect_texts(registry),
+        "documentation": collect_documentation(),
     }
     problems = list(dangling(bundle))
     for problem in problems:
@@ -175,7 +181,7 @@ def main():
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(bundle, ensure_ascii=False, indent=2) + "\n")
-    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "icons", "texts"))
+    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "icons", "texts", "documentation"))
     print(f"Набор собран: {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({counts})")
     return 0
 

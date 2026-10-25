@@ -1,0 +1,54 @@
+{
+  "holes": {
+    "text": {
+      "kind": "spans",
+      "sample": [
+        {
+          "text": {
+            "value": "Используйте "
+          }
+        },
+        {
+          "text": {
+            "value": "Spacing",
+            "typography": "code"
+          }
+        },
+        {
+          "text": {
+            "value": " вместо чисел."
+          }
+        }
+      ]
+    }
+  },
+  "model": {
+    "Text": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "zero"
+      },
+      "appearance": {
+        "plain": {}
+      },
+      "content": {
+        "rich": {
+          "spans": "$text"
+        }
+      },
+      "typography": "bodyMedium",
+      "color": {
+        "solid": "onSurface"
+      },
+      "alignment": "start"
+    }
+  }
+}

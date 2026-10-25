@@ -1,0 +1,35 @@
+{
+  "holes": {
+    "text": {
+      "kind": "text",
+      "sample": "Spacing"
+    }
+  },
+  "model": {
+    "Text": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "zero"
+      },
+      "appearance": {
+        "plain": {}
+      },
+      "content": {
+        "plain": "$text"
+      },
+      "typography": "headlineSmall",
+      "color": {
+        "solid": "onSurface"
+      },
+      "alignment": "start"
+    }
+  }
+}

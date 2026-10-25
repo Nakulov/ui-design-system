@@ -1,7 +1,7 @@
 # Отображение контрактов в Figma
 
 **Статус:** Черновик для согласования  
-**Версия спецификации:** 0.20
+**Версия спецификации:** 0.21
 
 ## 1. Назначение
 
@@ -381,7 +381,6 @@ Figma-компонент или вариант Component Set. Устройств
    | Компонент `text/icon` (раздел 10.5)      | `schemas/components/text/Text#icon`                                    |
    | Коллекция переменных foundation-сущности | `schemas/foundation/spacing/Spacing`                                   |
    | Коллекция режимов компонента             | `schemas/components/button/Button#size`                                |
-   | Коллекция токенов документации           | `figma/documentation/tokens/spacing/Spacing`                           |
    | Коллекция внутреннего контракта темы     | `themes/default/ColorPalette`                                          |
    | Переменная, стиль, компонент символа     | `schemas/foundation/spacing/Spacing#xs2`                               |
    | Переменная параметра стиля               | `schemas/foundation/typographyRole/TypographyRole#bodyMedium/fontSize` |

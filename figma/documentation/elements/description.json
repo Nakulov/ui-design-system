@@ -1,0 +1,35 @@
+{
+  "holes": {
+    "text": {
+      "kind": "text",
+      "sample": "Отступы между элементами и внутри них."
+    }
+  },
+  "model": {
+    "Text": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "zero"
+      },
+      "appearance": {
+        "plain": {}
+      },
+      "content": {
+        "plain": "$text"
+      },
+      "typography": "bodyMedium",
+      "color": {
+        "solid": "onSurfaceMuted"
+      },
+      "alignment": "start"
+    }
+  }
+}

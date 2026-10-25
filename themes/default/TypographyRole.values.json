@@ -21,7 +21,8 @@
         "labelLarge": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 16, "lineHeight": 20 },
         "labelMedium": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 14, "lineHeight": 18 },
         "labelSmall": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 12, "lineHeight": 16, "letterSpacing": 0.2 },
-        "caption": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 10, "lineHeight": 14, "letterSpacing": 0.2 }
+        "caption": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": 10, "lineHeight": 14, "letterSpacing": 0.2 },
+        "code": { "fontFamily": "JetBrains Mono", "fontWeight": 400, "fontSize": 13, "lineHeight": 20 }
       }
     }
   ]

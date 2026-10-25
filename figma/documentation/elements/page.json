@@ -1,0 +1,79 @@
+{
+  "holes": {
+    "sections": {
+      "kind": "items",
+      "sample": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "Секции страницы"
+            },
+            "typography": "bodyMedium",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": {
+            "fixed": {
+              "custom": {
+                "value": 960
+              }
+            }
+          }
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "xl2"
+      },
+      "appearance": {
+        "plain": {
+          "background": {
+            "solid": "background"
+          }
+        }
+      },
+      "arrangement": {
+        "vertical": {
+          "alignment": "start",
+          "distribution": {
+            "packed": {
+              "gap": "xl",
+              "position": "top"
+            }
+          }
+        }
+      },
+      "children": [
+        "$sections"
+      ]
+    }
+  }
+}
