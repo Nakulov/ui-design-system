@@ -1,0 +1,25 @@
+{
+  "$ref": "Text",
+  "sample": "label",
+  "iconSample": "iconLabel",
+  "properties": {
+    "content": {
+      "as": "text"
+    },
+    "typography": {
+      "as": "override"
+    },
+    "color": {
+      "as": "override"
+    },
+    "decoration": {
+      "as": "override"
+    },
+    "alignment": {
+      "as": "override"
+    },
+    "maxLines": {
+      "as": "override"
+    }
+  }
+}

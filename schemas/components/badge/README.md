@@ -17,12 +17,13 @@
 
 ## Состав
 
-| Файл                | Роль                                                     |
-|---------------------|----------------------------------------------------------|
-| `Badge.json`        | Публичный контракт: необязательное содержимое.           |
-| `BadgeContent.json` | Содержимое: `text` или `image`.                          |
-| `BadgeText.json`    | Текст в одну строку: значение, роль типографики, цвет.   |
-| `samples/`          | Примеры моделей: `min.json`, `max.json`, `count`, `dot`. |
+| Файл                | Роль                                                             |
+|---------------------|------------------------------------------------------------------|
+| `Badge.json`        | Публичный контракт: необязательное содержимое.                   |
+| `BadgeContent.json` | Содержимое: `text` или `image`.                                  |
+| `BadgeText.json`    | Текст в одну строку: значение, роль типографики, цвет.           |
+| `Badge.figma.json`  | Figma-компонент: образцы вариантов `content`.                    |
+| `samples/`          | Примеры моделей: `min.json`, `max.json`, `count`, `dot`, `icon`. |
 
 Картинка — `ImageSource` компонента `Image` (`schemas/components/image`).
 
@@ -39,7 +40,7 @@ content?: oneOf                            — нет: только фон (то
 | корень          | Auto Layout, `minWidth` равен высоте | `Box` с минимальной шириной, равной высоте | `Layout` с `minWidth = height`     |
 | `content` нет   | variant `content = none`             | пустой `Box`                               | пустая форма                       |
 | `content.text`  | variant `text`, text-свойство        | `Text(maxLines = 1, softWrap = false)`     | `Text(…).lineLimit(1).fixedSize()` |
-| `content.image` | variant `image`, слои как у `Image`  | как `Image`                                | как `Image`                        |
+| `content.image` | variant `image`, символ              | как `Image`                                | как `Image`                        |
 
 1. **Ширина не меньше высоты.** При ширине `hug` бейдж с одним знаком или символом — круг (при `cornerRadius = full`),
    с длинным текстом — таблетка той же высоты. Высота задаётся `layout` или содержимым с `padding`.

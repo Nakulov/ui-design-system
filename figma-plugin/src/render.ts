@@ -56,6 +56,11 @@ const BOUND_FIELDS: VariableBindableNodeField[] = [
   "maxHeight", "strokeWeight",
 ];
 
+/** Родитель с Auto Layout: дети в потоке. */
+function isAuto(parent: BaseNode): boolean {
+  return "layoutMode" in parent && parent.layoutMode !== "NONE";
+}
+
 /** Вариант значения `oneOf` или `enum`: имя и значение (`schema-format.md`, раздел 4.5). */
 function variant<T = unknown>(value: unknown): [string, T] {
   if (typeof value === "string") return [value, undefined as T];
@@ -119,32 +124,91 @@ export class Tokens {
   }
 }
 
+/** Слои, найденные при сбросе: ключ — место слоя в модели (`slot`). */
+type Kept = Map<string, SceneNode>;
+
 /**
  * Отрисовка одной модели. Слои строятся сразу; раскладка `overlay`, координаты `pinned`, слой наложения и вписывание
- * картинок требуют готовых размеров и выполняются в `finish`.
+ * картинок требуют готовых размеров и выполняются после.
+ *
+ * Каждый слой помечен местом в модели (`sharedPluginData`, ключ `slot`): `id` модели или путь (`children[1]`, `text`,
+ * `icon`). Повторная отрисовка обновляет слой с тем же местом и видом, а не пересоздаёт его: правки в экземплярах
+ * Figma-компонентов привязаны к слоям (раздел 7, правило 8).
  */
 export class Renderer {
   private readonly layouts: (() => void)[] = [];
   private readonly placements: (() => void)[] = [];
   private readonly fonts = new Set<string>();
 
-  constructor(private readonly tokens: Tokens, private readonly report: Report, private readonly label: string) {}
+  /** `library` — тело образца библиотеки: картинки по адресу не загружаются (раздел 4.1, правило 12). */
+  constructor(
+    private readonly tokens: Tokens, private readonly report: Report, private readonly label: string,
+    private readonly library = false,
+  ) {}
 
-  /** Рисует модель последним ребёнком `parent`; слои из `reuse` с тем же `id` обновляются на месте (§10.1, правило 4). */
-  async draw(entry: unknown, parent: FrameNode, reuse: Map<string, SceneNode>): Promise<SceneNode | undefined> {
-    const node = await this.component(entry as Entry, parent, reuse, "");
+  /**
+   * Рисует модель последним ребёнком `parent`. Корень из `reuse` с местом `slot` (или `id` модели) обновляется на
+   * месте; у образца библиотеки это сам Figma-компонент.
+   */
+  async draw(entry: unknown, parent: BaseNode & ChildrenMixin, reuse: Kept, slot = "root"): Promise<FrameNode | undefined> {
+    const node = await this.component(entry as Entry, parent as FrameNode, reuse, "", slot);
     // Размеры вложенных контейнеров overlay нужны родителям, а размеры родителей — растянутым детям.
     for (const layout of [...this.layouts].reverse()) layout();
     for (const layout of this.layouts) layout();
     for (const place of this.placements) place();
+    if (node) await this.resolvePaints(node);
     return node;
+  }
+
+  /**
+   * Заливки с переменными цвета получают значение переменной для своего слоя и привязываются заново. Figma Desktop не
+   * пересчитывает значение у текстов и фигур, привязанных через API внутри фрейма с явным режимом коллекции, и рисует
+   * заглушку, пока привязку не обновят.
+   */
+  private async resolvePaints(root: SceneNode) {
+    const variables = new Map<string, Variable | null>();
+    const resolve = async (paints: readonly Paint[], node: SceneNode): Promise<Paint[] | undefined> => {
+      let changed = false;
+      const result: Paint[] = [];
+      for (const paint of paints) {
+        const id = paint.type === "SOLID" ? paint.boundVariables?.color?.id : undefined;
+        if (!id) {
+          result.push(paint);
+          continue;
+        }
+        if (!variables.has(id)) variables.set(id, await figma.variables.getVariableByIdAsync(id));
+        const variable = variables.get(id);
+        const value = variable?.resolveForConsumer(node).value as RGBA | undefined;
+        if (!variable || !value || typeof value !== "object" || !("r" in value)) {
+          result.push(paint);
+          continue;
+        }
+        const solid: SolidPaint = { type: "SOLID", color: { r: value.r, g: value.g, b: value.b }, opacity: value.a ?? 1 };
+        result.push(figma.variables.setBoundVariableForPaint(solid, "color", variable));
+        changed = true;
+      }
+      return changed ? result : undefined;
+    };
+    const nodes = "findAll" in root ? [root, ...root.findAll()] : [root];
+    for (const node of nodes) {
+      if (node.type === "INSTANCE" || (node.parent && "type" in node.parent && node.parent.type === "BOOLEAN_OPERATION")) continue;
+      if (node.type === "TEXT") {
+        for (const segment of node.getStyledTextSegments(["fills"])) {
+          const paints = await resolve(segment.fills, node);
+          if (paints) node.setRangeFills(segment.start, segment.end, paints);
+        }
+      } else if ("fills" in node && Array.isArray(node.fills)) {
+        const paints = await resolve(node.fills, node);
+        if (paints) node.fills = paints;
+      }
+    }
   }
 
   private warn(at: string, message: string) {
     this.report.warn(`${this.label} › ${at}: ${message}`);
   }
 
-  private async component(entry: Entry, parent: FrameNode, reuse: Map<string, SceneNode>, path: string): Promise<FrameNode | undefined> {
+  private async component(entry: Entry, parent: FrameNode, reuse: Kept, path: string, slot: string): Promise<FrameNode | undefined> {
     const [name, model] = Object.entries(entry)[0];
     const at = path ? `${path}/${name}` : name;
     const contract = this.tokens.component(name);
@@ -152,23 +216,23 @@ export class Renderer {
       this.warn(at, "компонент не поддерживается и не отрисован");
       return undefined;
     }
-    const old = model.id ? reuse.get(model.id) : undefined;
-    if (model.id) reuse.delete(model.id);
-    if (model.indicators?.length) return this.indicated(name, model, parent, old, path, at);
+    const key = model.id ?? slot;
+    const old = reuse.get(key);
+    reuse.delete(key);
+    if (model.indicators?.length) return this.indicated(name, model, parent, old, path, at, key);
     let frame: FrameNode;
-    let kept = new Map<string, SceneNode>();
-    if (old?.type === "FRAME" && ref(old) === contract) {
-      frame = old;
-      kept = await this.reset(frame);
-    } else {
+    // Figma-компонент библиотеки — корень своего образца (раздел 6.2), в том числе `text/icon` с другим `ref`.
+    if (old?.type === "COMPONENT" || (old?.type === "FRAME" && ref(old) === contract)) frame = old as FrameNode;
+    else {
       old?.remove();
       frame = figma.createFrame();
-      await this.reset(frame);
     }
+    const kept = await this.reset(frame);
     parent.appendChild(frame);
-    frame.name = name;
+    if (frame.type === "FRAME") frame.name = name;
     mark(frame, contract);
     mark(frame, model.id ?? "", "id");
+    mark(frame, key, "slot");
 
     if (name === "Container") this.arrangement(frame, model, at);
     else {
@@ -176,19 +240,18 @@ export class Renderer {
       frame.primaryAxisAlignItems = name === "Text" ? "MIN" : "CENTER";
       frame.counterAxisAlignItems = name === "Text" ? "MIN" : "CENTER";
     }
-    this.layout(frame, model.layout, parent.layoutMode !== "NONE", at);
+    this.layout(frame, model.layout, isAuto(parent), at);
     this.padding(frame, model.padding, at);
     const plain = this.plain(model);
     await this.appearance(frame, plain, at);
 
     if (name === "Container") await this.children(frame, model, kept, at);
-    else if (name === "Text") await this.text(frame, model, at);
-    else if (name === "Image") await this.source(frame, model.source, model.layout, true, at);
-    else if (name === "Badge") await this.badge(frame, model, at);
+    else if (name === "Text") await this.text(frame, model, kept, at);
+    else if (name === "Image") await this.source(frame, model.source, model.layout, true, kept, at);
+    else if (name === "Badge") await this.badge(frame, model, kept, at);
+    if (plain.overlay) this.overlay(frame, plain, kept, at);
     for (const leftover of kept.values()) leftover.remove();
     this.collapseEmpty(frame, model.layout);
-
-    if (plain.overlay) this.overlay(frame, plain, at);
     return frame;
   }
 
@@ -205,12 +268,12 @@ export class Renderer {
     if (sizing[1] === "FILL") frame.layoutSizingVertical = "FILL";
   }
 
-  /** Сбрасывает свойства слоя; возвращает дочерние слои моделей с `id`, остальные удаляет. */
-  private async reset(frame: FrameNode): Promise<Map<string, SceneNode>> {
-    const kept = new Map<string, SceneNode>();
+  /** Сбрасывает свойства слоя; возвращает дочерние слои по месту в модели, слои без места удаляет. */
+  private async reset(frame: FrameNode): Promise<Kept> {
+    const kept: Kept = new Map();
     for (const child of [...frame.children]) {
-      const id = ref(child, "id");
-      if (id && (!ref(child, "role") || ref(child, "role") === "indicators")) kept.set(id, child);
+      const slot = ref(child, "slot");
+      if (slot && !kept.has(slot)) kept.set(slot, child);
       else child.remove();
     }
     for (const field of BOUND_FIELDS) {
@@ -225,6 +288,20 @@ export class Renderer {
     if (frame.layoutMode !== "NONE") frame.minWidth = frame.maxWidth = frame.minHeight = frame.maxHeight = null;
     frame.layoutMode = "NONE";
     return kept;
+  }
+
+  /** Слой с местом `slot`: прежний того же вида или новый (раздел 7, правило 8). */
+  private take<T extends SceneNode>(kept: Kept, slot: string, type: T["type"], create: () => T): T {
+    const old = kept.get(slot);
+    kept.delete(slot);
+    let node: T;
+    if (old?.type === type) node = old as T;
+    else {
+      old?.remove();
+      node = create();
+    }
+    mark(node, slot, "slot");
+    return node;
   }
 
   /** Число величины и привязка поля слоя к переменной варианта шкалы (раздел 10.1, правило 3). */
@@ -363,8 +440,8 @@ export class Renderer {
   }
 
   /** Наложение — верхний слой корня поверх детей (раздел 10.2, правило 3). */
-  private overlay(frame: FrameNode, plain: Plain, at: string) {
-    const layer = figma.createRectangle();
+  private overlay(frame: FrameNode, plain: Plain, kept: Kept, at: string) {
+    const layer = this.take(kept, "overlay", "RECTANGLE", () => figma.createRectangle());
     frame.appendChild(layer);
     layer.name = "overlay";
     mark(layer, "overlay", "role");
@@ -384,42 +461,42 @@ export class Renderer {
    * родителя, индикаторы и маска выреза лежат в ней с абсолютной позицией. Носитель — во фрейме `carrier` без
    * обрезки: маска Figma не режет фрейм с `clipsContent` (раздел 10.2, правило 4).
    */
-  private async indicated(name: string, model: Base, parent: FrameNode, old: SceneNode | undefined, path: string, at: string): Promise<FrameNode | undefined> {
+  private async indicated(name: string, model: Base, parent: FrameNode, old: SceneNode | undefined, path: string, at: string, key: string): Promise<FrameNode | undefined> {
     let wrapper: FrameNode;
-    let kept = new Map<string, SceneNode>();
-    if (old?.type === "FRAME" && ref(old, "role") === "indicators") {
-      wrapper = old;
-      // Носитель достаётся из прежнего фрейма carrier, чтобы обновиться на месте.
-      const slot = wrapper.children.find((n) => ref(n, "role") === "carrier");
-      if (slot && "children" in slot) for (const child of [...slot.children]) if (ref(child, "id")) wrapper.appendChild(child);
-      kept = await this.reset(wrapper);
-    } else {
-      wrapper = figma.createFrame();
-      await this.reset(wrapper);
+    if (old?.type === "FRAME" && ref(old, "role") === "indicators") wrapper = old;
+    else {
       // Носитель, нарисованный раньше без индикаторов, переиспользуется внутри обёртки.
-      if (old && model.id) kept.set(model.id, old);
+      wrapper = figma.createFrame();
+      if (old) {
+        const carrier = figma.createFrame();
+        wrapper.appendChild(carrier);
+        mark(carrier, "carrier", "slot");
+        carrier.appendChild(old);
+      }
     }
+    const kept = await this.reset(wrapper);
     parent.appendChild(wrapper);
     wrapper.name = `${name} indicators`;
     mark(wrapper, "indicators", "role");
     mark(wrapper, model.id ?? "", "id");
+    mark(wrapper, key, "slot");
     const flow: Layout = { ...model.layout, position: "flow" };
-    const slot = figma.createFrame();
+    const slot = this.take(kept, "carrier", "FRAME", () => figma.createFrame());
+    const carrierKept = await this.reset(slot);
     wrapper.appendChild(slot);
     slot.name = "carrier";
     mark(slot, "carrier", "role");
-    slot.fills = [];
-    slot.clipsContent = false;
-    for (const [frame, layout, parentAuto] of [[wrapper, model.layout, parent.layoutMode !== "NONE"], [slot, flow, true]] as const) {
+    for (const [frame, layout, parentAuto] of [[wrapper, model.layout, isAuto(parent)], [slot, flow, true]] as const) {
       frame.layoutMode = "HORIZONTAL";
       frame.itemSpacing = 0;
       frame.paddingLeft = frame.paddingRight = frame.paddingTop = frame.paddingBottom = 0;
       this.layout(frame, layout, parentAuto, at);
     }
-    const carrier = await this.component({ [name]: { ...model, indicators: undefined, layout: flow } }, slot, kept, path);
+    const carrier = await this.component({ [name]: { ...model, indicators: undefined, layout: flow } }, slot, carrierKept, path, key);
+    for (const leftover of carrierKept.values()) leftover.remove();
     const placed: [FrameNode, Indicator][] = [];
     for (const [index, indicator] of (model.indicators as Indicator[]).entries()) {
-      const node = await this.component(indicator.content, wrapper, kept, `${at}.indicators[${index}]`);
+      const node = await this.component(indicator.content, wrapper, kept, `${at}.indicators[${index}]`, `indicators[${index}]`);
       if (!node) continue;
       node.layoutPositioning = "ABSOLUTE";
       placed.push([node, indicator]);
@@ -558,11 +635,11 @@ export class Renderer {
     }
   }
 
-  private async children(frame: FrameNode, model: Base, kept: Map<string, SceneNode>, at: string) {
+  private async children(frame: FrameNode, model: Base, kept: Kept, at: string) {
     const children = (model.children as Entry[] | undefined) ?? [];
     const drawn: [FrameNode, Base][] = [];
     for (const [index, child] of children.entries()) {
-      const node = await this.component(child, frame, kept, `${at}.children[${index}]`);
+      const node = await this.component(child, frame, kept, `${at}.children[${index}]`, `children[${index}]`);
       if (node) drawn.push([node, Object.values(child)[0]]);
     }
     const [kind, value] = variant<{ horizontal: string; vertical: string }>(model.arrangement);
@@ -618,9 +695,15 @@ export class Renderer {
   }
 
   /** Текстовый слой со стилем роли и цветом. Шрифт стиля должен быть загружен до изменения текста. */
-  private async textNode(characters: string, role: string, color: string, at: string): Promise<TextNode> {
-    const node = figma.createText();
+  private async textNode(kept: Kept, slot: string, characters: string, role: string, color: string, at: string): Promise<TextNode> {
+    const node = this.take(kept, slot, "TEXT", () => figma.createText());
     await this.loadFont(DEFAULT_FONT);
+    // Прежний слой: шрифты всех фрагментов нужны до замены текста, обрезка и перенос сбрасываются.
+    if (node.characters.length) for (const font of node.getRangeAllFontNames(0, node.characters.length)) await this.loadFont(font);
+    node.textTruncation = "DISABLED";
+    node.maxLines = null;
+    node.maxWidth = null;
+    node.textDecoration = "NONE";
     const style = this.tokens.textStyle(role);
     if (style) await this.loadFont(style.fontName);
     node.characters = characters;
@@ -630,20 +713,24 @@ export class Renderer {
     return node;
   }
 
-  /** Экземпляр символа с цветом вектора (раздел 4.1, правило 12). */
-  private icon(name: string, color: string, at: string): InstanceNode | undefined {
+  /** Экземпляр символа с цветом вектора (раздел 4.1, правило 12); прежний экземпляр меняет символ на месте. */
+  private async icon(kept: Kept, slot: string, name: string, color: string, at: string): Promise<InstanceNode | undefined> {
     const component = this.tokens.icon(name);
     if (!component) {
+      kept.get(slot)?.remove();
+      kept.delete(slot);
       this.warn(at, `нет символа ${prefix("Icon")}/${name}`);
       return undefined;
     }
-    const instance = component.createInstance();
+    const instance = this.take(kept, slot, "INSTANCE", () => component.createInstance());
+    if ((await instance.getMainComponentAsync())?.id !== component.id) instance.swapComponent(component);
+    instance.resize(component.width, component.height);
     const vector = instance.findOne((n) => n.name === "vector");
     if (vector && "fills" in vector) vector.fills = [this.paint(color, at)];
     return instance;
   }
 
-  private async text(frame: FrameNode, model: Base, at: string) {
+  private async text(frame: FrameNode, model: Base, kept: Kept, at: string) {
     const typography = model.typography as string;
     const color = (model.color as Fill).solid;
     const [kind, value] = variant<string | { spans: Span[] }>(model.content);
@@ -663,7 +750,7 @@ export class Renderer {
         parts.push({ value: span.text.value, span });
       }
     }
-    const node = await this.textNode(parts.map((p) => p.value).join(""), typography, color, at);
+    const node = await this.textNode(kept, "text", parts.map((p) => p.value).join(""), typography, color, at);
     frame.appendChild(node);
     node.name = "text";
     let start = 0;
@@ -705,7 +792,7 @@ export class Renderer {
     for (const [span, index] of [[leading, 0], [trailing, -1]] as const) {
       if (!span || !("icon" in span)) continue;
       const role = span.icon.typography ?? typography;
-      const instance = this.icon(span.icon.name, span.icon.color ?? color, at);
+      const instance = await this.icon(kept, index === 0 ? "leadingIcon" : "trailingIcon", span.icon.name, span.icon.color ?? color, at);
       if (!instance) continue;
       if (index === 0) frame.insertChild(0, instance);
       else frame.appendChild(instance);
@@ -722,13 +809,23 @@ export class Renderer {
   // Изображение (раздел 10.4).
 
   /** Источник изображения: символ или картинка по адресу. `fit` — вписывать символ в размер слоя (правило 2). */
-  private async source(frame: FrameNode, source: unknown, layout: Layout, fit: boolean, at: string) {
+  private async source(frame: FrameNode, source: unknown, layout: Layout, fit: boolean, kept: Kept, at: string) {
     const [kind, value] = variant<Resource | Remote>(source);
     if (kind === "resource") {
-      this.resource(frame, value as Resource, fit ? layout : undefined, at);
+      await this.resource(frame, value as Resource, fit ? layout : undefined, kept, at);
       return;
     }
     const remote = value as Remote;
+    if (this.library) {
+      // В библиотеке вместо картинки по адресу — нейтральная заливка (раздел 4.1, правило 12).
+      const layer = this.take(kept, "image", "RECTANGLE", () => figma.createRectangle());
+      frame.appendChild(layer);
+      layer.name = "image";
+      if (layout.width.sizing !== "hug") layer.layoutSizingHorizontal = "FILL";
+      if (layout.height.sizing !== "hug") layer.layoutSizingVertical = "FILL";
+      layer.fills = [this.paint("surface2", at)];
+      return;
+    }
     let image: Image;
     let size: { width: number; height: number };
     try {
@@ -737,10 +834,10 @@ export class Renderer {
     } catch (e) {
       const fallback = remote.error ?? remote.placeholder;
       this.warn(at, `картинка ${remote.origin.url} не загрузилась${fallback ? `, показан символ ${fallback.icon.name}` : ""}: ${(e as Error).message}`);
-      if (fallback) this.resource(frame, fallback, undefined, at);
+      if (fallback) await this.resource(frame, fallback, undefined, kept, at);
       return;
     }
-    const layer = figma.createRectangle();
+    const layer = this.take(kept, "image", "RECTANGLE", () => figma.createRectangle());
     frame.appendChild(layer);
     layer.name = "image";
     layer.resize(size.width, size.height);
@@ -750,8 +847,8 @@ export class Renderer {
     if (remote.alignment !== "center") this.placements.push(() => this.alignImage(layer, image.hash, size, remote));
   }
 
-  private resource(frame: FrameNode, resource: Resource, fitTo: Layout | undefined, at: string) {
-    const instance = this.icon(resource.icon.name, resource.icon.color, at);
+  private async resource(frame: FrameNode, resource: Resource, fitTo: Layout | undefined, kept: Kept, at: string) {
+    const instance = await this.icon(kept, "icon", resource.icon.name, resource.icon.color, at);
     if (!instance) return;
     frame.appendChild(instance);
     if (fitTo && (fitTo.width.sizing !== "hug" || fitTo.height.sizing !== "hug")) {
@@ -782,16 +879,16 @@ export class Renderer {
 
   // Бейдж (раздел 4.1, правило 13).
 
-  private async badge(frame: FrameNode, model: Base, at: string) {
+  private async badge(frame: FrameNode, model: Base, kept: Kept, at: string) {
     if (model.content) {
       const [kind, value] = variant<{ value: string; typography: string; color: string }>(model.content);
       if (kind === "text") {
-        const node = await this.textNode(value.value, value.typography, value.color, at);
+        const node = await this.textNode(kept, "text", value.value, value.typography, value.color, at);
         frame.appendChild(node);
         node.name = "text";
         node.textAutoResize = "WIDTH_AND_HEIGHT";
       } else {
-        await this.source(frame, value, model.layout, false, at);
+        await this.source(frame, value, model.layout, false, kept, at);
       }
     }
     // Ширина не меньше высоты.

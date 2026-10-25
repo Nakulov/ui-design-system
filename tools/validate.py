@@ -56,6 +56,7 @@ FIGMA_SCOPES = {
 }
 FIGMA_VARIABLE_TYPE = {"color": "COLOR", "integer": "FLOAT", "float": "FLOAT", "string": "STRING", "boolean": "BOOLEAN"}
 FIGMA_FOUNDATION_FIELDS = {"$ref", "scopes", "publish"}
+FIGMA_COMPONENT_FIELDS = {"$ref", "sample", "variants", "iconSample", "properties"}
 
 PLATFORMS = ("android", "ios", "figma")
 STATUS_RANK = {"released": 0, "notReleased": 1, "willNotBeReleased": 2}
@@ -525,6 +526,114 @@ def check_figma_foundation(registry, values, figma):
             error(path, "publish — boolean")
 
 
+def figma_mapping(registry, owner, prop):
+    """Свойство Figma по умолчанию и допустимые переопределения (figma-mapping.md, раздел 4)."""
+    kind = prop.get("type")
+    if kind == "boolean":
+        return "boolean", {"variant"}
+    if kind == "string":
+        return "text", set()
+    if kind in ("integer", "float"):
+        return None, {"variant", "override"}
+    target = registry.resolve(owner, prop.get("$ref"))
+    if target is None:
+        return None, set()
+    if "extends" in target.data:
+        return "instanceSwap", set()
+    if target.type == "enum":
+        return "variant", {"mode", "override"}
+    if target.type != "oneOf":
+        return None, set()
+    variants = registry.variants(target)
+    if any(v.target == "string" for v in variants):
+        return None, {"text"}
+    if all(not v.has_data for v in variants):
+        return "variant", {"mode", "override"}
+    return None, {"override"}
+
+
+def check_figma_components(registry, figma):
+    """<Имя>.figma.json компонентов: образцы и переопределения свойств (figma-mapping.md, разделы 4, 6, 9)."""
+    for contract in registry:
+        if contract.kind != "public" or "extends" not in contract.data or contract.name == "Container":
+            continue
+        if contract.data.get("releaseVersions", {}).get("figma") == "willNotBeReleased":
+            continue
+        path = contract.path.with_name(f"{contract.name}.figma.json")
+        project = figma.get(path)
+        if not isinstance(project, dict):
+            error(contract.path, f"нет {path.name}: образец Figma-компонента (figma-mapping.md, раздел 6)")
+            continue
+        for extra in sorted(project.keys() - FIGMA_COMPONENT_FIELDS):
+            error(path, f"поле «{extra}» не определено (figma-mapping.md, раздел 6)")
+        if project.get("$ref") != contract.name:
+            error(path, f"$ref «{project.get('$ref')}», ожидается «{contract.name}»")
+        if ("sample" in project) == ("variants" in project):
+            error(path, "задаётся ровно одно из полей sample и variants (раздел 6)")
+        if "iconSample" in project and contract.name != "Text":
+            error(path, "iconSample — только у Text (раздел 10.5)")
+        own = {prop["name"]: (owner, prop) for owner, prop in registry.declared_properties(contract)
+               if owner is contract}
+
+        def sample(name, at):
+            """Модель образца или None; корень — этот компонент без индикаторов (раздел 6.2, правило 1)."""
+            file = contract.path.parent / "samples" / f"{name}.json" if isinstance(name, str) else None
+            if file is None or not file.is_file():
+                error(path, f"{at}: нет примера samples/{name}.json")
+                return None
+            model = json.loads(file.read_text()).get(contract.name, {})
+            if "indicators" in model:
+                error(path, f"{at}: образец {name} с индикаторами: они в Figma-компоненты не входят (раздел 6.2)")
+            return model
+
+        for key in ("sample", "iconSample"):
+            if key in project:
+                sample(project[key], key)
+        variants = project.get("variants", {})
+        if not isinstance(variants, dict) or len(variants) > 1:
+            error(path, "variants — объект с одним свойством (раздел 6.2, правило 3)")
+            variants = {}
+        for name, samples in variants.items():
+            if name not in own:
+                error(path, f"variants: «{name}» — не свойство {contract.name}")
+                continue
+            owner, prop = own[name]
+            target = registry.resolve(owner, prop.get("$ref"))
+            allowed = [v.name for v in registry.variants(target)] if target else []
+            if not prop["required"]:
+                allowed.append("none")
+            if not isinstance(samples, dict) or not samples:
+                error(path, f"variants.{name}: непустой объект «значение → образец»")
+                continue
+            for value, sample_name in samples.items():
+                if value not in allowed:
+                    error(path, f"variants.{name}: «{value}» — не значение свойства ({', '.join(allowed)})")
+                    continue
+                model = sample(sample_name, f"variants.{name}.{value}")
+                if model is None:
+                    continue
+                actual = list(model[name])[0] if isinstance(model.get(name), dict) else model.get(name, "none")
+                if actual != value:
+                    error(path, f"variants.{name}.{value}: у образца {sample_name} значение «{actual}»")
+        properties = project.get("properties", {})
+        for name, override in properties.items():
+            if name not in own:
+                error(path, f"properties: «{name}» — не собственное свойство {contract.name}")
+                continue
+            if name in variants:
+                error(path, f"properties: «{name}» уже задан в variants (раздел 6.1, правило 5)")
+            _, allowed = figma_mapping(registry, *own[name])
+            if not isinstance(override, dict) or override.get("as") not in allowed:
+                error(path, f"properties.{name}: as «{override.get('as') if isinstance(override, dict) else override}» "
+                            f"недопустимо, допустимо: {', '.join(sorted(allowed)) or 'нет'} (раздел 4)")
+        for name, (owner, prop) in own.items():
+            default, _ = figma_mapping(registry, owner, prop)
+            hidden = prop.get("releaseVersions", {}).get("figma") == "willNotBeReleased"
+            if default is None and not hidden and name not in properties and name not in variants:
+                error(path, f"свойство «{name}» не отображается в Figma: нужно переопределение или "
+                            f"figma: willNotBeReleased (раздел 4.1, правило 3)")
+
+
 # Версии спецификаций (раздел 11.3).
 
 def check_spec_versions():
@@ -591,6 +700,7 @@ def main():
         check_values(registry, values, path, data)
     check_themes(registry, values)
     check_figma_foundation(registry, values, figma)
+    check_figma_components(registry, figma)
     check_samples(registry)
     check_idea(registry)
 

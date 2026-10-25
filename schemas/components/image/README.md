@@ -26,6 +26,7 @@
 | `ImageOrigin.json`       | Откуда загружается: пока только `url`; набор способов расширяется.         |
 | `ImageScale.json`        | Вписывание: `fit`, `crop`.                                                 |
 | `ImageAlignment.json`    | Положение картинки: девять точек от `topStart` до `bottomEnd`.             |
+| `Image.figma.json`       | Figma-компонент: образцы вариантов `source`.                               |
 | `samples/`               | Примеры: `min`, `max`, `icon`, `productPhoto`, `avatarOnline`, `appIcon`.  |
 
 ## Варианты
@@ -45,7 +46,7 @@ source: oneOf
 | `remote.origin.url`   | Coil `AsyncImage(model = url)`       | `AsyncImage(url:)`                           | заливка-картинка при отрисовке модели         |
 | `remote.scale`        | `contentScale`: `Fit`, `Crop`        | `.aspectRatio(contentMode: .fit / .fill)`    | `scaleMode`: `FIT`, `FILL`                    |
 | `remote.alignment`    | `alignment`: `Alignment.TopStart` …  | `.frame(alignment: .topLeading …)` + обрезка | `imageTransform`, только при отрисовке модели |
-| `remote.placeholder`  | `placeholder`                        | фаза `.empty`                                | слой символа в библиотеке                     |
+| `remote.placeholder`  | `placeholder`                        | фаза `.empty`                                | в библиотеке — нейтральная заливка            |
 | `remote.error`        | `error`                              | фаза `.failure`                              | слой символа при ошибке загрузки              |
 
 1. **Размер.** При `hug` компонент принимает собственный размер рисунка: у символа — `width` и `height` SVG. При

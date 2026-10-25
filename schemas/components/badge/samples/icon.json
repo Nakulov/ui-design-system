@@ -1,0 +1,34 @@
+{
+  "Badge": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "xs2"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "primary"
+        },
+        "cornerRadius": "full"
+      }
+    },
+    "content": {
+      "image": {
+        "resource": {
+          "icon": {
+            "name": "check",
+            "color": "onPrimary"
+          }
+        }
+      }
+    }
+  }
+}

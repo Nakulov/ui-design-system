@@ -109,11 +109,11 @@ export class SamplesBuilder {
       card.fills = [this.paint(tokens, "background")];
       card.strokes = [this.paint(tokens, "outline")];
       this.label(card, GENERATED.includes(key.split("#")[1]) ? `${label} · сгенерирован` : label, tokens);
-      // Модель с тем же id обновляется на месте, остальные слои пересоздаются (раздел 10.1, правило 4).
+      // Слои обновляются на месте по месту в модели (раздел 10.1, правило 4).
       const reuse = new Map<string, SceneNode>();
       for (const node of [...card.children]) {
         if (ref(node, "role") === "label") continue;
-        if (ref(node, "id")) reuse.set(ref(node, "id"), node);
+        if (ref(node, "slot")) reuse.set(ref(node, "slot"), node);
         else node.remove();
       }
       await new Renderer(tokens, this.report, label).draw(model, card, reuse);

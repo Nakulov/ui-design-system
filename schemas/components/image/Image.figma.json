@@ -1,0 +1,9 @@
+{
+  "$ref": "Image",
+  "variants": {
+    "source": {
+      "resource": "icon",
+      "remote": "productPhoto"
+    }
+  }
+}
