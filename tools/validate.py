@@ -64,6 +64,12 @@ README_SECTIONS = [
     "Назначение", "Состав", "Варианты", "Рекомендации по использованию", "Ограничения и открытые вопросы",
 ]
 LOWER_CAMEL = re.compile(r"[a-z][A-Za-z0-9]*")
+# Подмножество Markdown раздела «Рекомендации по использованию» (раздел 11.2): запрещённые конструкции.
+USAGE_SECTION = "Рекомендации по использованию"
+USAGE_FORBIDDEN = [
+    (re.compile(r"^\s*\|"), "таблица"), (re.compile(r"^\s*(```|~~~)"), "блок кода"), (re.compile(r"^\s*#"), "подзаголовок"),
+    (re.compile(r"^\s*>"), "цитата"), (re.compile(r"!\["), "картинка"), (re.compile(r"</?[A-Za-z!]"), "HTML"),
+]
 DIFF_LINES = 40  # строк диффа на файл в сообщении об устаревшем файле
 
 errors = {}
@@ -141,12 +147,29 @@ def check_files(registry, referenced):
             sections = re.findall(r"^## (.+?)\s*$", readme.read_text(), re.M)
             if sections != README_SECTIONS:
                 error(readme, f"разделы {sections}, ожидаются {README_SECTIONS} (раздел 11.2)")
+            check_usage(readme)
     for theme in sorted(p for p in THEMES.iterdir() if p.is_dir()):
         if not LOWER_CAMEL.fullmatch(theme.name):
             error(theme, "имя темы не в lowerCamelCase (раздел 9.4)")
 
 
 # Примеры моделей (раздел 11.1, правило 8; раздел 11.2).
+
+def check_usage(readme):
+    """Раздел «Рекомендации по использованию» — подмножество Markdown для документации Figma (раздел 11.2)."""
+    match = re.search(rf"^## {USAGE_SECTION}\s*$(.*?)(?=^## |\Z)", readme.read_text(), re.M | re.S)
+    if not match:
+        return
+    first = readme.read_text()[:match.start(1)].count("\n") + 1
+    for offset, line in enumerate(match.group(1).split("\n")):
+        # Код в строке выводится как есть: разметка внутри него не считается.
+        text = re.sub(r"`[^`]*`", "", line) if not re.match(r"^\s*(```|~~~)", line) else line
+        for pattern, name in USAGE_FORBIDDEN:
+            if pattern.search(text):
+                error(readme, f"строка {first + offset}: {name} в разделе «{USAGE_SECTION}» — только абзацы, списки, "
+                              f"код в строке, жирный и ссылки (раздел 11.2)")
+                break
+
 
 def mismatch(path, actual, expected, message):
     """Ошибка расхождения файла с ожидаемым текстом и дифф, ограниченный DIFF_LINES строками."""
