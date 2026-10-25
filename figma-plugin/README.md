@@ -39,7 +39,7 @@ npm run typecheck
 | `src/foundation.ts`    | Построение foundation: переменные, стили, символы, удаление устаревших. |
 | `src/render.ts`        | Ядро отрисовки модели в режиме тела; величины foundation в файле.       |
 | `src/samples.ts`       | Страница `Samples`: карточки примеров компонентов.                      |
-| `src/documentation.ts` | Страницы документации: `Overview`, foundation и core (по манифестам).   |
+| `src/documentation.ts` | Страницы документации: `Overview`, foundation, core и компоненты.       |
 | `src/ids.ts`           | Идентификаторы объектов Figma и общие преобразования.                   |
 | `src/report.ts`        | Отчёт: счётчики по видам объектов и предупреждения.                     |
 | `build.mjs`            | Сборка esbuild.                                                         |

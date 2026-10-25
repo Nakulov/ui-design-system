@@ -1,0 +1,53 @@
+{
+  "$ref": "Text",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview",
+      "examples": [
+        {
+          "id": "main",
+          "sample": "label",
+          "caption": "Подпись"
+        }
+      ]
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "variants",
+      "type": "variants",
+      "title": "Variants",
+      "examples": [
+        {
+          "id": "label",
+          "sample": "label",
+          "caption": "Простой текст"
+        },
+        {
+          "id": "inStock",
+          "sample": "inStock",
+          "caption": "Наличие товара с символом"
+        },
+        {
+          "id": "priceWithLink",
+          "sample": "priceWithLink",
+          "caption": "Старая и новая цена со ссылкой"
+        },
+        {
+          "id": "iconLabel",
+          "sample": "iconLabel",
+          "caption": "Символы в начале и в конце"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    }
+  ]
+}

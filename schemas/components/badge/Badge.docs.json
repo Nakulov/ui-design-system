@@ -1,0 +1,48 @@
+{
+  "$ref": "Badge",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview",
+      "examples": [
+        {
+          "id": "main",
+          "sample": "count",
+          "caption": "Счётчик"
+        }
+      ]
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "variants",
+      "type": "variants",
+      "title": "Variants",
+      "examples": [
+        {
+          "id": "dot",
+          "sample": "dot",
+          "caption": "Точка без содержимого"
+        },
+        {
+          "id": "count",
+          "sample": "count",
+          "caption": "Счётчик"
+        },
+        {
+          "id": "icon",
+          "sample": "icon",
+          "caption": "Символ"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    }
+  ]
+}

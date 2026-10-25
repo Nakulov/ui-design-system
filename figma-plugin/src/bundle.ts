@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.5";
+export const SUPPORTED_FORMAT = "0.6";
 
 /** Идентификатор сущности: путь от корня репозитория без .json; вариант — после «#» (раздел 2). */
 export type Id = string;
@@ -47,8 +47,8 @@ export type Bundle = {
   manifests: Record<Id, Manifest>;
 };
 
-/** Пример секции: демонстрация по идентификатору и подпись (documentation-manifest.md, раздел 5). */
-export type ManifestExample = { id: string; demo: Id; caption?: string };
+/** Пример секции: демонстрация core или пример компонента по идентификатору и подпись (documentation-manifest.md, раздел 5). */
+export type ManifestExample = { id: string; demo?: Id; sample?: Id; caption?: string };
 
 export type ManifestSection = { id: string; type: string; title?: string; examples?: ManifestExample[] };
 

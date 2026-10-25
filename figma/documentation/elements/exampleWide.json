@@ -1,0 +1,343 @@
+{
+  "holes": {
+    "preview": {
+      "kind": "component",
+      "sample": {
+        "Container": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "arrangement": {
+            "horizontalWrap": {
+              "alignment": "center",
+              "distribution": {
+                "packed": {
+                  "gap": {
+                    "custom": {
+                      "value": 6
+                    }
+                  },
+                  "position": "start"
+                }
+              },
+              "lineDistribution": {
+                "packed": {
+                  "gap": "s"
+                }
+              }
+            }
+          },
+          "children": [
+            {
+              "Badge": {
+                "layout": {
+                  "width": {
+                    "sizing": "hug"
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "s",
+                    "vertical": "zero"
+                  }
+                },
+                "appearance": {
+                  "plain": {
+                    "background": {
+                      "solid": "secondaryContainer"
+                    },
+                    "cornerRadius": "full"
+                  }
+                },
+                "content": {
+                  "text": {
+                    "value": "Новинка",
+                    "typography": "labelMedium",
+                    "color": "onSecondaryContainer"
+                  }
+                }
+              }
+            },
+            {
+              "Badge": {
+                "layout": {
+                  "width": {
+                    "sizing": "hug"
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "s",
+                    "vertical": "zero"
+                  }
+                },
+                "appearance": {
+                  "plain": {
+                    "background": {
+                      "solid": "secondaryContainer"
+                    },
+                    "cornerRadius": "full"
+                  }
+                },
+                "content": {
+                  "text": {
+                    "value": "Хит продаж",
+                    "typography": "labelMedium",
+                    "color": "onSecondaryContainer"
+                  }
+                }
+              }
+            },
+            {
+              "Badge": {
+                "layout": {
+                  "width": {
+                    "sizing": "hug"
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "s",
+                    "vertical": "zero"
+                  }
+                },
+                "appearance": {
+                  "plain": {
+                    "background": {
+                      "solid": "secondaryContainer"
+                    },
+                    "cornerRadius": "full"
+                  }
+                },
+                "content": {
+                  "text": {
+                    "value": "Бесплатная доставка",
+                    "typography": "labelMedium",
+                    "color": "onSecondaryContainer"
+                  }
+                }
+              }
+            },
+            {
+              "Badge": {
+                "layout": {
+                  "width": {
+                    "sizing": "hug"
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "s",
+                    "vertical": "zero"
+                  }
+                },
+                "appearance": {
+                  "plain": {
+                    "background": {
+                      "solid": "secondaryContainer"
+                    },
+                    "cornerRadius": "full"
+                  }
+                },
+                "content": {
+                  "text": {
+                    "value": "Скидка 20%",
+                    "typography": "labelMedium",
+                    "color": "onSecondaryContainer"
+                  }
+                }
+              }
+            },
+            {
+              "Badge": {
+                "layout": {
+                  "width": {
+                    "sizing": "hug"
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "s",
+                    "vertical": "zero"
+                  }
+                },
+                "appearance": {
+                  "plain": {
+                    "background": {
+                      "solid": "secondaryContainer"
+                    },
+                    "cornerRadius": "full"
+                  }
+                },
+                "content": {
+                  "text": {
+                    "value": "Керамика",
+                    "typography": "labelMedium",
+                    "color": "onSecondaryContainer"
+                  }
+                }
+              }
+            },
+            {
+              "Badge": {
+                "layout": {
+                  "width": {
+                    "sizing": "hug"
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "s",
+                    "vertical": "zero"
+                  }
+                },
+                "appearance": {
+                  "plain": {
+                    "background": {
+                      "solid": "secondaryContainer"
+                    },
+                    "cornerRadius": "full"
+                  }
+                },
+                "content": {
+                  "text": {
+                    "value": "Ручная работа",
+                    "typography": "labelMedium",
+                    "color": "onSecondaryContainer"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "caption": {
+      "kind": "text",
+      "sample": "Облако меток с переносом строк"
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": {
+            "fixed": {
+              "custom": {
+                "value": 360
+              }
+            }
+          }
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "m"
+      },
+      "appearance": {
+        "plain": {
+          "background": {
+            "solid": "surface"
+          },
+          "cornerRadius": "s",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        }
+      },
+      "arrangement": {
+        "vertical": {
+          "alignment": "start",
+          "distribution": {
+            "packed": {
+              "gap": "s",
+              "position": "top"
+            }
+          }
+        }
+      },
+      "children": [
+        "$preview",
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "$caption"
+            },
+            "typography": "caption",
+            "color": {
+              "solid": "onSurfaceMuted"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  }
+}

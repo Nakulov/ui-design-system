@@ -727,38 +727,61 @@ def check_previews(registry, values, elements):
 
 MANIFEST_SECTIONS = {"overview", "properties", "variants", "states", "layoutBehavior", "usage"}
 DEMO_SECTIONS = {"variants", "states", "layoutBehavior"}
+COMPONENT_SECTIONS = {"overview", "properties", "variants", "usage"}
+SAMPLE_SECTIONS = {"overview", "variants"}
+
+
+def manifest_owners(registry):
+    """Сущности, у которых обязателен манифест: публичные компоненты и core, видимые в Figma (раздел 2)."""
+    return {contract.path.with_name(f"{contract.name}.docs.json"): contract for contract in registry
+            if contract.kind == "public" and contract.layer in ("components", "core")
+            and contract.data.get("releaseVersions", {}).get("figma") != "willNotBeReleased"}
+
+
+def sample_file(registry, owner, name):
+    """Файл примера по ссылке sample: `<имя>` своего компонента или `<Контракт>#<имя>` (раздел 5.1)."""
+    if not isinstance(name, str):
+        return None
+    contract, _, name = name.rpartition("#")
+    if contract:
+        owner = next((c for c in registry if c.kind == "public" and c.layer == "components" and c.name == contract), None)
+    if owner is None or name in required_samples(owner):
+        return None
+    file = owner.path.parent / "samples" / f"{name}.json"
+    return file if file.is_file() else None
 
 
 def check_manifests(registry, manifests, elements):
-    """Манифесты core: секции, примеры-демонстрации и наличие у каждой сущности, видимой в Figma (разделы 2, 4.2, 5.2)."""
-    expected = {}
-    for contract in registry:
-        if contract.kind == "public" and contract.layer == "core" and \
-                contract.data.get("releaseVersions", {}).get("figma") != "willNotBeReleased":
-            expected[contract.path.with_name(f"{contract.name}.docs.json")] = contract
+    """Манифесты: секции, примеры и наличие у каждой сущности, видимой в Figma (разделы 2, 4.2, 5)."""
+    expected = manifest_owners(registry)
     for path, contract in sorted(expected.items()):
         if path not in manifests:
             error(contract.path, f"нет манифеста документации {path.name} (documentation-manifest.md, раздел 2)")
     used = set()
     for path, data in sorted(manifests.items()):
         if path not in expected:
-            error(path, "манифест есть только у публичных сущностей core, видимых в Figma (documentation-manifest.md, раздел 2)")
+            error(path, "манифест есть только у публичных компонентов и сущностей core, видимых в Figma (documentation-manifest.md, раздел 2)")
             continue
         if path.read_text() != dumps(data):
             mismatch(path, path.read_text(), dumps(data), "формат не канонический: отступ 2, каждое поле на своей строке")
         if not isinstance(data, dict) or set(data) != {"$ref", "sections"} or not isinstance(data["sections"], list):
             error(path, "ожидается объект с полями $ref и sections (documentation-manifest.md, раздел 3)")
             continue
-        if data["$ref"] != expected[path].name:
-            error(path, f"$ref «{data['$ref']}»: ожидается «{expected[path].name}» — контракт рядом с манифестом")
+        owner = expected[path]
+        if data["$ref"] != owner.name:
+            error(path, f"$ref «{data['$ref']}»: ожидается «{owner.name}» — контракт рядом с манифестом")
+        component = owner.layer == "components"
+        types = COMPONENT_SECTIONS if component else MANIFEST_SECTIONS
+        with_examples = SAMPLE_SECTIONS if component else DEMO_SECTIONS
+        source, other = ("sample", "demo") if component else ("demo", "sample")
         ids = []
         for i, section in enumerate(data["sections"]):
             at = f"sections[{i}]"
-            if not isinstance(section, dict) or section.get("type") not in MANIFEST_SECTIONS:
-                error(path, f"{at}: type из {', '.join(sorted(MANIFEST_SECTIONS))} (раздел 4.2)")
+            if not isinstance(section, dict) or section.get("type") not in types:
+                error(path, f"{at}: type из {', '.join(sorted(types))} (раздел 4.2)")
                 continue
             kind = section["type"]
-            allowed = {"id", "type"} | (set() if kind == "overview" else {"title"}) | ({"examples"} if kind in DEMO_SECTIONS else set())
+            allowed = {"id", "type"} | (set() if kind == "overview" else {"title"}) | ({"examples"} if kind in with_examples else set())
             for extra in sorted(section.keys() - allowed):
                 error(path, f"{at}: поле «{extra}» не допускается в секции {kind} (раздел 4.2)")
             if not isinstance(section.get("id"), str) or not LOWER_CAMEL.fullmatch(section["id"]):
@@ -767,26 +790,34 @@ def check_manifests(registry, manifests, elements):
                 ids.append(section["id"])
             if kind != "overview" and not isinstance(section.get("title"), str):
                 error(path, f"{at}: нет title")
-            if kind not in DEMO_SECTIONS:
+            if kind not in with_examples:
                 continue
             examples = section.get("examples")
             if not isinstance(examples, list) or not examples:
                 error(path, f"{at}: нет примеров examples")
                 continue
+            if kind == "overview" and len(examples) != 1:
+                error(path, f"{at}: в Overview компонента ровно один основной пример (раздел 4.2, правило 6)")
             example_ids = []
             for j, example in enumerate(examples):
                 where = f"{at}.examples[{j}]"
                 if not isinstance(example, dict):
                     error(path, f"{where}: ожидается объект")
                     continue
-                for extra in sorted(example.keys() - {"id", "demo", "caption"}):
-                    error(path, f"{where}: поле «{extra}» не допускается (раздел 5.2)")
+                if other in example:
+                    error(path, f"{where}: {other} не допускается у {'компонента' if component else 'core'}, пример — {source} (раздел 5)")
+                for extra in sorted(example.keys() - {"id", source, other, "caption"}):
+                    error(path, f"{where}: поле «{extra}» не допускается (раздел 5)")
                 if not isinstance(example.get("id"), str) or not LOWER_CAMEL.fullmatch(example["id"]):
                     error(path, f"{where}: id в lowerCamelCase (раздел 4.3)")
                 else:
                     example_ids.append(example["id"])
                 if "caption" in example and not isinstance(example["caption"], str):
                     error(path, f"{where}: caption — строка")
+                if component:
+                    if sample_file(registry, owner, example.get("sample")) is None:
+                        error(path, f"{where}: sample «{example.get('sample')}» — нет примера компонента; min и max не используются (раздел 5.1)")
+                    continue
                 demo = DEMOS / f"{example.get('demo')}.json"
                 if not isinstance(example.get("demo"), str) or demo not in elements:
                     error(path, f"{where}: demo «{example.get('demo')}» — нет файла в {DEMOS.relative_to(ROOT)} (раздел 5.2)")
