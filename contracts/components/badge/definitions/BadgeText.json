@@ -1,0 +1,28 @@
+{
+  "name": "BadgeText",
+  "type": "object",
+  "description": "Текст бейджа в одну строку, без переноса и многоточия: бейдж растёт по тексту",
+  "properties": [
+    {
+      "name": "value",
+      "type": "string",
+      "required": true,
+      "sample": "99+",
+      "description": "Текст: например, «9» или «99+». Сокращение и форматирование чисел выполняет сервер или приложение"
+    },
+    {
+      "name": "typography",
+      "$ref": "foundation/typographyRole/TypographyRole",
+      "required": true,
+      "sample": "labelSmall",
+      "description": "Роль типографики"
+    },
+    {
+      "name": "color",
+      "$ref": "foundation/colorRole/ColorRole",
+      "required": true,
+      "sample": "onError",
+      "description": "Цвет текста: пара к фону, например onError на error"
+    }
+  ]
+}

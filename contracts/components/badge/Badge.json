@@ -1,0 +1,22 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "extends": "core/component/Component",
+  "appearanceContext": [
+    "plain"
+  ],
+  "description": "Метка внимания: форма с текстом, символом или картинкой либо без содержимого. Ширина не меньше высоты: один знак — круг, длинный текст — таблетка",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "properties": [
+    {
+      "name": "content",
+      "$ref": "BadgeContent",
+      "required": false,
+      "description": "Содержимое по центру. Если не задано, бейдж — только фон (точка)"
+    }
+  ]
+}

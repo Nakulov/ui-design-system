@@ -132,7 +132,7 @@ export class Tokens {
 
   /** Идентификатор публичного контракта компонента по имени. */
   component(name: string): Id | undefined {
-    return Object.keys(this.bundle.contracts).find((id) => id.startsWith("schemas/components/") && this.bundle.contracts[id].name === name);
+    return Object.keys(this.bundle.contracts).find((id) => id.startsWith("components/") && this.bundle.contracts[id].name === name);
   }
 }
 

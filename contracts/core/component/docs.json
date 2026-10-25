@@ -1,0 +1,36 @@
+{
+  "$ref": "Component",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview"
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "indicators",
+      "type": "variants",
+      "title": "Indicators",
+      "examples": [
+        {
+          "id": "anchors",
+          "demo": "indicatorAnchors",
+          "caption": "anchor: центр индикатора — в точке угла формы"
+        },
+        {
+          "id": "cutout",
+          "demo": "indicatorCutout",
+          "caption": "gap вырезает носитель вокруг индикатора"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    }
+  ]
+}

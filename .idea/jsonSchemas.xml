@@ -11,355 +11,355 @@
               <option name="patterns">
                 <list>
                   <Item>
-                    <option name="path" value="schemas/components/badge/Badge.json" />
+                    <option name="path" value="contracts/components/badge/Badge.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/badge/BadgeContent.json" />
+                    <option name="path" value="contracts/components/badge/definitions/BadgeContent.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/badge/BadgeText.json" />
+                    <option name="path" value="contracts/components/badge/definitions/BadgeText.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/Container.json" />
+                    <option name="path" value="contracts/components/container/Container.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerArrangement.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerArrangement.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerDistributionMode.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerDistributionMode.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerHorizontal.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerHorizontal.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerHorizontalAlignment.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerHorizontalAlignment.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerHorizontalDistribution.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerHorizontalDistribution.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerHorizontalPacked.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerHorizontalPacked.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerHorizontalWrap.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerHorizontalWrap.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerLineDistribution.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerLineDistribution.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerLinePacked.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerLinePacked.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerOverlay.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerOverlay.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerRowAlignment.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerRowAlignment.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerVertical.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerVertical.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerVerticalAlignment.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerVerticalAlignment.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerVerticalDistribution.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerVerticalDistribution.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerVerticalPacked.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerVerticalPacked.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/container/ContainerVerticalWrap.json" />
+                    <option name="path" value="contracts/components/container/definitions/ContainerVerticalWrap.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/image/Image.json" />
+                    <option name="path" value="contracts/components/image/Image.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/image/ImageAlignment.json" />
+                    <option name="path" value="contracts/components/image/definitions/ImageAlignment.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/image/ImageOrigin.json" />
+                    <option name="path" value="contracts/components/image/definitions/ImageOrigin.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/image/ImageRemote.json" />
+                    <option name="path" value="contracts/components/image/definitions/ImageRemote.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/image/ImageResource.json" />
+                    <option name="path" value="contracts/components/image/definitions/ImageResource.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/image/ImageResourceIcon.json" />
+                    <option name="path" value="contracts/components/image/definitions/ImageResourceIcon.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/image/ImageScale.json" />
+                    <option name="path" value="contracts/components/image/definitions/ImageScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/image/ImageSource.json" />
+                    <option name="path" value="contracts/components/image/definitions/ImageSource.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/Text.json" />
+                    <option name="path" value="contracts/components/text/Text.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextAlignment.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextAlignment.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextColor.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextColor.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextContent.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextContent.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextDecoration.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextDecoration.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextRich.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextRich.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextSpan.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextSpan.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextSpanIcon.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextSpanIcon.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextSpanText.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextSpanText.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/components/text/TextTruncation.json" />
+                    <option name="path" value="contracts/components/text/definitions/TextTruncation.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/Appearance.json" />
+                    <option name="path" value="contracts/core/appearance/Appearance.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/AppearanceControl.json" />
+                    <option name="path" value="contracts/core/appearance/definitions/AppearanceControl.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/AppearanceFill.json" />
+                    <option name="path" value="contracts/core/appearance/definitions/AppearanceFill.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/AppearanceFocusable.json" />
+                    <option name="path" value="contracts/core/appearance/definitions/AppearanceFocusable.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/AppearancePlain.json" />
+                    <option name="path" value="contracts/core/appearance/definitions/AppearancePlain.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/AppearanceSelectable.json" />
+                    <option name="path" value="contracts/core/appearance/definitions/AppearanceSelectable.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/appearance/AppearanceStroke.json" />
+                    <option name="path" value="contracts/core/appearance/definitions/AppearanceStroke.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/component/Component.json" />
+                    <option name="path" value="contracts/core/component/Component.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/component/ComponentIndicator.json" />
+                    <option name="path" value="contracts/core/component/definitions/ComponentIndicator.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/component/ComponentIndicatorAnchor.json" />
+                    <option name="path" value="contracts/core/component/definitions/ComponentIndicatorAnchor.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/event/Event.json" />
+                    <option name="path" value="contracts/core/event/Event.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/event/EventData.json" />
+                    <option name="path" value="contracts/core/event/definitions/EventData.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/Layout.json" />
+                    <option name="path" value="contracts/core/layout/Layout.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutDimension.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutDimension.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPinHorizontal.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPinHorizontal.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPinOffset.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPinOffset.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPinReference.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPinReference.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPinStretchHorizontal.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPinStretchHorizontal.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPinStretchVertical.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPinStretchVertical.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPinVertical.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPinVertical.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPinned.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPinned.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPosition.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPosition.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutPositionMode.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutPositionMode.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutSizing.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutSizing.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/layout/LayoutSizingMode.json" />
+                    <option name="path" value="contracts/core/layout/definitions/LayoutSizingMode.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/padding/Padding.json" />
+                    <option name="path" value="contracts/core/padding/Padding.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/padding/PaddingSides.json" />
+                    <option name="path" value="contracts/core/padding/definitions/PaddingSides.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/core/padding/PaddingSymmetric.json" />
+                    <option name="path" value="contracts/core/padding/definitions/PaddingSymmetric.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/borderWidth/BorderWidth.json" />
+                    <option name="path" value="contracts/foundation/borderWidth/BorderWidth.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/borderWidth/BorderWidthCustom.json" />
+                    <option name="path" value="contracts/foundation/borderWidth/definitions/BorderWidthCustom.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/borderWidth/BorderWidthScale.json" />
+                    <option name="path" value="contracts/foundation/borderWidth/definitions/BorderWidthScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/colorRole/ColorRole.json" />
+                    <option name="path" value="contracts/foundation/colorRole/ColorRole.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/colorRole/ColorRoleScale.json" />
+                    <option name="path" value="contracts/foundation/colorRole/definitions/ColorRoleScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/cornerRadius/CornerRadius.json" />
+                    <option name="path" value="contracts/foundation/cornerRadius/CornerRadius.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/cornerRadius/CornerRadiusScale.json" />
+                    <option name="path" value="contracts/foundation/cornerRadius/definitions/CornerRadiusScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/elevation/Elevation.json" />
+                    <option name="path" value="contracts/foundation/elevation/Elevation.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/elevation/ElevationScale.json" />
+                    <option name="path" value="contracts/foundation/elevation/definitions/ElevationScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/elevation/ElevationStyle.json" />
+                    <option name="path" value="contracts/foundation/elevation/definitions/ElevationStyle.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/icon/Icon.json" />
+                    <option name="path" value="contracts/foundation/icon/Icon.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/icon/IconScale.json" />
+                    <option name="path" value="contracts/foundation/icon/definitions/IconScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/icon/IconValue.json" />
+                    <option name="path" value="contracts/foundation/icon/definitions/IconValue.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/size/Size.json" />
+                    <option name="path" value="contracts/foundation/size/Size.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/size/SizeCustom.json" />
+                    <option name="path" value="contracts/foundation/size/definitions/SizeCustom.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/size/SizeScale.json" />
+                    <option name="path" value="contracts/foundation/size/definitions/SizeScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/spacing/Spacing.json" />
+                    <option name="path" value="contracts/foundation/spacing/Spacing.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/spacing/SpacingCustom.json" />
+                    <option name="path" value="contracts/foundation/spacing/definitions/SpacingCustom.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/spacing/SpacingScale.json" />
+                    <option name="path" value="contracts/foundation/spacing/definitions/SpacingScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/typographyRole/TypographyRole.json" />
+                    <option name="path" value="contracts/foundation/typographyRole/TypographyRole.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/typographyRole/TypographyRoleScale.json" />
+                    <option name="path" value="contracts/foundation/typographyRole/definitions/TypographyRoleScale.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
-                    <option name="path" value="schemas/foundation/typographyRole/TypographyStyle.json" />
+                    <option name="path" value="contracts/foundation/typographyRole/definitions/TypographyStyle.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
@@ -405,7 +405,7 @@
                 <list>
                   <Item>
                     <option name="pattern" value="true" />
-                    <option name="path" value="*.changelog.json" />
+                    <option name="path" value="changelog.json" />
                     <option name="mappingKind" value="Pattern" />
                   </Item>
                 </list>

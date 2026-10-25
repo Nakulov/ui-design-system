@@ -1,6 +1,6 @@
 {
-  "$ref": "../../schemas/foundation/elevation/Elevation",
-  "valueType": { "$ref": "../../schemas/foundation/elevation/ElevationStyle" },
+  "$ref": "foundation/elevation/Elevation",
+  "valueType": { "$ref": "foundation/elevation/ElevationStyle" },
   "modes": [
     {
       "name": "light",

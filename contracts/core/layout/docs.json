@@ -1,0 +1,63 @@
+{
+  "$ref": "Layout",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview"
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "sizing",
+      "type": "layoutBehavior",
+      "title": "Sizing",
+      "examples": [
+        {
+          "id": "widthSizing",
+          "demo": "widthSizing",
+          "caption": "hug, fill и fixed xl3 по ширине одного родителя"
+        },
+        {
+          "id": "minMax",
+          "demo": "minMax",
+          "caption": "min расширяет короткое содержимое, max ограничивает длинное"
+        }
+      ]
+    },
+    {
+      "id": "position",
+      "type": "layoutBehavior",
+      "title": "Position",
+      "examples": [
+        {
+          "id": "pinnedCorners",
+          "demo": "pinnedCorners",
+          "caption": "pinned по углам со смещением s"
+        },
+        {
+          "id": "pinnedStretch",
+          "demo": "pinnedStretch",
+          "caption": "stretch по ширине с отступами s"
+        },
+        {
+          "id": "pinnedEdge",
+          "demo": "pinnedEdge",
+          "caption": "relativeTo edge: от края родителя"
+        },
+        {
+          "id": "pinnedContent",
+          "demo": "pinnedContent",
+          "caption": "relativeTo content: от области внутри отступов"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    }
+  ]
+}

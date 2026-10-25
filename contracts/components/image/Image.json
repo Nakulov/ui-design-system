@@ -1,0 +1,23 @@
+{
+  "name": "Image",
+  "type": "object",
+  "extends": "core/component/Component",
+  "appearanceContext": [
+    "plain",
+    "control"
+  ],
+  "description": "Изображение: символ из словаря темы или картинка, загружаемая по адресу",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "properties": [
+    {
+      "name": "source",
+      "$ref": "ImageSource",
+      "required": true,
+      "description": "Что показать: ресурс, доступный сразу, или картинку, которая загружается"
+    }
+  ]
+}

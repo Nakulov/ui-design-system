@@ -1,12 +1,13 @@
 // Страницы документации: описание системы, страницы foundation, core и компонентов (figma-documentation.md, разделы 3, 5).
 import type { Bundle, Contract, Element, Id, ManifestExample, ManifestSection } from "./bundle";
-import { mark, ref } from "./ids";
+import { isMain, mark, ref } from "./ids";
 import { Renderer, Tokens } from "./render";
 import { Report } from "./report";
 import { fill } from "./samples";
 
 const ELEMENTS = "figma/documentation/elements/";
-const PREVIEWS = "figma/documentation/previews/";
+/** Превью величин foundation лежит в сущности: `foundation/spacing/preview` (bundle-format.md, раздел 3.7). */
+const PREVIEW = "preview";
 const OVERVIEW = "docs/overview";
 const USAGE = "Рекомендации по использованию";
 const GAP = 120;
@@ -71,14 +72,14 @@ export class DocumentationBuilder {
     this.tokens = await Tokens.load(this.bundle);
     await figma.loadAllPagesAsync();
     const foundation = Object.entries(this.bundle.contracts)
-      .filter(([id]) => id.startsWith("schemas/foundation/") && id.split("/").length === 4 && this.bundle.values[id])
+      .filter(([id]) => id.startsWith("foundation/") && isMain(id) && this.bundle.values[id])
       .sort(([, a], [, b]) => a.name.localeCompare(b.name));
     // Страницы core и компонентов — у сущностей с манифестом (documentation-manifest.md, раздел 2).
     const manifested = (layer: string) => Object.entries(this.bundle.contracts)
       .filter(([id]) => id.startsWith(layer) && this.bundle.manifests[id])
       .sort(([, a], [, b]) => a.name.localeCompare(b.name));
-    const core = manifested("schemas/core/");
-    const components = manifested("schemas/components/");
+    const core = manifested("core/");
+    const components = manifested("components/");
     const overview = await this.page((p) => ref(p, "role") === "overview", "Overview", (p) => mark(p, "overview", "role"));
     await this.draw(overview, "overview", this.overview(foundation.map(([id]) => id), core.map(([id]) => id), components.map(([id]) => id)));
     const pages = async (entities: [Id, Contract][], build: (id: Id) => Model) => {
@@ -229,7 +230,7 @@ export class DocumentationBuilder {
   private entity(id: Id): Model {
     const contract = this.bundle.contracts[id];
     const values = this.bundle.values[id];
-    const preview = `${PREVIEWS}${id.split("/")[2]}`;
+    const preview = `${id.split("/").slice(0, 2).join("/")}/${PREVIEW}`;
     const rows = Object.keys(values.modes[0].values).map((name) => this.element(`${ELEMENTS}valueRow`, {
       name, value: this.value(values.modes.map((mode) => mode.values[name])), sample: this.element(preview, { value: name }),
     }));

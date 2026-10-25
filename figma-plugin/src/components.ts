@@ -61,7 +61,7 @@ export class ComponentsBuilder {
     return page;
   }
 
-  /** Figma-компоненты по `<Имя>.figma.json` компонентов; `iconSample` даёт `text/icon` (раздел 10.5). */
+  /** Figma-компоненты по `figma.json` компонентов; `iconSample` даёт `text/icon` (раздел 10.5). */
   private targets(): Target[] {
     const result: Target[] = [];
     for (const [id, data] of Object.entries(this.bundle.figma)) {

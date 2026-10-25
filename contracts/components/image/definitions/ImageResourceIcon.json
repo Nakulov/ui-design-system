@@ -1,0 +1,20 @@
+{
+  "name": "ImageResourceIcon",
+  "type": "object",
+  "description": "Символ из словаря темы, окрашенный ролью цвета",
+  "properties": [
+    {
+      "name": "name",
+      "$ref": "foundation/icon/Icon",
+      "required": true,
+      "description": "Символ"
+    },
+    {
+      "name": "color",
+      "$ref": "foundation/colorRole/ColorRole",
+      "required": true,
+      "sample": "onSurfaceMuted",
+      "description": "Цвет символа"
+    }
+  ]
+}

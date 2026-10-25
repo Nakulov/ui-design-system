@@ -1,0 +1,46 @@
+{
+  "$ref": "Appearance",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview"
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "states",
+      "type": "states",
+      "title": "States",
+      "examples": [
+        {
+          "id": "plainFields",
+          "demo": "plainFields",
+          "caption": "plain: поля оформления"
+        },
+        {
+          "id": "controlStates",
+          "demo": "controlStates",
+          "caption": "control: default, pressed, disabled"
+        },
+        {
+          "id": "selectableStates",
+          "demo": "selectableStates",
+          "caption": "selectable: unselected и selected, в каждом — состояния control"
+        },
+        {
+          "id": "focusableStates",
+          "demo": "focusableStates",
+          "caption": "focusable: default, focused, disabled"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    }
+  ]
+}

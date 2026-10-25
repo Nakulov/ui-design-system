@@ -13,16 +13,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-from contracts import DEMOS, ELEMENTS, PREVIEWS, ROOT, SCHEMAS, THEMES, is_sample, is_skipped, load_registry, pascal, ref_path
+from contracts import CONTRACTS, DEMOS, ELEMENTS, PREVIEW, ROOT, THEMES, element_id, load_registry, ref_id
 
 THEME = "default"
-ICON = "schemas/foundation/icon/Icon"
+ICON = "foundation/icon/Icon"
 SECTION_RE = re.compile(r"^## (.+)$", re.M)
-
-
-def ident(path):
-    """Идентификатор сущности: путь от корня репозитория без .json (раздел 2)."""
-    return path.relative_to(ROOT).with_suffix("").as_posix()
 
 
 def rewrite_refs(node, file):
@@ -34,7 +29,7 @@ def rewrite_refs(node, file):
     result = {}
     for key, value in node.items():
         if key in ("$ref", "extends") and isinstance(value, str):
-            result[key] = ident(ref_path(file, value))
+            result[key] = ref_id(file, value)
         else:
             result[key] = rewrite_refs(value, file)
     return result
@@ -43,7 +38,7 @@ def rewrite_refs(node, file):
 def value(node, file, theme_dir):
     """Величина файла значений: алиас — ссылкой, пути ресурсов — от корня репозитория (раздел 3.2)."""
     if isinstance(node, dict) and "$ref" in node and "value" in node:
-        return {"alias": f"{ident(ref_path(file, node['$ref']))}#{node['value']}"}
+        return {"alias": f"{ref_id(file, node['$ref'])}#{node['value']}"}
     if isinstance(node, dict):
         return {key: ((theme_dir / item).relative_to(ROOT).as_posix() if key == "source" else item)
                 for key, item in node.items()}
@@ -55,8 +50,8 @@ def collect_values(theme_dir):
     for file in sorted(theme_dir.glob("*.values.json")):
         data = json.loads(file.read_text())
         kind = data["valueType"]
-        result[ident(ref_path(file, data["$ref"]))] = {
-            "valueType": kind if isinstance(kind, str) else {"$ref": ident(ref_path(file, kind["$ref"]))},
+        result[ref_id(file, data["$ref"])] = {
+            "valueType": kind if isinstance(kind, str) else {"$ref": ref_id(file, kind["$ref"])},
             "modes": [{"name": mode["name"], "values": {k: value(v, file, theme_dir) for k, v in mode["values"].items()}}
                       for mode in data["modes"]],
         }
@@ -64,21 +59,18 @@ def collect_values(theme_dir):
 
 
 def collect_figma():
-    """Файлы <Имя>.figma.json по идентификатору контракта, без $ref (раздел 3.6)."""
+    """Файлы figma.json по идентификатору контракта, без $ref (раздел 3.6)."""
     result = {}
-    for file in sorted(SCHEMAS.rglob("*.figma.json")):
+    for file in sorted(CONTRACTS.glob("*/*/figma.json")):
         data = json.loads(file.read_text())
-        result[ident(ref_path(file, data["$ref"]))] = rewrite_refs({k: v for k, v in data.items() if k != "$ref"}, file)
+        result[ref_id(file, data["$ref"])] = rewrite_refs({k: v for k, v in data.items() if k != "$ref"}, file)
     return result
 
 
 def collect_samples(registry):
     result = {}
-    for file in sorted(SCHEMAS.rglob("samples/*.json")):
-        if is_skipped(file) or not is_sample(file):
-            continue
-        entity = file.parent.parent
-        owner = registry.by_path.get(entity / f"{pascal(entity.name)}.json")
+    for file in sorted(CONTRACTS.glob("*/*/samples/*.json")):
+        owner = registry.by_entity.get(file.parent.parent)
         if owner is not None:
             result[f"{owner.id}#{file.stem}"] = json.loads(file.read_text())
     return result
@@ -101,8 +93,8 @@ def sections(readme):
 
 def collect_texts(registry):
     result = {}
-    for readme in sorted(SCHEMAS.glob("*/*/README.md")):
-        owner = registry.by_path.get(readme.parent / f"{pascal(readme.parent.name)}.json")
+    for readme in sorted(CONTRACTS.glob("*/*/README.md")):
+        owner = registry.by_entity.get(readme.parent)
         if owner is not None:
             result[owner.id] = sections(readme)
     result["docs/overview"] = sections(ROOT / "docs" / "overview.md")
@@ -111,14 +103,14 @@ def collect_texts(registry):
 
 def collect_documentation():
     """Элементы оформления документации, превью величин и демонстрации по пути без .json (раздел 3.7)."""
-    files = sorted([*ELEMENTS.glob("*.json"), *PREVIEWS.glob("*.json"), *DEMOS.glob("*/*.json")])
-    return {ident(file): json.loads(file.read_text()) for file in files}
+    files = sorted([*ELEMENTS.glob("*.json"), *CONTRACTS.glob(f"*/*/{PREVIEW}"), *CONTRACTS.glob(f"*/*/{DEMOS}/*.json")])
+    return {element_id(file): json.loads(file.read_text()) for file in files}
 
 
 def example_source(registry, owner, example):
     """demo — идентификатор демонстрации, sample — ключ примера в samples (раздел 3.8, правило 2)."""
     if "demo" in example:
-        return {**example, "demo": ident(DEMOS / example["demo"])}
+        return {**example, "demo": element_id(owner.entity / DEMOS / f"{example['demo']}.json")}
     contract, _, name = example["sample"].rpartition("#")
     if contract:
         owner = next(c for c in registry if c.kind == "public" and c.layer == "components" and c.name == contract)
@@ -128,9 +120,9 @@ def example_source(registry, owner, example):
 def collect_manifests(registry):
     """Манифесты документации по идентификатору контракта; примеры — идентификаторами (раздел 3.8)."""
     result = {}
-    for file in sorted(SCHEMAS.glob("*/*/*.docs.json")):
+    for file in sorted(CONTRACTS.glob("*/*/docs.json")):
         data = json.loads(file.read_text())
-        owner = registry.by_path[ref_path(file, data["$ref"])]
+        owner = registry.by_id[ref_id(file, data["$ref"])]
         result[owner.id] = {"sections": [
             {**section, "examples": [example_source(registry, owner, example) for example in section["examples"]]}
             if "examples" in section else section

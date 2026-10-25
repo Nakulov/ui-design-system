@@ -1,0 +1,20 @@
+{
+  "name": "AppearanceStroke",
+  "type": "object",
+  "description": "Обводка внутри границ компонента: не меняет его размер",
+  "properties": [
+    {
+      "name": "width",
+      "$ref": "foundation/borderWidth/BorderWidth",
+      "required": true,
+      "description": "Толщина обводки"
+    },
+    {
+      "name": "color",
+      "$ref": "foundation/colorRole/ColorRole",
+      "required": true,
+      "sample": "outline",
+      "description": "Цвет обводки"
+    }
+  ]
+}

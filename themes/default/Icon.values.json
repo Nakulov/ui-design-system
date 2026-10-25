@@ -1,6 +1,6 @@
 {
-  "$ref": "../../schemas/foundation/icon/Icon",
-  "valueType": { "$ref": "../../schemas/foundation/icon/IconValue" },
+  "$ref": "foundation/icon/Icon",
+  "valueType": { "$ref": "foundation/icon/IconValue" },
   "modes": [
     {
       "name": "default",

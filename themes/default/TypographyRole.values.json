@@ -1,6 +1,6 @@
 {
-  "$ref": "../../schemas/foundation/typographyRole/TypographyRole",
-  "valueType": { "$ref": "../../schemas/foundation/typographyRole/TypographyStyle" },
+  "$ref": "foundation/typographyRole/TypographyRole",
+  "valueType": { "$ref": "foundation/typographyRole/TypographyStyle" },
   "modes": [
     {
       "name": "default",

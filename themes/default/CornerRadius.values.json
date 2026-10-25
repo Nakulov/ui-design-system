@@ -1,5 +1,5 @@
 {
-  "$ref": "../../schemas/foundation/cornerRadius/CornerRadius",
+  "$ref": "foundation/cornerRadius/CornerRadius",
   "valueType": "integer",
   "modes": [
     {

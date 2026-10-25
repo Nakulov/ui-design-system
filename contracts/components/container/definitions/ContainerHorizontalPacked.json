@@ -1,0 +1,19 @@
+{
+  "name": "ContainerHorizontalPacked",
+  "type": "object",
+  "description": "Дети собраны вместе с заданным промежутком",
+  "properties": [
+    {
+      "name": "gap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "description": "Промежуток между соседними детьми"
+    },
+    {
+      "name": "position",
+      "$ref": "ContainerHorizontalAlignment",
+      "required": true,
+      "description": "Положение группы детей по горизонтали"
+    }
+  ]
+}
