@@ -1,0 +1,36 @@
+{
+  "holes": {
+    "value": {
+      "kind": "text",
+      "sample": "bodyMedium"
+    }
+  },
+  "model": {
+    "Text": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "zero"
+      },
+      "appearance": {
+        "plain": {}
+      },
+      "content": {
+        "plain": "Съешь же ещё этих мягких булок"
+      },
+      "typography": "$value",
+      "color": {
+        "solid": "onSurface"
+      },
+      "alignment": "start",
+      "maxLines": 1
+    }
+  }
+}

@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCHEMAS = ROOT / "schemas"
 THEMES = ROOT / "themes"
 ELEMENTS = ROOT / "figma" / "documentation" / "elements"  # элементы оформления документации (figma-documentation.md, раздел 5)
+PREVIEWS = ROOT / "figma" / "documentation" / "previews"  # превью величин foundation (figma-documentation.md, раздел 5)
 COMPONENT = "schemas/core/component/Component"
 APPEARANCE = "schemas/core/appearance/Appearance"
 SKIPPED = {"build", "figma-plugin"}  # верхние каталоги без контрактов
@@ -36,7 +37,8 @@ def is_sample(path):
 
 
 def is_element(path):
-    return path.parent == ELEMENTS
+    """Шаблон-модель документации: элемент оформления или превью величин."""
+    return path.parent in (ELEMENTS, PREVIEWS)
 
 
 HOLE_KINDS = {"text", "spans", "component", "items"}

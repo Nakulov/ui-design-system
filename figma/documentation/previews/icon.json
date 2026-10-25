@@ -1,0 +1,35 @@
+{
+  "holes": {
+    "value": {
+      "kind": "text",
+      "sample": "check"
+    }
+  },
+  "model": {
+    "Image": {
+      "layout": {
+        "width": {
+          "sizing": "hug"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "zero"
+      },
+      "appearance": {
+        "plain": {}
+      },
+      "source": {
+        "resource": {
+          "icon": {
+            "name": "$value",
+            "color": "onSurface"
+          }
+        }
+      }
+    }
+  }
+}
