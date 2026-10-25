@@ -1,0 +1,238 @@
+{
+  "holes": {
+    "name": {
+      "kind": "text",
+      "sample": "layout"
+    },
+    "type": {
+      "kind": "text",
+      "sample": "Layout"
+    },
+    "description": {
+      "kind": "text",
+      "sample": "Размеры и положение компонента внутри родителя"
+    },
+    "platforms": {
+      "kind": "text",
+      "sample": "Android · iOS · Figma"
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "symmetric": {
+          "horizontal": "m",
+          "vertical": "s"
+        }
+      },
+      "appearance": {
+        "plain": {
+          "background": {
+            "solid": "surface"
+          },
+          "cornerRadius": "xs"
+        }
+      },
+      "arrangement": {
+        "horizontal": {
+          "alignment": "top",
+          "distribution": {
+            "packed": {
+              "gap": "m",
+              "position": "start"
+            }
+          }
+        }
+      },
+      "children": [
+        {
+          "Container": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": {
+                    "custom": {
+                      "value": 200
+                    }
+                  }
+                }
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "arrangement": {
+              "vertical": {
+                "alignment": "start",
+                "distribution": {
+                  "packed": {
+                    "gap": "xs",
+                    "position": "top"
+                  }
+                }
+              }
+            },
+            "children": [
+              {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "$name"
+                  },
+                  "typography": "code",
+                  "color": {
+                    "solid": "onSurface"
+                  },
+                  "alignment": "start"
+                }
+              },
+              {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "$type"
+                  },
+                  "typography": "code",
+                  "color": {
+                    "solid": "onSurfaceMuted"
+                  },
+                  "alignment": "start"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Container": {
+            "layout": {
+              "width": {
+                "sizing": "fill"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "arrangement": {
+              "vertical": {
+                "alignment": "start",
+                "distribution": {
+                  "packed": {
+                    "gap": "xs",
+                    "position": "top"
+                  }
+                }
+              }
+            },
+            "children": [
+              {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "$description"
+                  },
+                  "typography": "bodySmall",
+                  "color": {
+                    "solid": "onSurface"
+                  },
+                  "alignment": "start"
+                }
+              },
+              {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "hug"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "$platforms"
+                  },
+                  "typography": "caption",
+                  "color": {
+                    "solid": "onSurfaceMuted"
+                  },
+                  "alignment": "start"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

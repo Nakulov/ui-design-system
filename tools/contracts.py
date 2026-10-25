@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMAS = ROOT / "schemas"
 THEMES = ROOT / "themes"
+ELEMENTS = ROOT / "figma" / "documentation" / "elements"  # элементы оформления документации (figma-documentation.md, раздел 5)
 COMPONENT = "schemas/core/component/Component"
 APPEARANCE = "schemas/core/appearance/Appearance"
 SKIPPED = {"build", "figma-plugin"}  # верхние каталоги без контрактов
@@ -34,6 +35,29 @@ def is_sample(path):
     return path.parent.name == "samples"
 
 
+def is_element(path):
+    return path.parent == ELEMENTS
+
+
+HOLE_KINDS = {"text", "spans", "component", "items"}
+
+
+def fill(node, values):
+    """Модель элемента с подставленными дырками `$имя`; дырка `items` в массиве разворачивается в его элементы."""
+    if isinstance(node, str) and node.startswith("$") and node[1:] in values:
+        return values[node[1:]]
+    if isinstance(node, list):
+        result = []
+        for item in node:
+            filled = fill(item, values)
+            spread = isinstance(item, str) and item.startswith("$") and isinstance(filled, list)
+            result.extend(filled) if spread else result.append(filled)
+        return result
+    if isinstance(node, dict):
+        return {key: fill(item, values) for key, item in node.items()}
+    return node
+
+
 def is_skipped(path):
     """Не файлы репозитория контрактов: скрытые каталоги, производный build/ и плагин со своими JSON (npm, manifest)."""
     parts = path.relative_to(ROOT).parts
@@ -42,7 +66,7 @@ def is_skipped(path):
 
 def load_registry():
     """Контракты репозитория без проверки структуры — для инструментов, работающих с проверенным репозиторием."""
-    paths = [p for p in sorted(ROOT.rglob("*.json")) if is_contract(p) and not is_skipped(p)
+    paths = [p for p in sorted(ROOT.rglob("*.json")) if is_contract(p) and not is_skipped(p) and not is_element(p)
              and not p.relative_to(ROOT).parts[0] == "specifications"]
     return Registry([Contract(p, json.loads(p.read_text())) for p in paths])
 

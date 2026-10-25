@@ -20,8 +20,8 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, COMPONENT, ROOT, SCHEMAS, THEMES, Contract, Registry, is_contract, is_sample,
-                       is_skipped, pascal, ref_path)
+from contracts import (APPEARANCE, COMPONENT, HOLE_KINDS, ROOT, SCHEMAS, THEMES, Contract, Registry, fill, is_contract,
+                       is_element, is_sample, is_skipped, pascal, ref_path)
 import idea
 from samples import dumps, generate, render, required_samples
 
@@ -657,6 +657,38 @@ def check_figma_components(registry, figma):
                             f"figma: willNotBeReleased (раздел 4.1, правило 3)")
 
 
+def check_elements(registry, elements):
+    """Элементы оформления документации: шаблон-модель с дырками (figma-documentation.md, раздел 5)."""
+    kind = registry.by_id.get(COMPONENT)
+    for path, data in elements.items():
+        if not LOWER_CAMEL.fullmatch(path.stem):
+            error(path, "имя элемента не в lowerCamelCase")
+        if not isinstance(data, dict) or set(data) != {"holes", "model"} or not isinstance(data["holes"], dict):
+            error(path, "ожидается объект с полями holes и model (figma-documentation.md, раздел 5)")
+            continue
+        if path.read_text() != dumps(data):
+            mismatch(path, path.read_text(), dumps(data), "формат не канонический: отступ 2, каждое поле на своей строке")
+        samples = {}
+        for name, hole in data["holes"].items():
+            if not isinstance(hole, dict) or hole.get("kind") not in HOLE_KINDS or "sample" not in hole:
+                error(path, f"дырка «{name}»: kind из {', '.join(sorted(HOLE_KINDS))} и sample")
+                continue
+            expected = {"text": str, "spans": list, "component": dict, "items": list}[hole["kind"]]
+            if not isinstance(hole["sample"], expected):
+                error(path, f"дырка «{name}»: sample не подходит к kind {hole['kind']}")
+                continue
+            samples[name] = hole["sample"]
+        used = set(re.findall(r'"\$([A-Za-z0-9]+)"', json.dumps(data["model"], ensure_ascii=False)))
+        for name in sorted(used - data["holes"].keys()):
+            error(path, f"дырка «${name}» не объявлена в holes")
+        for name in sorted(data["holes"].keys() - used):
+            error(path, f"дырка «{name}» не используется в model")
+        if used - samples.keys():
+            continue
+        for problem in registry.value_errors(fill(data["model"], samples), kind, "модель"):
+            error(path, f"с подставленными sample: {problem}")
+
+
 # Версии спецификаций (раздел 11.3).
 
 def check_spec_versions():
@@ -691,7 +723,7 @@ def main():
     parser.add_argument("--base", help="git ref, с которым сравниваются спецификации")
     args = parser.parse_args()
 
-    contracts, values, figma, referenced = [], {}, {}, set()
+    contracts, values, figma, elements, referenced = [], {}, {}, {}, set()
     for path in json_files():
         try:
             data = json.loads(path.read_text())
@@ -699,6 +731,9 @@ def main():
             error(path, f"некорректный JSON: {e}")
             continue
         if path.name.endswith(".schema.json") or is_sample(path):
+            continue
+        if is_element(path):
+            elements[path] = data
             continue
         check_refs(path, data)
         referenced.update(refs(path, data))
@@ -724,6 +759,7 @@ def main():
     check_themes(registry, values)
     check_figma_foundation(registry, values, figma)
     check_figma_components(registry, figma)
+    check_elements(registry, elements)
     check_samples(registry)
     check_idea(registry)
 

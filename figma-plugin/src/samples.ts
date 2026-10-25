@@ -1,14 +1,31 @@
 // Страница Samples: отрисовка примеров моделей компонентов для проверки ядра отрисовки (figma-mapping.md, раздел 10).
-import type { Bundle, Id } from "./bundle";
+import type { Bundle, Element, Id } from "./bundle";
 import { COLOR, mark, ref } from "./ids";
 import { Renderer, Tokens } from "./render";
 import { Report } from "./report";
 
 const ROLE = "samples";
 const CARD_WIDTH = 360;
+/** Элементы документации растягиваются по ширине страницы: карточки шире. */
+const DOCUMENTATION_CARD_WIDTH = 600;
+const CARD_PADDING = 16;
 const LABEL_FONT: FontName = { family: "Inter", style: "Regular" };
 /** Примеры, сгенерированные из контракта (schema-format.md, раздел 11.1): проверяют ветки ядра, а не вид. */
 const GENERATED = ["min", "max"];
+/** Строка элементов оформления документации (figma-documentation.md, раздел 5). */
+const DOCUMENTATION = "figma/documentation/elements";
+
+/** Строка страницы: идентификатор, имя и карточки — ключ, подпись, модель. */
+type Row = { id: Id; name: string; cards: [string, string, unknown][] };
+
+/** Модель элемента с подставленными дырками; дырка-список внутри массива разворачивается. */
+export function fill(node: unknown, values: Record<string, unknown>): unknown {
+  const hole = (item: unknown) => typeof item === "string" && item.startsWith("$") && item.slice(1) in values;
+  if (hole(node)) return values[(node as string).slice(1)];
+  if (Array.isArray(node)) return node.flatMap((item) => (hole(item) && Array.isArray(fill(item, values)) ? fill(item, values) as unknown[] : [fill(item, values)]));
+  if (typeof node === "object" && node !== null) return Object.fromEntries(Object.entries(node).map(([k, v]) => [k, fill(v, values)]));
+  return node;
+}
 
 function autoLayout(frame: FrameNode, mode: "HORIZONTAL" | "VERTICAL", spacing: number) {
   frame.layoutMode = mode;
@@ -34,25 +51,36 @@ export class SamplesBuilder {
     const page = await this.page();
     const root = this.root(page);
     // Примеры публичных контрактов компонентов; примеры core — фрагменты модели и не рисуются.
-    const groups = new Map<Id, [string, unknown][]>();
+    const groups = new Map<Id, Row>();
     for (const [key, model] of Object.entries(this.bundle.samples)) {
       const contract = key.split("#")[0];
       if (!contract.startsWith("schemas/components/")) continue;
-      groups.set(contract, [...(groups.get(contract) ?? []), [key, model]]);
+      const name = this.bundle.contracts[contract].name;
+      const row = groups.get(contract) ?? { id: contract, name, cards: [] };
+      row.cards.push([key, `${name}#${key.split("#")[1]}`, model]);
+      groups.set(contract, row);
     }
+    const elements = Object.entries(this.bundle.documentation ?? {});
+    const documentation: Row = {
+      id: DOCUMENTATION, name: "Documentation",
+      cards: elements.map(([key, element]: [string, Element]) => [key, `Documentation#${key.split("/").pop()}`,
+        fill(element.model, Object.fromEntries(Object.entries(element.holes).map(([name, hole]) => [name, hole.sample])))]),
+    };
+    const ordered = [...groups.values()].sort((a, b) => a.id.localeCompare(b.id));
+    if (documentation.cards.length) ordered.push(documentation);
     const rows = new Map(root.children.filter((n): n is FrameNode => n.type === "FRAME").map((n) => [ref(n), n]));
-    for (const [contract, samples] of [...groups].sort(([a], [b]) => a.localeCompare(b))) {
-      let row = rows.get(contract);
-      rows.delete(contract);
+    for (const group of ordered) {
+      let row = rows.get(group.id);
+      rows.delete(group.id);
       if (!row) {
         row = figma.createFrame();
-        mark(row, contract);
+        mark(row, group.id);
       }
       root.appendChild(row);
-      row.name = this.bundle.contracts[contract].name;
+      row.name = group.name;
       autoLayout(row, "HORIZONTAL", 24);
       row.counterAxisAlignItems = "MIN";
-      await this.cards(row, samples, tokens);
+      await this.cards(row, group.cards, tokens);
     }
     for (const row of rows.values()) {
       for (const card of row.children) if (ref(card)) this.report.deleted("примеры");
@@ -86,12 +114,11 @@ export class SamplesBuilder {
   }
 
   /** Карточки примеров: подпись `<Компонент>#<пример>` и отрисованная модель. */
-  private async cards(row: FrameNode, samples: [string, unknown][], tokens: Tokens) {
+  private async cards(row: FrameNode, samples: [string, string, unknown][], tokens: Tokens) {
     const cards = new Map(row.children.filter((n): n is FrameNode => n.type === "FRAME").map((n) => [ref(n), n]));
-    for (const [key, model] of samples) {
+    for (const [key, label, model] of samples) {
       let card = cards.get(key);
       cards.delete(key);
-      const label = `${this.bundle.contracts[key.split("#")[0]].name}#${key.split("#")[1]}`;
       if (card) this.report.updated("примеры");
       else {
         card = figma.createFrame();
@@ -103,8 +130,12 @@ export class SamplesBuilder {
       autoLayout(card, "VERTICAL", 12);
       card.primaryAxisSizingMode = "AUTO";
       card.counterAxisSizingMode = "FIXED";
-      card.resize(CARD_WIDTH, card.height);
-      card.paddingLeft = card.paddingRight = card.paddingTop = card.paddingBottom = 16;
+      // Корень с фиксированной шириной больше карточки (например, страница документации) расширяет карточку.
+      const width = (Object.values(model as Record<string, { layout?: { width?: { sizing?: { fixed?: { custom?: { value?: number } } } } } }>)[0]
+        ?.layout?.width?.sizing as { fixed?: { custom?: { value?: number } } } | undefined)?.fixed?.custom?.value ?? 0;
+      const base = row.name === "Documentation" ? DOCUMENTATION_CARD_WIDTH : CARD_WIDTH;
+      card.resize(Math.max(base, width + 2 * CARD_PADDING), card.height);
+      card.paddingLeft = card.paddingRight = card.paddingTop = card.paddingBottom = CARD_PADDING;
       card.cornerRadius = 8;
       card.fills = [this.paint(tokens, "background")];
       card.strokes = [this.paint(tokens, "outline")];

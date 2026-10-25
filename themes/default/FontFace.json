@@ -5,6 +5,7 @@
   "values": [
     { "name": "interRegular", "description": "Inter, вес 400" },
     { "name": "interMedium", "description": "Inter, вес 500" },
-    { "name": "interBold", "description": "Inter, вес 700" }
+    { "name": "interBold", "description": "Inter, вес 700" },
+    { "name": "jetBrainsMonoRegular", "description": "JetBrains Mono, вес 400" }
   ]
 }
