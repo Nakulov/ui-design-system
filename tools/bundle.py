@@ -13,7 +13,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from contracts import ELEMENTS, ROOT, SCHEMAS, THEMES, is_sample, is_skipped, load_registry, pascal, ref_path
+from contracts import ELEMENTS, PREVIEWS, ROOT, SCHEMAS, THEMES, is_sample, is_skipped, load_registry, pascal, ref_path
 
 THEME = "default"
 ICON = "schemas/foundation/icon/Icon"
@@ -105,12 +105,14 @@ def collect_texts(registry):
         owner = registry.by_path.get(readme.parent / f"{pascal(readme.parent.name)}.json")
         if owner is not None:
             result[owner.id] = sections(readme)
+    result["docs/overview"] = sections(ROOT / "docs" / "overview.md")
     return result
 
 
 def collect_documentation():
-    """Элементы оформления документации по пути без .json (раздел 3.7)."""
-    return {ident(file): json.loads(file.read_text()) for file in sorted(ELEMENTS.glob("*.json"))}
+    """Элементы оформления документации и превью величин по пути без .json (раздел 3.7)."""
+    files = sorted([*ELEMENTS.glob("*.json"), *PREVIEWS.glob("*.json")])
+    return {ident(file): json.loads(file.read_text()) for file in files}
 
 
 def dangling(bundle):

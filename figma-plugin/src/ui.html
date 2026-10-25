@@ -6,7 +6,7 @@
   body { margin: 0; padding: 12px; font: 12px/16px Inter, system-ui, sans-serif; color: var(--figma-color-text); background: var(--figma-color-bg); }
   h1 { margin: 0 0 8px; font-size: 13px; font-weight: 600; }
   p { margin: 0 0 12px; color: var(--figma-color-text-secondary); }
-  .actions { display: flex; gap: 8px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
   button:disabled { opacity: 0.4; cursor: default; }
   h2 { margin: 16px 0 4px; font-size: 12px; font-weight: 600; }
   ul { margin: 8px 0 0; padding-left: 16px; color: var(--figma-color-text-warning); }
@@ -28,6 +28,7 @@
     <button id="foundation" disabled>Построить foundation</button>
     <button id="components" disabled>Построить компоненты</button>
     <button id="samples" disabled>Отрисовать примеры</button>
+    <button id="documentation" disabled>Построить документацию</button>
   </div>
   <input id="file" type="file" accept=".json,application/json" hidden>
   <div id="error" class="error" hidden></div>

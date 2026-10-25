@@ -20,8 +20,8 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, COMPONENT, HOLE_KINDS, ROOT, SCHEMAS, THEMES, Contract, Registry, fill, is_contract,
-                       is_element, is_sample, is_skipped, pascal, ref_path)
+from contracts import (APPEARANCE, COMPONENT, HOLE_KINDS, PREVIEWS, ROOT, SCHEMAS, THEMES, Contract, Registry, fill,
+                       is_contract, is_element, is_sample, is_skipped, pascal, ref_path)
 import idea
 from samples import dumps, generate, render, required_samples
 
@@ -158,16 +158,32 @@ def check_files(registry, referenced):
 def check_usage(readme):
     """Раздел «Рекомендации по использованию» — подмножество Markdown для документации Figma (раздел 11.2)."""
     match = re.search(rf"^## {USAGE_SECTION}\s*$(.*?)(?=^## |\Z)", readme.read_text(), re.M | re.S)
-    if not match:
+    if match:
+        check_subset(readme, match.group(1), readme.read_text()[:match.start(1)].count("\n") + 1, f"разделе «{USAGE_SECTION}»")
+
+
+def check_overview():
+    """Описание системы `docs/overview.md`: разделы `##` и подмножество Markdown (figma-documentation.md, раздел 3)."""
+    path = ROOT / "docs" / "overview.md"
+    if not path.is_file():
+        error(ROOT / "docs", "нет overview.md: описание системы для документации Figma")
         return
-    first = readme.read_text()[:match.start(1)].count("\n") + 1
-    for offset, line in enumerate(match.group(1).split("\n")):
+    text = path.read_text()
+    if not text.startswith("## "):
+        error(path, "файл начинается с раздела «## …»")
+    for match in re.finditer(r"^## [^\n]+\n(.*?)(?=^## |\Z)", text, re.M | re.S):
+        check_subset(path, match.group(1), text[:match.start(1)].count("\n") + 1, "описании системы")
+
+
+def check_subset(path, section, first, where):
+    """Строки раздела — только абзацы, списки, код в строке, жирный и ссылки (раздел 11.2)."""
+    for offset, line in enumerate(section.split("\n")):
         # Код в строке выводится как есть: разметка внутри него не считается.
         text = re.sub(r"`[^`]*`", "", line) if not re.match(r"^\s*(```|~~~)", line) else line
         for pattern, name in USAGE_FORBIDDEN:
             if pattern.search(text):
-                error(readme, f"строка {first + offset}: {name} в разделе «{USAGE_SECTION}» — только абзацы, списки, "
-                              f"код в строке, жирный и ссылки (раздел 11.2)")
+                error(path, f"строка {first + offset}: {name} в {where} — только абзацы, списки, код в строке, жирный "
+                            f"и ссылки (раздел 11.2)")
                 break
 
 
@@ -689,6 +705,22 @@ def check_elements(registry, elements):
             error(path, f"с подставленными sample: {problem}")
 
 
+def check_previews(registry, values, elements):
+    """Превью величин: шаблон у каждой публичной foundation-сущности с файлом значений (figma-documentation.md, раздел 5)."""
+    expected = {}
+    for contract in registry:
+        if contract.kind == "public" and contract.layer == "foundation" and THEMES / "default" / f"{contract.name}.values.json" in values:
+            expected[PREVIEWS / f"{contract.path.parent.name}.json"] = contract
+    for path, contract in sorted(expected.items()):
+        if path not in elements:
+            error(contract.path, f"нет превью величин {path.relative_to(ROOT)} (figma-documentation.md, раздел 5)")
+    for path in sorted(p for p in elements if p.parent == PREVIEWS):
+        if path not in expected:
+            error(path, "превью без публичной foundation-сущности с файлом значений")
+        elif set(elements[path].get("holes", {})) != {"value"}:
+            error(path, "у превью одна дырка value — имя варианта")
+
+
 # Версии спецификаций (раздел 11.3).
 
 def check_spec_versions():
@@ -760,6 +792,8 @@ def main():
     check_figma_foundation(registry, values, figma)
     check_figma_components(registry, figma)
     check_elements(registry, elements)
+    check_previews(registry, values, elements)
+    check_overview()
     check_samples(registry)
     check_idea(registry)
 

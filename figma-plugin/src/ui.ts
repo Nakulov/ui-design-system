@@ -22,6 +22,7 @@ const report = element<HTMLDivElement>("report");
 const foundation = element<HTMLButtonElement>("foundation");
 const components = element<HTMLButtonElement>("components");
 const samples = element<HTMLButtonElement>("samples");
+const documentation = element<HTMLButtonElement>("documentation");
 
 function send(message: ToPlugin) {
   parent.postMessage({ pluginMessage: message }, "*");
@@ -68,6 +69,7 @@ element<HTMLButtonElement>("open").onclick = () => file.click();
 foundation.onclick = () => send({ type: "buildFoundation" });
 components.onclick = () => send({ type: "buildComponents" });
 samples.onclick = () => send({ type: "renderSamples" });
+documentation.onclick = () => send({ type: "buildDocumentation" });
 
 file.onchange = async () => {
   const chosen = file.files?.[0];
@@ -79,7 +81,7 @@ onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => {
   const message = event.data.pluginMessage;
   error.hidden = message.type !== "error";
   status.hidden = message.type !== "busy";
-  foundation.disabled = components.disabled = samples.disabled = message.type === "busy" || (message.type === "error" && summary.hidden === true);
+  foundation.disabled = components.disabled = samples.disabled = documentation.disabled = message.type === "busy" || (message.type === "error" && summary.hidden === true);
   if (message.type === "error") {
     error.textContent = message.message;
   } else if (message.type === "busy") {
@@ -87,7 +89,7 @@ onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => {
   } else if (message.type === "loaded") {
     report.hidden = true;
     showSummary(message.summary);
-    foundation.disabled = components.disabled = samples.disabled = false;
+    foundation.disabled = components.disabled = samples.disabled = documentation.disabled = false;
   } else {
     showReport(message.title, message.report);
   }

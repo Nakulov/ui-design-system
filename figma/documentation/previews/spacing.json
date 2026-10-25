@@ -1,0 +1,49 @@
+{
+  "holes": {
+    "value": {
+      "kind": "text",
+      "sample": "m"
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": "hug"
+        },
+        "height": {
+          "sizing": {
+            "fixed": "xs"
+          }
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "sides": {
+          "start": "$value",
+          "end": "zero",
+          "top": "zero",
+          "bottom": "zero"
+        }
+      },
+      "appearance": {
+        "plain": {
+          "background": {
+            "solid": "primary"
+          }
+        }
+      },
+      "arrangement": {
+        "horizontal": {
+          "alignment": "top",
+          "distribution": {
+            "packed": {
+              "gap": "zero",
+              "position": "start"
+            }
+          }
+        }
+      }
+    }
+  }
+}
