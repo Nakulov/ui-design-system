@@ -33,6 +33,7 @@ type Base = {
 };
 /** Модель компонента: объект с одним ключом — именем компонента (schema-format.md, раздел 4.5). */
 type Entry = Record<string, Base>;
+type Indicator = { anchor: string; content: Entry; gap?: Token };
 type Resource = { icon: { name: string; color: string } };
 type Remote = { origin: { url: string }; scale: "fit" | "crop"; alignment: string; placeholder?: Resource; error?: Resource };
 type Span = { text: { value: string; typography?: string; color?: string; decoration?: string } } | { icon: { name: string; typography?: string; color?: string } };
@@ -153,6 +154,7 @@ export class Renderer {
     }
     const old = model.id ? reuse.get(model.id) : undefined;
     if (model.id) reuse.delete(model.id);
+    if (model.indicators?.length) return this.indicated(name, model, parent, old, path, at);
     let frame: FrameNode;
     let kept = new Map<string, SceneNode>();
     if (old?.type === "FRAME" && ref(old) === contract) {
@@ -187,7 +189,6 @@ export class Renderer {
     this.collapseEmpty(frame, model.layout);
 
     if (plain.overlay) this.overlay(frame, plain, at);
-    if (model.indicators) this.warn(at, "индикаторы пока не поддерживаются и не отрисованы (#54)");
     return frame;
   }
 
@@ -209,7 +210,7 @@ export class Renderer {
     const kept = new Map<string, SceneNode>();
     for (const child of [...frame.children]) {
       const id = ref(child, "id");
-      if (id && !ref(child, "role")) kept.set(id, child);
+      if (id && (!ref(child, "role") || ref(child, "role") === "indicators")) kept.set(id, child);
       else child.remove();
     }
     for (const field of BOUND_FIELDS) {
@@ -376,6 +377,139 @@ export class Renderer {
       layer.resize(Math.max(frame.width, 0.01), Math.max(frame.height, 0.01));
       layer.constraints = { horizontal: "STRETCH", vertical: "STRETCH" };
     });
+  }
+
+  /**
+   * Носитель и индикаторы во фрейме-обёртке с Auto Layout: обёртка повторяет размер носителя и занимает его место у
+   * родителя, индикаторы и маска выреза лежат в ней с абсолютной позицией. Носитель — во фрейме `carrier` без
+   * обрезки: маска Figma не режет фрейм с `clipsContent` (раздел 10.2, правило 4).
+   */
+  private async indicated(name: string, model: Base, parent: FrameNode, old: SceneNode | undefined, path: string, at: string): Promise<FrameNode | undefined> {
+    let wrapper: FrameNode;
+    let kept = new Map<string, SceneNode>();
+    if (old?.type === "FRAME" && ref(old, "role") === "indicators") {
+      wrapper = old;
+      // Носитель достаётся из прежнего фрейма carrier, чтобы обновиться на месте.
+      const slot = wrapper.children.find((n) => ref(n, "role") === "carrier");
+      if (slot && "children" in slot) for (const child of [...slot.children]) if (ref(child, "id")) wrapper.appendChild(child);
+      kept = await this.reset(wrapper);
+    } else {
+      wrapper = figma.createFrame();
+      await this.reset(wrapper);
+      // Носитель, нарисованный раньше без индикаторов, переиспользуется внутри обёртки.
+      if (old && model.id) kept.set(model.id, old);
+    }
+    parent.appendChild(wrapper);
+    wrapper.name = `${name} indicators`;
+    mark(wrapper, "indicators", "role");
+    mark(wrapper, model.id ?? "", "id");
+    const flow: Layout = { ...model.layout, position: "flow" };
+    const slot = figma.createFrame();
+    wrapper.appendChild(slot);
+    slot.name = "carrier";
+    mark(slot, "carrier", "role");
+    slot.fills = [];
+    slot.clipsContent = false;
+    for (const [frame, layout, parentAuto] of [[wrapper, model.layout, parent.layoutMode !== "NONE"], [slot, flow, true]] as const) {
+      frame.layoutMode = "HORIZONTAL";
+      frame.itemSpacing = 0;
+      frame.paddingLeft = frame.paddingRight = frame.paddingTop = frame.paddingBottom = 0;
+      this.layout(frame, layout, parentAuto, at);
+    }
+    const carrier = await this.component({ [name]: { ...model, indicators: undefined, layout: flow } }, slot, kept, path);
+    const placed: [FrameNode, Indicator][] = [];
+    for (const [index, indicator] of (model.indicators as Indicator[]).entries()) {
+      const node = await this.component(indicator.content, wrapper, kept, `${at}.indicators[${index}]`);
+      if (!node) continue;
+      node.layoutPositioning = "ABSOLUTE";
+      placed.push([node, indicator]);
+    }
+    for (const leftover of kept.values()) leftover.remove();
+    if (carrier) this.placements.push(() => this.cutout(wrapper, carrier, placed, at));
+    return wrapper;
+  }
+
+  /**
+   * Центры индикаторов — в точках углов носителя, маска — прямоугольник с запасом минус формы индикаторов, расширенные
+   * на `gap`. Маска режет слои над собой: индикаторы с вырезом лежат под ней и видны сквозь вырез, без выреза — над
+   * носителем.
+   */
+  private cutout(wrapper: FrameNode, carrier: FrameNode, placed: [FrameNode, Indicator][], at: string) {
+    const cuts: { x: number; y: number; width: number; height: number; radii: number[]; constraints: Constraints }[] = [];
+    const below: FrameNode[] = [];
+    for (const [node, { anchor, gap }] of placed) {
+      const end = anchor.endsWith("End");
+      const bottom = anchor.startsWith("bottom");
+      const corner = `${bottom ? "bottom" : "top"}${end ? "Right" : "Left"}Radius` as const;
+      // Середина дуги скругления под 45°; у прямого угла — вершина.
+      const inset = Math.min(carrier[corner], carrier.width / 2, carrier.height / 2) * (1 - Math.SQRT1_2);
+      node.x = (end ? carrier.width - inset : inset) - node.width / 2;
+      node.y = (bottom ? carrier.height - inset : inset) - node.height / 2;
+      node.constraints = { horizontal: end ? "MAX" : "MIN", vertical: bottom ? "MAX" : "MIN" };
+      if (gap === undefined) {
+        wrapper.appendChild(node);
+        continue;
+      }
+      const g = this.tokens.number(SPACING, gap);
+      const radii = [node.topLeftRadius, node.topRightRadius, node.bottomRightRadius, node.bottomLeftRadius].map((r) => r + g);
+      cuts.push({ x: node.x - g, y: node.y - g, width: node.width + 2 * g, height: node.height + 2 * g, radii, constraints: node.constraints });
+      wrapper.insertChild(below.length, node);
+      below.push(node);
+    }
+    if (!cuts.length) return;
+    // Запас маски — всё, что рисуют носитель и индикаторы, включая тень.
+    const [ox, oy] = [wrapper.absoluteTransform[0][2], wrapper.absoluteTransform[1][2]];
+    const boxes = [carrier, ...placed.map(([node]) => node)].map((n) => n.absoluteRenderBounds ?? n.absoluteBoundingBox).filter((b): b is Rect => b !== null);
+    const left = Math.min(...boxes.map((b) => b.x)) - ox - 1;
+    const top = Math.min(...boxes.map((b) => b.y)) - oy - 1;
+    const right = Math.max(...boxes.map((b) => b.x + b.width)) - ox + 1;
+    const bottom = Math.max(...boxes.map((b) => b.y + b.height)) - oy + 1;
+    const shapes: RectangleNode[] = [];
+    try {
+      const shape = (x: number, y: number, width: number, height: number) => {
+        const rect = figma.createRectangle();
+        shapes.push(rect);
+        rect.x = x;
+        rect.y = y;
+        rect.resize(Math.max(width, 0.01), Math.max(height, 0.01));
+        rect.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
+        return rect;
+      };
+      const base = shape(left, top, right - left, bottom - top);
+      base.name = "area";
+      base.constraints = { horizontal: "STRETCH", vertical: "STRETCH" };
+      for (const cut of cuts) {
+        const rect = shape(cut.x, cut.y, cut.width, cut.height);
+        rect.name = "cut";
+        [rect.topLeftRadius, rect.topRightRadius, rect.bottomRightRadius, rect.bottomLeftRadius] = cut.radii;
+        // Вырез переезжает вместе с углом, как индикатор.
+        rect.constraints = cut.constraints;
+      }
+      // Маска — фрейм с булевой операцией: у булевой операции нет констрейнтов, а фрейм растягивается вместе с
+      // обёрткой, и вырезы внутри едут за своими углами.
+      const mask = figma.createFrame();
+      wrapper.insertChild(below.length, mask);
+      mask.layoutPositioning = "ABSOLUTE";
+      mask.name = "cutout";
+      mask.fills = [];
+      mask.clipsContent = false;
+      mask.x = left;
+      mask.y = top;
+      mask.resize(right - left, bottom - top);
+      for (const rect of shapes) {
+        mask.appendChild(rect);
+        rect.x -= left;
+        rect.y -= top;
+      }
+      figma.subtract(shapes, mask).name = "shape";
+      mask.constraints = { horizontal: "STRETCH", vertical: "STRETCH" };
+      mask.isMask = true;
+    } catch (e) {
+      for (const rect of shapes) if (!rect.removed) rect.remove();
+      wrapper.findChild((n) => n.name === "cutout")?.remove();
+      for (const node of below) wrapper.appendChild(node);
+      this.warn(at, `вырез не построен, индикаторы нарисованы поверх носителя: ${(e as Error).message}`);
+    }
   }
 
   // Контейнер (раздел 10.3).
