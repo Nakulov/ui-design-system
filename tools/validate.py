@@ -20,7 +20,7 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, COMPONENT, HOLE_KINDS, PREVIEWS, ROOT, SCHEMAS, THEMES, Contract, Registry, fill,
+from contracts import (APPEARANCE, COMPONENT, DEMOS, HOLE_KINDS, PREVIEWS, ROOT, SCHEMAS, THEMES, Contract, Registry, fill,
                        is_contract, is_element, is_sample, is_skipped, pascal, ref_path)
 import idea
 from samples import dumps, generate, render, required_samples
@@ -682,6 +682,8 @@ def check_elements(registry, elements):
         if not isinstance(data, dict) or set(data) != {"holes", "model"} or not isinstance(data["holes"], dict):
             error(path, "ожидается объект с полями holes и model (figma-documentation.md, раздел 5)")
             continue
+        if path.parent.parent == DEMOS and data["holes"]:
+            error(path, "у демонстрации нет дырок: holes пустой (figma-documentation.md, раздел 5)")
         if path.read_text() != dumps(data):
             mismatch(path, path.read_text(), dumps(data), "формат не канонический: отступ 2, каждое поле на своей строке")
         samples = {}
@@ -721,6 +723,83 @@ def check_previews(registry, values, elements):
             error(path, "у превью одна дырка value — имя варианта")
 
 
+# Манифесты документации (documentation-manifest.md).
+
+MANIFEST_SECTIONS = {"overview", "properties", "variants", "states", "layoutBehavior", "usage"}
+DEMO_SECTIONS = {"variants", "states", "layoutBehavior"}
+
+
+def check_manifests(registry, manifests, elements):
+    """Манифесты core: секции, примеры-демонстрации и наличие у каждой сущности, видимой в Figma (разделы 2, 4.2, 5.2)."""
+    expected = {}
+    for contract in registry:
+        if contract.kind == "public" and contract.layer == "core" and \
+                contract.data.get("releaseVersions", {}).get("figma") != "willNotBeReleased":
+            expected[contract.path.with_name(f"{contract.name}.docs.json")] = contract
+    for path, contract in sorted(expected.items()):
+        if path not in manifests:
+            error(contract.path, f"нет манифеста документации {path.name} (documentation-manifest.md, раздел 2)")
+    used = set()
+    for path, data in sorted(manifests.items()):
+        if path not in expected:
+            error(path, "манифест есть только у публичных сущностей core, видимых в Figma (documentation-manifest.md, раздел 2)")
+            continue
+        if path.read_text() != dumps(data):
+            mismatch(path, path.read_text(), dumps(data), "формат не канонический: отступ 2, каждое поле на своей строке")
+        if not isinstance(data, dict) or set(data) != {"$ref", "sections"} or not isinstance(data["sections"], list):
+            error(path, "ожидается объект с полями $ref и sections (documentation-manifest.md, раздел 3)")
+            continue
+        if data["$ref"] != expected[path].name:
+            error(path, f"$ref «{data['$ref']}»: ожидается «{expected[path].name}» — контракт рядом с манифестом")
+        ids = []
+        for i, section in enumerate(data["sections"]):
+            at = f"sections[{i}]"
+            if not isinstance(section, dict) or section.get("type") not in MANIFEST_SECTIONS:
+                error(path, f"{at}: type из {', '.join(sorted(MANIFEST_SECTIONS))} (раздел 4.2)")
+                continue
+            kind = section["type"]
+            allowed = {"id", "type"} | (set() if kind == "overview" else {"title"}) | ({"examples"} if kind in DEMO_SECTIONS else set())
+            for extra in sorted(section.keys() - allowed):
+                error(path, f"{at}: поле «{extra}» не допускается в секции {kind} (раздел 4.2)")
+            if not isinstance(section.get("id"), str) or not LOWER_CAMEL.fullmatch(section["id"]):
+                error(path, f"{at}: id в lowerCamelCase (раздел 4.3)")
+            else:
+                ids.append(section["id"])
+            if kind != "overview" and not isinstance(section.get("title"), str):
+                error(path, f"{at}: нет title")
+            if kind not in DEMO_SECTIONS:
+                continue
+            examples = section.get("examples")
+            if not isinstance(examples, list) or not examples:
+                error(path, f"{at}: нет примеров examples")
+                continue
+            example_ids = []
+            for j, example in enumerate(examples):
+                where = f"{at}.examples[{j}]"
+                if not isinstance(example, dict):
+                    error(path, f"{where}: ожидается объект")
+                    continue
+                for extra in sorted(example.keys() - {"id", "demo", "caption"}):
+                    error(path, f"{where}: поле «{extra}» не допускается (раздел 5.2)")
+                if not isinstance(example.get("id"), str) or not LOWER_CAMEL.fullmatch(example["id"]):
+                    error(path, f"{where}: id в lowerCamelCase (раздел 4.3)")
+                else:
+                    example_ids.append(example["id"])
+                if "caption" in example and not isinstance(example["caption"], str):
+                    error(path, f"{where}: caption — строка")
+                demo = DEMOS / f"{example.get('demo')}.json"
+                if not isinstance(example.get("demo"), str) or demo not in elements:
+                    error(path, f"{where}: demo «{example.get('demo')}» — нет файла в {DEMOS.relative_to(ROOT)} (раздел 5.2)")
+                else:
+                    used.add(demo)
+            for name in duplicates(example_ids):
+                error(path, f"{at}: id примера «{name}» повторяется")
+        for name in duplicates(ids):
+            error(path, f"id секции «{name}» повторяется")
+    for path in sorted(p for p in elements if p.parent.parent == DEMOS and p not in used):
+        error(path, "демонстрация не используется ни одним манифестом")
+
+
 # Версии спецификаций (раздел 11.3).
 
 def check_spec_versions():
@@ -755,7 +834,7 @@ def main():
     parser.add_argument("--base", help="git ref, с которым сравниваются спецификации")
     args = parser.parse_args()
 
-    contracts, values, figma, elements, referenced = [], {}, {}, {}, set()
+    contracts, values, figma, elements, manifests, referenced = [], {}, {}, {}, {}, set()
     for path in json_files():
         try:
             data = json.loads(path.read_text())
@@ -771,6 +850,8 @@ def main():
         referenced.update(refs(path, data))
         if path.name.endswith(".figma.json"):
             figma[path] = data
+        elif path.name.endswith(".docs.json"):
+            manifests[path] = data
         elif path.name.endswith(".values.json"):
             if check_structure(path, data, VALUES_SCHEMA):
                 values[path] = data
@@ -793,6 +874,7 @@ def main():
     check_figma_components(registry, figma)
     check_elements(registry, elements)
     check_previews(registry, values, elements)
+    check_manifests(registry, manifests, elements)
     check_overview()
     check_samples(registry)
     check_idea(registry)

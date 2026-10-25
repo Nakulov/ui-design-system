@@ -13,6 +13,7 @@ SCHEMAS = ROOT / "schemas"
 THEMES = ROOT / "themes"
 ELEMENTS = ROOT / "figma" / "documentation" / "elements"  # элементы оформления документации (figma-documentation.md, раздел 5)
 PREVIEWS = ROOT / "figma" / "documentation" / "previews"  # превью величин foundation (figma-documentation.md, раздел 5)
+DEMOS = ROOT / "figma" / "documentation" / "demos"  # демонстрации core: demos/<сущность>/<имя>.json (figma-documentation.md, раздел 5)
 COMPONENT = "schemas/core/component/Component"
 APPEARANCE = "schemas/core/appearance/Appearance"
 SKIPPED = {"build", "figma-plugin"}  # верхние каталоги без контрактов
@@ -37,8 +38,8 @@ def is_sample(path):
 
 
 def is_element(path):
-    """Шаблон-модель документации: элемент оформления или превью величин."""
-    return path.parent in (ELEMENTS, PREVIEWS)
+    """Шаблон-модель документации: элемент оформления, превью величин или демонстрация."""
+    return path.parent in (ELEMENTS, PREVIEWS) or path.parent.parent == DEMOS
 
 
 HOLE_KINDS = {"text", "spans", "component", "items"}

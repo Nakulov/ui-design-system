@@ -12,8 +12,10 @@ const CARD_PADDING = 16;
 const LABEL_FONT: FontName = { family: "Inter", style: "Regular" };
 /** Примеры, сгенерированные из контракта (schema-format.md, раздел 11.1): проверяют ветки ядра, а не вид. */
 const GENERATED = ["min", "max"];
-/** Строка элементов оформления документации (figma-documentation.md, раздел 5). */
+/** Строка элементов оформления, превью и демонстраций документации (figma-documentation.md, раздел 5). */
 const DOCUMENTATION = "figma/documentation/elements";
+/** Демонстрации подписываются с сущностью: `Documentation#layout/widthSizing`. */
+const DEMOS = "figma/documentation/demos/";
 
 /** Строка страницы: идентификатор, имя и карточки — ключ, подпись, модель. */
 type Row = { id: Id; name: string; cards: [string, string, unknown][] };
@@ -63,7 +65,7 @@ export class SamplesBuilder {
     const elements = Object.entries(this.bundle.documentation ?? {});
     const documentation: Row = {
       id: DOCUMENTATION, name: "Documentation",
-      cards: elements.map(([key, element]: [string, Element]) => [key, `Documentation#${key.split("/").pop()}`,
+      cards: elements.map(([key, element]: [string, Element]) => [key, `Documentation#${key.startsWith(DEMOS) ? key.slice(DEMOS.length) : key.split("/").pop()}`,
         fill(element.model, Object.fromEntries(Object.entries(element.holes).map(([name, hole]) => [name, hole.sample])))]),
     };
     const ordered = [...groups.values()].sort((a, b) => a.id.localeCompare(b.id));

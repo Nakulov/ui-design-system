@@ -1,0 +1,41 @@
+{
+  "$ref": "Padding",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview"
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "variants",
+      "type": "variants",
+      "title": "Variants",
+      "examples": [
+        {
+          "id": "all",
+          "demo": "padding/all",
+          "caption": "all: одинаково со всех сторон"
+        },
+        {
+          "id": "symmetric",
+          "demo": "padding/symmetric",
+          "caption": "symmetric: по горизонтали и вертикали"
+        },
+        {
+          "id": "sides",
+          "demo": "padding/sides",
+          "caption": "sides: каждая сторона отдельно"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    }
+  ]
+}

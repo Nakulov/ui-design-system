@@ -460,9 +460,11 @@ export class Renderer {
   private pin(frame: FrameNode, pinned: Pinned) {
     const parent = frame.parent as FrameNode;
     const content = pinned.relativeTo === "content";
-    const pad = content
-      ? { start: parent.paddingLeft, end: parent.paddingRight, top: parent.paddingTop, bottom: parent.paddingBottom }
-      : { start: 0, end: 0, top: 0, bottom: 0 };
+    // У родителя overlay (без Auto Layout) отступы не в полях фрейма, а в метке `padding` (раздел 10.2).
+    const marked = parent.layoutMode === "NONE" ? JSON.parse(ref(parent, "padding") || "{}") as Record<string, number> : undefined;
+    const pad = !content ? { start: 0, end: 0, top: 0, bottom: 0 }
+      : marked ? { start: marked.start ?? 0, end: marked.end ?? 0, top: marked.top ?? 0, bottom: marked.bottom ?? 0 }
+      : { start: parent.paddingLeft, end: parent.paddingRight, top: parent.paddingTop, bottom: parent.paddingBottom };
     const axis = (pin: Pin, size: number, length: number, near: "start" | "top", far: "end" | "bottom") => {
       const [kind, value] = variant<Record<string, Token>>(pin);
       const offset = (token: Token) => this.tokens.number(SPACING, token);
@@ -871,11 +873,12 @@ export class Renderer {
     }
     if (model.decoration) node.textDecoration = DECORATION[model.decoration as string];
     node.textAlignHorizontal = TEXT_ALIGN[model.alignment as string];
-    if (model.layout.width.sizing === "hug") {
+    if (model.layout.width.sizing === "hug" && frame.minWidth === null && frame.maxWidth === null) {
       node.textAutoResize = "WIDTH_AND_HEIGHT";
-      // Текст по содержимому переносится по максимальной ширине корня за вычетом отступов, как на платформах.
-      if (frame.maxWidth !== null) node.maxWidth = Math.max(frame.maxWidth - frame.paddingLeft - frame.paddingRight, 1);
+      node.layoutSizingHorizontal = "HUG";
     } else {
+      // У корня `hug` с `min` или `max` текст растягивается с переносом: корень обнимает текст в пределах min и max, как
+      // на платформах. maxWidth самого текста в экземпляре библиотеки Figma переопределить не даёт (раздел 10.2, правило 6).
       node.textAutoResize = "HEIGHT";
       node.layoutSizingHorizontal = "FILL";
     }
