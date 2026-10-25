@@ -1,0 +1,27 @@
+{
+  "Text": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "content": {
+      "plain": "Подпись"
+    },
+    "typography": "bodyMedium",
+    "color": {
+      "solid": "onSurface"
+    },
+    "alignment": "start"
+  }
+}

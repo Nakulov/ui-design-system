@@ -1,0 +1,10 @@
+{
+  "$ref": "Badge",
+  "variants": {
+    "content": {
+      "none": "dot",
+      "text": "count",
+      "image": "icon"
+    }
+  }
+}

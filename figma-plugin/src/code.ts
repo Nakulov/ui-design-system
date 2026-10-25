@@ -1,5 +1,6 @@
 // Основной поток плагина: доступ к документу Figma.
 import { type Bundle, readBundle } from "./bundle";
+import { ComponentsBuilder } from "./components";
 import { FoundationBuilder } from "./foundation";
 import type { ToPlugin, ToUi } from "./messages";
 import type { Report } from "./report";
@@ -17,6 +18,7 @@ function send(message: ToUi) {
 figma.ui.onmessage = async (message: ToPlugin) => {
   if (message.type === "load") load(message.text);
   else if (message.type === "buildFoundation") await run("Строится foundation…", "Foundation построен", "Foundation не построен", (b) => new FoundationBuilder(b).build());
+  else if (message.type === "buildComponents") await run("Строятся компоненты…", "Компоненты построены", "Компоненты не построены", (b) => new ComponentsBuilder(b).build());
   else if (message.type === "renderSamples") await run("Рисуются примеры…", "Примеры отрисованы", "Примеры не отрисованы", (b) => new SamplesBuilder(b).build());
 };
 

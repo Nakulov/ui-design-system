@@ -1,0 +1,45 @@
+{
+  "Text": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "content": {
+      "rich": {
+        "spans": [
+          {
+            "icon": {
+              "name": "check"
+            }
+          },
+          {
+            "text": {
+              "value": " Подпись "
+            }
+          },
+          {
+            "icon": {
+              "name": "chevronDown"
+            }
+          }
+        ]
+      }
+    },
+    "typography": "bodyMedium",
+    "color": {
+      "solid": "onSurface"
+    },
+    "alignment": "start"
+  }
+}
