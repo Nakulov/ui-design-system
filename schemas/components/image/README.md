@@ -26,7 +26,7 @@
 | `ImageOrigin.json`       | Откуда загружается: пока только `url`; набор способов расширяется.         |
 | `ImageScale.json`        | Вписывание: `fit`, `crop`.                                                 |
 | `ImageAlignment.json`    | Положение картинки: девять точек от `topStart` до `bottomEnd`.             |
-| `samples/`               | Примеры: `min`, `max`, `icon`, `productPhoto`, `avatarOnline`.             |
+| `samples/`               | Примеры: `min`, `max`, `icon`, `productPhoto`, `avatarOnline`, `appIcon`.  |
 
 ## Варианты
 
@@ -270,6 +270,91 @@ sealed interface ImageOrigin {
 }
 ```
 
+Иконка приложения со счётчиком: вырез повторяет форму счётчика — «таблетку», расширенную на зазор:
+
+<!-- sample: samples/appIcon.json -->
+```json
+{
+  "Image": {
+    "layout": {
+      "width": {
+        "sizing": {
+          "fixed": "xl"
+        }
+      },
+      "height": {
+        "sizing": {
+          "fixed": "xl"
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "s"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "primaryContainer"
+        },
+        "cornerRadius": "m",
+        "clip": true
+      }
+    },
+    "indicators": [
+      {
+        "anchor": "topEnd",
+        "content": {
+          "Badge": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": {
+                  "fixed": "xs"
+                }
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "symmetric": {
+                "horizontal": "xs",
+                "vertical": "zero"
+              }
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "error"
+                },
+                "cornerRadius": "full"
+              }
+            },
+            "content": {
+              "text": {
+                "value": "12",
+                "typography": "labelSmall",
+                "color": "onError"
+              }
+            }
+          }
+        },
+        "gap": "xs2"
+      }
+    ],
+    "source": {
+      "resource": {
+        "icon": {
+          "name": "image",
+          "color": "onPrimaryContainer"
+        }
+      }
+    }
+  }
+}
+```
+
 ## Рекомендации по использованию
 
 - Для символов используйте `resource.icon` и `layout` с `hug`: компонент примет размер рисунка. Если нужна область
@@ -290,8 +375,7 @@ sealed interface ImageOrigin {
 1. Подпись для экранного диктора не задаётся: доступность решается для всех компонентов сразу.
 2. Картинка на фоне формы — не вариант фона в `appearance`, а композиция `Container` с раскладкой `overlay`: адрес
    картинки — данные, а не оформление.
-3. Индикаторы в углах с вырезом формы — отдельная задача.
-4. Анимированная заглушка (мерцание) не поддерживается: заглушка — статичный ресурс.
-5. Форматы загружаемых картинок определяют загрузчики платформ; рекомендуются растровые (JPEG, PNG, WebP): SVG по
+3. Анимированная заглушка (мерцание) не поддерживается: заглушка — статичный ресурс.
+4. Форматы загружаемых картинок определяют загрузчики платформ; рекомендуются растровые (JPEG, PNG, WebP): SVG по
    адресу на iOS без сторонних библиотек не отрисовывается.
-6. Правило `https://` записано здесь, а не в контракте: ограничений значений строк в спецификации пока нет.
+5. Правило `https://` записано здесь, а не в контракте: ограничений значений строк в спецификации пока нет.

@@ -1,0 +1,79 @@
+{
+  "Image": {
+    "layout": {
+      "width": {
+        "sizing": {
+          "fixed": "xl"
+        }
+      },
+      "height": {
+        "sizing": {
+          "fixed": "xl"
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "s"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "primaryContainer"
+        },
+        "cornerRadius": "m",
+        "clip": true
+      }
+    },
+    "indicators": [
+      {
+        "anchor": "topEnd",
+        "content": {
+          "Badge": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": {
+                  "fixed": "xs"
+                }
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "symmetric": {
+                "horizontal": "xs",
+                "vertical": "zero"
+              }
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "error"
+                },
+                "cornerRadius": "full"
+              }
+            },
+            "content": {
+              "text": {
+                "value": "12",
+                "typography": "labelSmall",
+                "color": "onError"
+              }
+            }
+          }
+        },
+        "gap": "xs2"
+      }
+    ],
+    "source": {
+      "resource": {
+        "icon": {
+          "name": "image",
+          "color": "onPrimaryContainer"
+        }
+      }
+    }
+  }
+}
