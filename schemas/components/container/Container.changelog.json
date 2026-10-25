@@ -1,0 +1,10 @@
+{
+  "$ref": "Container",
+  "entries": [
+    {
+      "date": "2026-10-23",
+      "kind": "added",
+      "description": "Компонент добавлен"
+    }
+  ]
+}

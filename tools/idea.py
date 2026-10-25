@@ -1,6 +1,7 @@
 """Сопоставление JSON-схем в Android Studio и других IDE JetBrains (.idea/jsonSchemas.xml).
 
-Маски IntelliJ не умеют исключать файлы, поэтому контракты перечисляются поимённо, а файлы значений — маской.
+Маски IntelliJ не умеют исключать файлы, поэтому контракты перечисляются поимённо, а файлы значений и журналы
+изменений — масками.
 """
 
 from xml.sax.saxutils import quoteattr
@@ -36,7 +37,7 @@ def entry(name, schema, items):
 
 
 def json_schemas(registry):
-    """Текст .idea/jsonSchemas.xml: каждый контракт — по файлу, файлы значений — по маске."""
+    """Текст .idea/jsonSchemas.xml: каждый контракт — по файлу, файлы значений и журналы — по маске."""
     contracts = sorted(c.path.relative_to(ROOT).as_posix() for c in registry)
     return ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             "<project version=\"4\">\n"
@@ -45,6 +46,7 @@ def json_schemas(registry):
             "      <map>\n"
             + entry("Контракт", "specifications/contract.schema.json", [item(p, "File") for p in contracts])
             + entry("Файл значений", "specifications/values.schema.json", [item("*.values.json", "Pattern")])
+            + entry("Журнал изменений", "specifications/changelog.schema.json", [item("*.changelog.json", "Pattern")])
             + "      </map>\n"
             "    </state>\n"
             "  </component>\n"
