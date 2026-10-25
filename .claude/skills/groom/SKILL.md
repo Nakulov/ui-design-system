@@ -81,7 +81,7 @@ n=$(tools/board.sh issue "Компонент Image" component body.md) &&
 Если `status` вернул ошибку, сообщи пользователю: задача создана, но на доске не видна. Вторую метку добавь после
 создания: `gh issue edit <номер> --add-label <метка>`.
 
-Метки: `component`, `foundation`, `spec`, `process`, `epic`.
+Метки: `component`, `foundation`, `spec`, `process`, `documentation`, `epic`.
 
 ## Границы
 
