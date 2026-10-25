@@ -13,7 +13,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from contracts import ELEMENTS, PREVIEWS, ROOT, SCHEMAS, THEMES, is_sample, is_skipped, load_registry, pascal, ref_path
+from contracts import DEMOS, ELEMENTS, PREVIEWS, ROOT, SCHEMAS, THEMES, is_sample, is_skipped, load_registry, pascal, ref_path
 
 THEME = "default"
 ICON = "schemas/foundation/icon/Icon"
@@ -110,9 +110,23 @@ def collect_texts(registry):
 
 
 def collect_documentation():
-    """Элементы оформления документации и превью величин по пути без .json (раздел 3.7)."""
-    files = sorted([*ELEMENTS.glob("*.json"), *PREVIEWS.glob("*.json")])
+    """Элементы оформления документации, превью величин и демонстрации по пути без .json (раздел 3.7)."""
+    files = sorted([*ELEMENTS.glob("*.json"), *PREVIEWS.glob("*.json"), *DEMOS.glob("*/*.json")])
     return {ident(file): json.loads(file.read_text()) for file in files}
+
+
+def collect_manifests(registry):
+    """Манифесты документации по идентификатору контракта; demo — идентификатор демонстрации (раздел 3.8)."""
+    result = {}
+    for file in sorted(SCHEMAS.glob("*/*/*.docs.json")):
+        data = json.loads(file.read_text())
+        owner = registry.by_path[ref_path(file, data["$ref"])]
+        result[owner.id] = {"sections": [
+            {**section, "examples": [{**example, "demo": ident(DEMOS / example["demo"])} for example in section["examples"]]}
+            if "examples" in section else section
+            for section in data["sections"]
+        ]}
+    return result
 
 
 def dangling(bundle):
@@ -135,6 +149,11 @@ def dangling(bundle):
     for key in bundle["figma"]:
         if key not in contracts:
             yield f"figma: {key} — нет контракта"
+    for key, manifest in bundle["manifests"].items():
+        for section in manifest["sections"]:
+            for example in section.get("examples", []):
+                if example["demo"] not in bundle["documentation"]:
+                    yield f"manifests: {key} — демонстрация «{example['demo']}» не найдена"
     for key, data in values.items():
         if key not in contracts:
             yield f"values: {key} — нет контракта"
@@ -172,6 +191,7 @@ def main():
         "icons": collect_icons(values, theme_dir),
         "texts": collect_texts(registry),
         "documentation": collect_documentation(),
+        "manifests": collect_manifests(registry),
     }
     problems = list(dangling(bundle))
     for problem in problems:
@@ -183,7 +203,7 @@ def main():
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(bundle, ensure_ascii=False, indent=2) + "\n")
-    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "icons", "texts", "documentation"))
+    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "icons", "texts", "documentation", "manifests"))
     print(f"Набор собран: {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({counts})")
     return 0
 

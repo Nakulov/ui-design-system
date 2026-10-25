@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.4";
+export const SUPPORTED_FORMAT = "0.5";
 
 /** Идентификатор сущности: путь от корня репозитория без .json; вариант — после «#» (раздел 2). */
 export type Id = string;
@@ -41,9 +41,18 @@ export type Bundle = {
   icons: Record<Id, Icon>;
   /** Разделы README: заголовок → исходный Markdown. */
   texts: Record<Id, Record<string, string>>;
-  /** Элементы оформления документации (раздел 3.7). */
+  /** Элементы оформления документации, превью и демонстрации (раздел 3.7). */
   documentation: Record<Id, Element>;
+  /** Манифесты документации по идентификатору контракта (раздел 3.8). */
+  manifests: Record<Id, Manifest>;
 };
+
+/** Пример секции: демонстрация по идентификатору и подпись (documentation-manifest.md, раздел 5). */
+export type ManifestExample = { id: string; demo: Id; caption?: string };
+
+export type ManifestSection = { id: string; type: string; title?: string; examples?: ManifestExample[] };
+
+export type Manifest = { sections: ManifestSection[] };
 
 export type HoleKind = "text" | "spans" | "component" | "items";
 
@@ -56,7 +65,7 @@ export type Summary = {
   counts: Record<(typeof SECTIONS)[number], number>;
 };
 
-const SECTIONS = ["contracts", "values", "figma", "samples", "icons", "texts", "documentation"] as const;
+const SECTIONS = ["contracts", "values", "figma", "samples", "icons", "texts", "documentation", "manifests"] as const;
 
 /** Совпадает основная версия, а до 1.0 — и дополнительная (раздел 4, правило 1). */
 export function isSupported(version: string): boolean {

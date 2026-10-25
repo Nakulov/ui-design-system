@@ -1,0 +1,115 @@
+{
+  "holes": {},
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": {
+            "fixed": {
+              "custom": {
+                "value": 240
+              }
+            }
+          }
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "s"
+      },
+      "appearance": {
+        "plain": {
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "cornerRadius": "s"
+        }
+      },
+      "arrangement": {
+        "vertical": {
+          "alignment": "start",
+          "distribution": {
+            "packed": {
+              "gap": "s",
+              "position": "top"
+            }
+          }
+        }
+      },
+      "children": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug",
+                "min": "xl3"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "xs"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "primaryContainer"
+                }
+              }
+            },
+            "content": {
+              "plain": "min xl3"
+            },
+            "typography": "labelMedium",
+            "color": {
+              "solid": "onPrimaryContainer"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug",
+                "max": {
+                  "custom": {
+                    "value": 160
+                  }
+                }
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "xs"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "primaryContainer"
+                }
+              }
+            },
+            "content": {
+              "plain": "max 160: длинная подпись переносится на следующую строку"
+            },
+            "typography": "labelMedium",
+            "color": {
+              "solid": "onPrimaryContainer"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  }
+}

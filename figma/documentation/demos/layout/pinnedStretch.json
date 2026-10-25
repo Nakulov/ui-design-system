@@ -1,0 +1,93 @@
+{
+  "holes": {},
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": {
+            "fixed": {
+              "custom": {
+                "value": 240
+              }
+            }
+          }
+        },
+        "height": {
+          "sizing": {
+            "fixed": {
+              "custom": {
+                "value": 80
+              }
+            }
+          }
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "zero"
+      },
+      "appearance": {
+        "plain": {
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "cornerRadius": "s"
+        }
+      },
+      "arrangement": {
+        "overlay": {
+          "horizontal": "start",
+          "vertical": "top"
+        }
+      },
+      "children": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": {
+                "pinned": {
+                  "horizontal": {
+                    "stretch": {
+                      "start": "s",
+                      "end": "s"
+                    }
+                  },
+                  "vertical": {
+                    "bottom": {
+                      "offset": "s"
+                    }
+                  }
+                }
+              }
+            },
+            "padding": {
+              "all": "xs"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "primaryContainer"
+                }
+              }
+            },
+            "content": {
+              "plain": "stretch s · s"
+            },
+            "typography": "labelMedium",
+            "color": {
+              "solid": "onPrimaryContainer"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  }
+}

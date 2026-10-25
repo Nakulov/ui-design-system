@@ -1,0 +1,224 @@
+{
+  "holes": {},
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": {
+            "fixed": {
+              "custom": {
+                "value": 240
+              }
+            }
+          }
+        },
+        "height": {
+          "sizing": {
+            "fixed": {
+              "custom": {
+                "value": 120
+              }
+            }
+          }
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "all": "zero"
+      },
+      "appearance": {
+        "plain": {
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "cornerRadius": "s"
+        }
+      },
+      "arrangement": {
+        "overlay": {
+          "horizontal": "start",
+          "vertical": "top"
+        }
+      },
+      "children": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": {
+                "pinned": {
+                  "horizontal": {
+                    "start": {
+                      "offset": "s"
+                    }
+                  },
+                  "vertical": {
+                    "top": {
+                      "offset": "s"
+                    }
+                  }
+                }
+              }
+            },
+            "padding": {
+              "all": "xs"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "primaryContainer"
+                }
+              }
+            },
+            "content": {
+              "plain": "topStart"
+            },
+            "typography": "labelMedium",
+            "color": {
+              "solid": "onPrimaryContainer"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": {
+                "pinned": {
+                  "horizontal": {
+                    "end": {
+                      "offset": "s"
+                    }
+                  },
+                  "vertical": {
+                    "top": {
+                      "offset": "s"
+                    }
+                  }
+                }
+              }
+            },
+            "padding": {
+              "all": "xs"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "primaryContainer"
+                }
+              }
+            },
+            "content": {
+              "plain": "topEnd"
+            },
+            "typography": "labelMedium",
+            "color": {
+              "solid": "onPrimaryContainer"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": {
+                "pinned": {
+                  "horizontal": {
+                    "start": {
+                      "offset": "s"
+                    }
+                  },
+                  "vertical": {
+                    "bottom": {
+                      "offset": "s"
+                    }
+                  }
+                }
+              }
+            },
+            "padding": {
+              "all": "xs"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "primaryContainer"
+                }
+              }
+            },
+            "content": {
+              "plain": "bottomStart"
+            },
+            "typography": "labelMedium",
+            "color": {
+              "solid": "onPrimaryContainer"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": {
+                "pinned": {
+                  "horizontal": {
+                    "end": {
+                      "offset": "s"
+                    }
+                  },
+                  "vertical": {
+                    "bottom": {
+                      "offset": "s"
+                    }
+                  }
+                }
+              }
+            },
+            "padding": {
+              "all": "xs"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "primaryContainer"
+                }
+              }
+            },
+            "content": {
+              "plain": "bottomEnd"
+            },
+            "typography": "labelMedium",
+            "color": {
+              "solid": "onPrimaryContainer"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  }
+}
