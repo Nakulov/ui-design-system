@@ -76,7 +76,11 @@ export class Tokens {
     private readonly textStyles: Map<Id, TextStyle>,
     private readonly effectStyles: Map<Id, EffectStyle>,
     private readonly icons: Map<Id, ComponentNode>,
+    private readonly components: Map<Id, ComponentNode | ComponentSetNode>,
   ) {}
+
+  /** Компоненты без Figma-компонента в библиотеке, о которых уже предупредили за этот прогон. */
+  readonly missing = new Set<Id>();
 
   /** Величины из файла; если foundation не построен — ошибка. */
   static async load(bundle: Bundle): Promise<Tokens> {
@@ -88,11 +92,13 @@ export class Tokens {
     }
     await figma.loadAllPagesAsync();
     const iconPage = figma.root.children.find((page) => ref(page) === ICON);
+    const componentsPage = figma.root.children.find((page) => ref(page, "role") === "components");
     return new Tokens(
       bundle, variables,
       byRef(await figma.getLocalTextStylesAsync()),
       byRef(await figma.getLocalEffectStylesAsync()),
       byRef(iconPage?.findAllWithCriteria({ types: ["COMPONENT"] }) ?? []),
+      byRef((componentsPage?.children ?? []).filter((n): n is ComponentNode | ComponentSetNode => n.type === "COMPONENT" || n.type === "COMPONENT_SET")),
     );
   }
 
@@ -110,6 +116,12 @@ export class Tokens {
 
   icon(name: string): ComponentNode | undefined {
     return this.icons.get(`${ICON}#${name}`);
+  }
+
+  /** Figma-компонент библиотеки по идентификатору (раздел 7.1); удалённый вручную не учитывается. */
+  library(id: Id): ComponentNode | ComponentSetNode | undefined {
+    const node = this.components.get(id);
+    return node && !node.removed ? node : undefined;
   }
 
   /** Число величины: вариант шкалы — из первого режима темы, `custom` — его значение. */
@@ -220,11 +232,15 @@ export class Renderer {
     const old = reuse.get(key);
     reuse.delete(key);
     if (model.indicators?.length) return this.indicated(name, model, parent, old, path, at, key);
+    if (!this.library && name !== "Container") {
+      const node = await this.instance(name, model, contract, parent, old, key, at);
+      if (node) return node;
+    }
     let frame: FrameNode;
     // Figma-компонент библиотеки — корень своего образца (раздел 6.2), в том числе `text/icon` с другим `ref`.
     if (old?.type === "COMPONENT" || (old?.type === "FRAME" && ref(old) === contract)) frame = old as FrameNode;
     else {
-      old?.remove();
+      if (old && !old.removed) old.remove();
       frame = figma.createFrame();
     }
     const kept = await this.reset(frame);
@@ -255,6 +271,76 @@ export class Renderer {
     return frame;
   }
 
+  /**
+   * Экземпляр Figma-компонента библиотеки (раздел 10.1, правило 1): вариант по значениям модели, значения — свойствами
+   * и переопределениями слоёв, поля базовой модели — свойствами корня. Если компонента нет или модель требует того,
+   * чего в нём нет, возвращает `undefined`, и рисуется тело.
+   */
+  private async instance(name: string, model: Base, contract: Id, parent: FrameNode, old: SceneNode | undefined, key: string, at: string): Promise<FrameNode | undefined> {
+    const [id, values] = this.target(name, model, contract);
+    const library = this.tokens.library(id);
+    if (!library) {
+      if (!this.tokens.missing.has(id)) {
+        const figmaName = id.endsWith("#icon") ? "text/icon" : id.split("/").pop();
+        this.warn(at, `нет Figma-компонента ${figmaName} на странице Components, все такие элементы нарисованы телом`);
+      }
+      this.tokens.missing.add(id);
+      return undefined;
+    }
+    if (library.type === "COMPONENT_SET" && "state" in library.componentPropertyDefinitions) values.state = "default";
+    const main = library.type === "COMPONENT" ? library : library.children.find((c) =>
+      c.type === "COMPONENT" && Object.entries(values).every(([k, v]) => c.variantProperties?.[k] === v)) as ComponentNode | undefined;
+    const plain = this.plain(model);
+    const reason = !main ? `нет варианта ${Object.entries(values).map(([k, v]) => `${k}=${v}`).join(", ")}`
+      : plain.overlay && !main.children.some((n) => ref(n, "slot") === "overlay") ? "наложение — нет слоя в компоненте"
+      : name === "Badge" && model.content !== undefined && variant(model.content)[0] === "image" && variant(variant(model.content)[1])[0] === "remote" ? "картинка по адресу в бейдже"
+      : undefined;
+    if (!main || reason) {
+      this.warn(at, `${reason}, нарисовано телом (раздел 10.1, правило 5)`);
+      return undefined;
+    }
+    let node: InstanceNode;
+    if (old?.type === "INSTANCE") {
+      node = old;
+      if ((await node.getMainComponentAsync())?.id !== main.id) node.swapComponent(main);
+    } else node = main.createInstance();
+    try {
+      parent.appendChild(node);
+      mark(node, contract);
+      mark(node, model.id ?? "", "id");
+      mark(node, key, "slot");
+      const frame = node as unknown as FrameNode;
+      await this.clear(frame);
+      this.layout(frame, model.layout, isAuto(parent), at);
+      this.padding(frame, model.padding, at);
+      await this.appearance(frame, plain, at);
+      const kept: Kept = new Map(node.children.filter((n) => ref(n, "slot")).map((n) => [ref(n, "slot"), n]));
+      if (name === "Text") await this.text(frame, model, kept, at);
+      else if (name === "Image") await this.source(frame, model.source, model.layout, true, kept, at);
+      else if (name === "Badge") await this.badge(frame, model, kept, at);
+      if (plain.overlay) this.overlay(frame, plain, kept, at);
+      // Слои компонента, которых нет в модели, скрываются: менять состав экземпляра Figma не даёт.
+      for (const leftover of kept.values()) leftover.visible = false;
+      this.collapseEmpty(frame, model.layout);
+      if (old && old !== node && !old.removed) old.remove();
+      return frame;
+    } catch (e) {
+      node.remove();
+      this.warn(at, `экземпляр не построен, нарисовано телом: ${(e as Error).message}`);
+      return undefined;
+    }
+  }
+
+  /** Figma-компонент и значения его variant-свойств для модели (разделы 4.1, правила 12–13, и 10.5). */
+  private target(name: string, model: Base, contract: Id): [Id, Record<string, string>] {
+    if (name === "Image") return [contract, { source: variant(model.source)[0] }];
+    if (name === "Badge") return [contract, { content: model.content === undefined ? "none" : variant(model.content)[0] }];
+    const [kind, value] = variant<{ spans: Span[] }>(model.content);
+    const spans = kind === "rich" ? value.spans : [];
+    const edge = spans.length > 1 && ("icon" in spans[0] || "icon" in spans[spans.length - 1]);
+    return [edge ? `${contract}#icon` : contract, {}];
+  }
+
   /** Пустой фрейм Auto Layout в Figma не сжимается: при `hug` его размер — сумма отступов, как на платформах. */
   private collapseEmpty(frame: FrameNode, layout: Layout) {
     if (frame.layoutMode === "NONE" || frame.children.some((n) => !("layoutPositioning" in n) || n.layoutPositioning === "AUTO")) return;
@@ -276,6 +362,13 @@ export class Renderer {
       if (slot && !kept.has(slot)) kept.set(slot, child);
       else child.remove();
     }
+    await this.clear(frame);
+    frame.layoutMode = "NONE";
+    return kept;
+  }
+
+  /** Сбрасывает оформление и ограничения размера корня: значения задаёт модель. */
+  private async clear(frame: FrameNode) {
     for (const field of BOUND_FIELDS) {
       if (frame.boundVariables?.[field as keyof typeof frame.boundVariables]) frame.setBoundVariable(field, null);
     }
@@ -286,8 +379,13 @@ export class Renderer {
     frame.cornerRadius = 0;
     frame.clipsContent = false;
     if (frame.layoutMode !== "NONE") frame.minWidth = frame.maxWidth = frame.minHeight = frame.maxHeight = null;
-    frame.layoutMode = "NONE";
-    return kept;
+  }
+
+  /** Добавляет слой в корень; у экземпляра слои уже на месте, а менять их порядок Figma не даёт. */
+  private attach(frame: FrameNode, node: SceneNode, first = false) {
+    if ((frame as SceneNode).type === "INSTANCE") return;
+    if (first) frame.insertChild(0, node);
+    else frame.appendChild(node);
   }
 
   /** Слой с местом `slot`: прежний того же вида или новый (раздел 7, правило 8). */
@@ -301,6 +399,7 @@ export class Renderer {
       node = create();
     }
     mark(node, slot, "slot");
+    node.visible = true;
     return node;
   }
 
@@ -442,7 +541,7 @@ export class Renderer {
   /** Наложение — верхний слой корня поверх детей (раздел 10.2, правило 3). */
   private overlay(frame: FrameNode, plain: Plain, kept: Kept, at: string) {
     const layer = this.take(kept, "overlay", "RECTANGLE", () => figma.createRectangle());
-    frame.appendChild(layer);
+    this.attach(frame, layer);
     layer.name = "overlay";
     mark(layer, "overlay", "role");
     if (frame.layoutMode !== "NONE") layer.layoutPositioning = "ABSOLUTE";
@@ -751,7 +850,7 @@ export class Renderer {
       }
     }
     const node = await this.textNode(kept, "text", parts.map((p) => p.value).join(""), typography, color, at);
-    frame.appendChild(node);
+    this.attach(frame, node);
     node.name = "text";
     let start = 0;
     for (const part of parts) {
@@ -794,8 +893,7 @@ export class Renderer {
       const role = span.icon.typography ?? typography;
       const instance = await this.icon(kept, index === 0 ? "leadingIcon" : "trailingIcon", span.icon.name, span.icon.color ?? color, at);
       if (!instance) continue;
-      if (index === 0) frame.insertChild(0, instance);
-      else frame.appendChild(instance);
+      this.attach(frame, instance, index === 0);
       const size = this.tokens.textStyle(role)?.fontSize ?? instance.height;
       instance.resize(size, size);
       const variable = this.tokens.variable(TYPOGRAPHY, `${role}/fontSize`);
@@ -819,7 +917,7 @@ export class Renderer {
     if (this.library) {
       // В библиотеке вместо картинки по адресу — нейтральная заливка (раздел 4.1, правило 12).
       const layer = this.take(kept, "image", "RECTANGLE", () => figma.createRectangle());
-      frame.appendChild(layer);
+      this.attach(frame, layer);
       layer.name = "image";
       if (layout.width.sizing !== "hug") layer.layoutSizingHorizontal = "FILL";
       if (layout.height.sizing !== "hug") layer.layoutSizingVertical = "FILL";
@@ -832,13 +930,19 @@ export class Renderer {
       image = await figma.createImageAsync(remote.origin.url);
       size = await image.getSizeAsync();
     } catch (e) {
+      if ((frame as SceneNode).type === "INSTANCE") {
+        // В экземпляре варианта remote нет слоя символа: остаётся заглушка компонента.
+        kept.delete("image");
+        this.warn(at, `картинка ${remote.origin.url} не загрузилась, показана заглушка: ${(e as Error).message}`);
+        return;
+      }
       const fallback = remote.error ?? remote.placeholder;
       this.warn(at, `картинка ${remote.origin.url} не загрузилась${fallback ? `, показан символ ${fallback.icon.name}` : ""}: ${(e as Error).message}`);
       if (fallback) await this.resource(frame, fallback, undefined, kept, at);
       return;
     }
     const layer = this.take(kept, "image", "RECTANGLE", () => figma.createRectangle());
-    frame.appendChild(layer);
+    this.attach(frame, layer);
     layer.name = "image";
     layer.resize(size.width, size.height);
     if (layout.width.sizing !== "hug") layer.layoutSizingHorizontal = "FILL";
@@ -850,7 +954,7 @@ export class Renderer {
   private async resource(frame: FrameNode, resource: Resource, fitTo: Layout | undefined, kept: Kept, at: string) {
     const instance = await this.icon(kept, "icon", resource.icon.name, resource.icon.color, at);
     if (!instance) return;
-    frame.appendChild(instance);
+    this.attach(frame, instance);
     if (fitTo && (fitTo.width.sizing !== "hug" || fitTo.height.sizing !== "hug")) {
       this.placements.push(() => {
         const scales = [
@@ -884,7 +988,7 @@ export class Renderer {
       const [kind, value] = variant<{ value: string; typography: string; color: string }>(model.content);
       if (kind === "text") {
         const node = await this.textNode(kept, "text", value.value, value.typography, value.color, at);
-        frame.appendChild(node);
+        this.attach(frame, node);
         node.name = "text";
         node.textAutoResize = "WIDTH_AND_HEIGHT";
       } else {
