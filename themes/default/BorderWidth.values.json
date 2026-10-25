@@ -1,5 +1,5 @@
 {
-  "$ref": "../../schemas/foundation/borderWidth/BorderWidth",
+  "$ref": "foundation/borderWidth/BorderWidth",
   "valueType": "integer",
   "modes": [
     {

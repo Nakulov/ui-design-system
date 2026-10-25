@@ -11,26 +11,28 @@
 
 ## Состав
 
-| Файл                                   | Роль                                                                       |
-|----------------------------------------|----------------------------------------------------------------------------|
-| `Container.json`                       | Публичный контракт: способ расположения и дети.                            |
-| `ContainerArrangement.json`            | Способ расположения: строка, колонка, перенос, наложение.                  |
-| `ContainerHorizontal.json`             | Строка: выравнивание по вертикали, распределение.                          |
-| `ContainerVertical.json`               | Колонка: выравнивание по горизонтали, распределение.                       |
-| `ContainerHorizontalWrap.json`         | Строка с переносом: выравнивание, распределение в строке и строк.          |
-| `ContainerVerticalWrap.json`           | Колонка с переносом: выравнивание, распределение в колонке и колонок.      |
-| `ContainerOverlay.json`                | Наложение: положение детей по обеим осям.                                  |
-| `ContainerHorizontalDistribution.json` | Распределение в строке: `packed` или `spaceBetween`.                       |
-| `ContainerVerticalDistribution.json`   | Распределение в колонке: `packed` или `spaceBetween`.                      |
-| `ContainerHorizontalPacked.json`       | Дети строки вместе: промежуток и положение группы.                         |
-| `ContainerVerticalPacked.json`         | Дети колонки вместе: промежуток и положение группы.                        |
-| `ContainerLineDistribution.json`       | Распределение строк или колонок при переносе: `packed` или `spaceBetween`. |
-| `ContainerLinePacked.json`             | Строки или колонки вместе: промежуток.                                     |
-| `ContainerDistributionMode.json`       | Перечисление распределений без параметров: `spaceBetween`.                 |
-| `ContainerHorizontalAlignment.json`    | Положение по горизонтали: `start`, `center`, `end`.                        |
-| `ContainerVerticalAlignment.json`      | Положение по вертикали: `top`, `center`, `bottom`.                         |
-| `ContainerRowAlignment.json`           | Выравнивание в строке: `top`, `center`, `bottom`, `baseline`.              |
-| `samples/`                             | Примеры моделей: `min.json`, `max.json`.                                   |
+| Файл                                               | Роль                                                                       |
+|----------------------------------------------------|----------------------------------------------------------------------------|
+| `Container.json`                                   | Публичный контракт: способ расположения и дети.                            |
+| `definitions/ContainerArrangement.json`            | Способ расположения: строка, колонка, перенос, наложение.                  |
+| `definitions/ContainerHorizontal.json`             | Строка: выравнивание по вертикали, распределение.                          |
+| `definitions/ContainerVertical.json`               | Колонка: выравнивание по горизонтали, распределение.                       |
+| `definitions/ContainerHorizontalWrap.json`         | Строка с переносом: выравнивание, распределение в строке и строк.          |
+| `definitions/ContainerVerticalWrap.json`           | Колонка с переносом: выравнивание, распределение в колонке и колонок.      |
+| `definitions/ContainerOverlay.json`                | Наложение: положение детей по обеим осям.                                  |
+| `definitions/ContainerHorizontalDistribution.json` | Распределение в строке: `packed` или `spaceBetween`.                       |
+| `definitions/ContainerVerticalDistribution.json`   | Распределение в колонке: `packed` или `spaceBetween`.                      |
+| `definitions/ContainerHorizontalPacked.json`       | Дети строки вместе: промежуток и положение группы.                         |
+| `definitions/ContainerVerticalPacked.json`         | Дети колонки вместе: промежуток и положение группы.                        |
+| `definitions/ContainerLineDistribution.json`       | Распределение строк или колонок при переносе: `packed` или `spaceBetween`. |
+| `definitions/ContainerLinePacked.json`             | Строки или колонки вместе: промежуток.                                     |
+| `definitions/ContainerDistributionMode.json`       | Перечисление распределений без параметров: `spaceBetween`.                 |
+| `definitions/ContainerHorizontalAlignment.json`    | Положение по горизонтали: `start`, `center`, `end`.                        |
+| `definitions/ContainerVerticalAlignment.json`      | Положение по вертикали: `top`, `center`, `bottom`.                         |
+| `definitions/ContainerRowAlignment.json`           | Выравнивание в строке: `top`, `center`, `bottom`, `baseline`.              |
+| `docs.json`                                        | Манифест документации Figma: секции страницы и примеры.                    |
+| `changelog.json`                                   | Журнал изменений API.                                                      |
+| `samples/`                                         | Примеры моделей: `min.json`, `max.json`.                                   |
 
 ## Варианты
 

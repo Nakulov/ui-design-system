@@ -1,5 +1,5 @@
 {
-  "$ref": "../../schemas/foundation/size/Size",
+  "$ref": "foundation/size/Size",
   "valueType": "integer",
   "modes": [
     {

@@ -11,14 +11,14 @@
     },
     {
       "name": "min",
-      "$ref": "../../foundation/size/Size",
+      "$ref": "foundation/size/Size",
       "required": false,
       "sample": "xs",
       "description": "Минимальный размер"
     },
     {
       "name": "max",
-      "$ref": "../../foundation/size/Size",
+      "$ref": "foundation/size/Size",
       "required": false,
       "sample": { "custom": { "value": 240 } },
       "description": "Максимальный размер"

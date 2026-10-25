@@ -23,16 +23,16 @@
 
 Каждый компонент расширяет базовую модель `Component`. Её поля:
 
-| Поле         | Статус                  | Контракт                                    |
-|--------------|-------------------------|---------------------------------------------|
-| `id`         | Согласовано (раздел 5)  | свойство `Component`                        |
-| `layout`     | Согласовано (раздел 4)  | `schemas/core/layout/Layout`                |
-| `padding`    | Согласовано (раздел 6)  | `schemas/core/padding/Padding`              |
-| `appearance` | Согласовано (раздел 8)  | `schemas/core/appearance/Appearance`        |
-| `indicators` | Согласовано (раздел 12) | `schemas/core/component/ComponentIndicator` |
-| `events`     | Согласовано (раздел 7)  | `schemas/core/event/Event`                  |
+| Поле         | Статус                  | Контракт                            |
+|--------------|-------------------------|-------------------------------------|
+| `id`         | Согласовано (раздел 5)  | свойство `Component`                |
+| `layout`     | Согласовано (раздел 4)  | `core/layout/Layout`                |
+| `padding`    | Согласовано (раздел 6)  | `core/padding/Padding`              |
+| `appearance` | Согласовано (раздел 8)  | `core/appearance/Appearance`        |
+| `indicators` | Согласовано (раздел 12) | `core/component/ComponentIndicator` |
+| `events`     | Согласовано (раздел 7)  | `core/event/Event`                  |
 
-Базовая модель: `schemas/core/component/Component`.
+Базовая модель: `core/component/Component`.
 
 Остальные поля обсуждаются.
 
@@ -188,7 +188,7 @@ stroke:     { width: BorderWidth, color: ColorRole }                       — �
 
 ## 9. Контейнер
 
-`Container` (`schemas/components/container/Container`) — первый компонент: располагает детей в строку, в колонку (в том
+`Container` (`components/container/Container`) — первый компонент: располагает детей в строку, в колонку (в том
 числе с переносом) или наложением. Наследует `Component` (`extends`, `schema-format.md`, раздел 5.2).
 
 ```
@@ -238,7 +238,7 @@ children?: [Component]                            — любой компоне�
 
 ## 10. `Text`
 
-`Text` (`schemas/components/text/Text`) — простой текст или текст из фрагментов. Контексты оформления — `plain` и
+`Text` (`components/text/Text`) — простой текст или текст из фрагментов. Контексты оформления — `plain` и
 `control` (кликабельный текст с откликом корня).
 
 ```
@@ -282,7 +282,7 @@ TextSpan: oneOf
 
 ## 11. `Image`
 
-`Image` (`schemas/components/image/Image`) — символ из словаря темы или картинка, загружаемая по адресу. Контексты
+`Image` (`components/image/Image`) — символ из словаря темы или картинка, загружаемая по адресу. Контексты
 оформления — `plain` и `control`.
 
 ```
@@ -337,7 +337,7 @@ ComponentIndicator: { anchor: topStart | topEnd | bottomStart | bottomEnd,
 
 ## 13. `Badge`
 
-`Badge` (`schemas/components/badge/Badge`) — метка внимания: форма с текстом, символом или картинкой либо без
+`Badge` (`components/badge/Badge`) — метка внимания: форма с текстом, символом или картинкой либо без
 содержимого. Контекст оформления — только `plain`.
 
 ```

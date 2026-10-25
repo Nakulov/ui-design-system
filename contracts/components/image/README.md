@@ -16,18 +16,20 @@
 
 ## Состав
 
-| Файл                     | Роль                                                                       |
-|--------------------------|----------------------------------------------------------------------------|
-| `Image.json`             | Публичный контракт: источник изображения.                                  |
-| `ImageSource.json`       | Источник: `resource` или `remote`.                                         |
-| `ImageResource.json`     | Ресурс без загрузки: пока только `icon`; набор видов расширяется.          |
-| `ImageResourceIcon.json` | Символ: имя из словаря `Icon` и цвет `ColorRole`.                          |
-| `ImageRemote.json`       | Загружаемая картинка: адрес, вписывание, положение, заглушка, ошибка.      |
-| `ImageOrigin.json`       | Откуда загружается: пока только `url`; набор способов расширяется.         |
-| `ImageScale.json`        | Вписывание: `fit`, `crop`.                                                 |
-| `ImageAlignment.json`    | Положение картинки: девять точек от `topStart` до `bottomEnd`.             |
-| `Image.figma.json`       | Figma-компонент: образцы вариантов `source`.                               |
-| `samples/`               | Примеры: `min`, `max`, `icon`, `productPhoto`, `avatarOnline`, `appIcon`.  |
+| Файл                                 | Роль                                                                      |
+|--------------------------------------|---------------------------------------------------------------------------|
+| `Image.json`                         | Публичный контракт: источник изображения.                                 |
+| `definitions/ImageSource.json`       | Источник: `resource` или `remote`.                                        |
+| `definitions/ImageResource.json`     | Ресурс без загрузки: пока только `icon`; набор видов расширяется.         |
+| `definitions/ImageResourceIcon.json` | Символ: имя из словаря `Icon` и цвет `ColorRole`.                         |
+| `definitions/ImageRemote.json`       | Загружаемая картинка: адрес, вписывание, положение, заглушка, ошибка.     |
+| `definitions/ImageOrigin.json`       | Откуда загружается: пока только `url`; набор способов расширяется.        |
+| `definitions/ImageScale.json`        | Вписывание: `fit`, `crop`.                                                |
+| `definitions/ImageAlignment.json`    | Положение картинки: девять точек от `topStart` до `bottomEnd`.            |
+| `figma.json`                         | Figma-компонент: образцы вариантов `source`.                              |
+| `docs.json`                          | Манифест документации Figma: секции страницы и примеры.                   |
+| `changelog.json`                     | Журнал изменений API.                                                     |
+| `samples/`                           | Примеры: `min`, `max`, `icon`, `productPhoto`, `avatarOnline`, `appIcon`. |
 
 ## Варианты
 

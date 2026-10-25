@@ -17,12 +17,12 @@
       "examples": [
         {
           "id": "widthSizing",
-          "demo": "layout/widthSizing",
+          "demo": "widthSizing",
           "caption": "hug, fill и fixed xl3 по ширине одного родителя"
         },
         {
           "id": "minMax",
-          "demo": "layout/minMax",
+          "demo": "minMax",
           "caption": "min расширяет короткое содержимое, max ограничивает длинное"
         }
       ]
@@ -34,22 +34,22 @@
       "examples": [
         {
           "id": "pinnedCorners",
-          "demo": "layout/pinnedCorners",
+          "demo": "pinnedCorners",
           "caption": "pinned по углам со смещением s"
         },
         {
           "id": "pinnedStretch",
-          "demo": "layout/pinnedStretch",
+          "demo": "pinnedStretch",
           "caption": "stretch по ширине с отступами s"
         },
         {
           "id": "pinnedEdge",
-          "demo": "layout/pinnedEdge",
+          "demo": "pinnedEdge",
           "caption": "relativeTo edge: от края родителя"
         },
         {
           "id": "pinnedContent",
-          "demo": "layout/pinnedContent",
+          "demo": "pinnedContent",
           "caption": "relativeTo content: от области внутри отступов"
         }
       ]

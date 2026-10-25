@@ -12,14 +12,14 @@
     },
     {
       "name": "typography",
-      "$ref": "../../foundation/typographyRole/TypographyRole",
+      "$ref": "foundation/typographyRole/TypographyRole",
       "required": true,
       "sample": "labelSmall",
       "description": "Роль типографики"
     },
     {
       "name": "color",
-      "$ref": "../../foundation/colorRole/ColorRole",
+      "$ref": "foundation/colorRole/ColorRole",
       "required": true,
       "sample": "onError",
       "description": "Цвет текста: пара к фону, например onError на error"

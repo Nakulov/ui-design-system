@@ -2,14 +2,14 @@
 
 export const NAMESPACE = "uiContracts";
 
-export const COLOR = "schemas/foundation/colorRole/ColorRole";
-export const SPACING = "schemas/foundation/spacing/Spacing";
-export const SIZE = "schemas/foundation/size/Size";
-export const CORNER_RADIUS = "schemas/foundation/cornerRadius/CornerRadius";
-export const BORDER_WIDTH = "schemas/foundation/borderWidth/BorderWidth";
-export const ELEVATION = "schemas/foundation/elevation/Elevation";
-export const TYPOGRAPHY = "schemas/foundation/typographyRole/TypographyRole";
-export const ICON = "schemas/foundation/icon/Icon";
+export const COLOR = "foundation/colorRole/ColorRole";
+export const SPACING = "foundation/spacing/Spacing";
+export const SIZE = "foundation/size/Size";
+export const CORNER_RADIUS = "foundation/cornerRadius/CornerRadius";
+export const BORDER_WIDTH = "foundation/borderWidth/BorderWidth";
+export const ELEVATION = "foundation/elevation/Elevation";
+export const TYPOGRAPHY = "foundation/typographyRole/TypographyRole";
+export const ICON = "foundation/icon/Icon";
 
 type PluginData = { getSharedPluginData(namespace: string, key: string): string };
 type WritablePluginData = { setSharedPluginData(namespace: string, key: string, value: string): void };
@@ -20,6 +20,12 @@ export function ref(node: PluginData, key = "ref"): string {
 
 export function mark(node: WritablePluginData, value: string, key = "ref") {
   node.setSharedPluginData(NAMESPACE, key, value);
+}
+
+/** Главный контракт сущности: `<слой>/<сущность>/<Имя>`, имя — имя каталога сущности с заглавной (figma-mapping.md, раздел 7.1). */
+export function isMain(id: string): boolean {
+  const [, entity, name] = id.split("/");
+  return entity !== undefined && name === entity[0].toUpperCase() + entity.slice(1);
 }
 
 /** Префикс имён в Figma: имя контракта в lowerCamelCase без суффикса Role (`spacing/xs2`, `color/primary`). */

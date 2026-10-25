@@ -5,13 +5,13 @@
   "properties": [
     {
       "name": "top",
-      "$ref": "../../foundation/spacing/Spacing",
+      "$ref": "foundation/spacing/Spacing",
       "required": true,
       "description": "Смещение от верхней стороны"
     },
     {
       "name": "bottom",
-      "$ref": "../../foundation/spacing/Spacing",
+      "$ref": "foundation/spacing/Spacing",
       "required": true,
       "description": "Смещение от нижней стороны"
     }

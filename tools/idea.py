@@ -46,7 +46,7 @@ def json_schemas(registry):
             "      <map>\n"
             + entry("Контракт", "specifications/contract.schema.json", [item(p, "File") for p in contracts])
             + entry("Файл значений", "specifications/values.schema.json", [item("*.values.json", "Pattern")])
-            + entry("Журнал изменений", "specifications/changelog.schema.json", [item("*.changelog.json", "Pattern")])
+            + entry("Журнал изменений", "specifications/changelog.schema.json", [item("changelog.json", "Pattern")])
             + "      </map>\n"
             "    </state>\n"
             "  </component>\n"

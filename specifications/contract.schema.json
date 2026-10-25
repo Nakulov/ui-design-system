@@ -25,7 +25,7 @@
     },
     "extends": {
       "description": "Ссылка на базовую модель Component (раздел 5.2).",
-      "allOf": [{ "$ref": "#/$defs/ref" }, { "pattern": "(^|/)core/component/Component$" }]
+      "allOf": [{ "$ref": "#/$defs/ref" }, { "const": "core/component/Component" }]
     },
     "appearanceContext": {
       "description": "Контекст оформления компонента (раздел 5.2).",
@@ -88,9 +88,9 @@
       "not": { "type": "null" }
     },
     "ref": {
-      "description": "Путь относительно файла, без ведущего / и без .json (раздел 6).",
+      "description": "Имя контракта в своей сущности или теме либо идентификатор <слой>/<сущность>/<Имя> (раздел 6).",
       "type": "string",
-      "pattern": "^(?!/)(?!.*\\.json$).+$"
+      "pattern": "^([a-z][A-Za-z0-9]*/[a-z][A-Za-z0-9]*/)?[A-Z][A-Za-z0-9]*$"
     },
     "property": {
       "description": "Свойство объекта (раздел 5).",

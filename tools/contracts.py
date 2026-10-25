@@ -9,13 +9,16 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCHEMAS = ROOT / "schemas"
+CONTRACTS = ROOT / "contracts"
 THEMES = ROOT / "themes"
 ELEMENTS = ROOT / "figma" / "documentation" / "elements"  # элементы оформления документации (figma-documentation.md, раздел 5)
-PREVIEWS = ROOT / "figma" / "documentation" / "previews"  # превью величин foundation (figma-documentation.md, раздел 5)
-DEMOS = ROOT / "figma" / "documentation" / "demos"  # демонстрации core: demos/<сущность>/<имя>.json (figma-documentation.md, раздел 5)
-COMPONENT = "schemas/core/component/Component"
-APPEARANCE = "schemas/core/appearance/Appearance"
+DEFINITIONS = "definitions"  # вспомогательные определения сущности (раздел 11.1)
+PREVIEW = "preview.json"  # превью величин foundation (figma-documentation.md, раздел 5)
+DEMOS = "demos"  # демонстрации core: demos/<имя>.json (figma-documentation.md, раздел 5)
+SERVICE_FILES = {"README.md", "figma.json", "docs.json", "changelog.json", PREVIEW}  # раздел 11.1, правило 5
+SERVICE_DIRS = {DEFINITIONS, "samples", DEMOS}
+COMPONENT = "core/component/Component"
+APPEARANCE = "core/appearance/Appearance"
 SKIPPED = {"build", "figma-plugin"}  # верхние каталоги без контрактов
 
 PRIMITIVES = {
@@ -29,8 +32,9 @@ PRIMITIVES = {
 
 
 def is_contract(path):
-    """Контракт — <Имя>.json вне samples/; <Имя>.<вид>.json — не контракты (раздел 11.1, правила 5, 8)."""
-    return len(path.suffixes) == 1 and path != ROOT / "spec-versions.json" and not is_sample(path)
+    """Контракт — <Имя>.json вне samples/ и demos/, не служебный файл сущности (раздел 11.1, правила 5, 8)."""
+    return (len(path.suffixes) == 1 and path != ROOT / "spec-versions.json" and not is_sample(path)
+            and not is_element(path) and not (path.is_relative_to(CONTRACTS) and path.name in SERVICE_FILES))
 
 
 def is_sample(path):
@@ -39,7 +43,13 @@ def is_sample(path):
 
 def is_element(path):
     """Шаблон-модель документации: элемент оформления, превью величин или демонстрация."""
-    return path.parent in (ELEMENTS, PREVIEWS) or path.parent.parent == DEMOS
+    return path.parent == ELEMENTS or path.is_relative_to(CONTRACTS) and (path.name == PREVIEW or path.parent.name == DEMOS)
+
+
+def element_id(path):
+    """Ключ шаблона-модели в наборе: путь без .json от contracts/ или от корня репозитория (bundle-format.md, раздел 3.7)."""
+    base = CONTRACTS if path.is_relative_to(CONTRACTS) else ROOT
+    return path.relative_to(base).with_suffix("").as_posix()
 
 
 HOLE_KINDS = {"text", "spans", "component", "items"}
@@ -69,14 +79,29 @@ def is_skipped(path):
 
 def load_registry():
     """Контракты репозитория без проверки структуры — для инструментов, работающих с проверенным репозиторием."""
-    paths = [p for p in sorted(ROOT.rglob("*.json")) if is_contract(p) and not is_skipped(p) and not is_element(p)
+    paths = [p for p in sorted(ROOT.rglob("*.json")) if is_contract(p) and not is_skipped(p)
              and not p.relative_to(ROOT).parts[0] == "specifications"]
     return Registry([Contract(p, json.loads(p.read_text())) for p in paths])
 
 
-def ref_path(file, ref):
-    """Путь контракта по ссылке без расширения, относительно файла со ссылкой (раздел 6)."""
-    return (file.parent / f"{ref}.json").resolve()
+def scope(path):
+    """Область имён файла: `<слой>/<сущность>` в contracts/, иначе каталог от корня репозитория (раздел 6)."""
+    if path.is_relative_to(CONTRACTS):
+        return "/".join(path.relative_to(CONTRACTS).parts[:2])
+    return path.parent.relative_to(ROOT).as_posix()
+
+
+def ref_id(file, ref):
+    """Идентификатор контракта по ссылке: имя без `/` — в области имён файла, с `/` — идентификатор (раздел 6)."""
+    return ref if "/" in ref else f"{scope(file)}/{ref}"
+
+
+def id_path(ident):
+    """Файл контракта по идентификатору или None: в корне сущности, в её definitions/ или вне contracts/."""
+    *where, name = ident.split("/")
+    candidates = [CONTRACTS.joinpath(*where, f"{name}.json"), CONTRACTS.joinpath(*where, DEFINITIONS, f"{name}.json"),
+                  ROOT.joinpath(*where, f"{name}.json")] if len(where) == 2 else []
+    return next((p for p in candidates if p.is_file() and is_contract(p)), None)
 
 
 def pascal(name):
@@ -90,7 +115,8 @@ class Contract:
 
     @property
     def id(self):
-        return self.path.relative_to(ROOT).with_suffix("").as_posix()
+        """`<слой>/<сущность>/<Имя>` без корня и definitions/; вне contracts/ — путь от корня (figma-mapping.md, раздел 7.1)."""
+        return f"{scope(self.path)}/{self.path.stem}"
 
     @property
     def name(self):
@@ -101,19 +127,20 @@ class Contract:
         return self.data["type"]
 
     @property
+    def entity(self):
+        """Каталог сущности или None у внутреннего контракта."""
+        return CONTRACTS.joinpath(*scope(self.path).split("/")) if self.path.is_relative_to(CONTRACTS) else None
+
+    @property
     def layer(self):
-        parts = self.path.relative_to(ROOT).parts
-        return parts[1] if parts[0] == "schemas" and len(parts) > 2 else None
+        return scope(self.path).split("/")[0] if self.entity else None
 
     @property
     def kind(self):
         """public, helper или internal (раздел 11.1, правила 2, 3, 7)."""
-        if not self.path.is_relative_to(SCHEMAS):
+        if self.entity is None:
             return "internal"
-        entity = self.path.parent
-        if entity.parent.parent == SCHEMAS and self.path.stem == pascal(entity.name):
-            return "public"
-        return "helper"
+        return "public" if self.path.parent == self.entity and self.path.stem == pascal(self.entity.name) else "helper"
 
 
 @dataclass(eq=False)
@@ -131,13 +158,14 @@ class Variant:
 class Registry:
     def __init__(self, contracts):
         self.by_path = {c.path: c for c in contracts}
-        self.by_id = {c.id: c for c in contracts}
+        self.by_id = {c.id: c for c in sorted(contracts, key=lambda c: c.kind == "public")}  # при совпадении — главный
+        self.by_entity = {c.entity: c for c in contracts if c.kind == "public"}
 
     def __iter__(self):
         return iter(self.by_path.values())
 
     def resolve(self, contract, ref):
-        return self.by_path.get(ref_path(contract.path, ref)) if isinstance(ref, str) else None
+        return self.by_id.get(ref_id(contract.path, ref)) if isinstance(ref, str) else None
 
     def properties(self, contract):
         """Свойства объекта; у компонента — сначала свойства Component (раздел 5.2)."""

@@ -1,7 +1,7 @@
 # Формат набора данных плагина
 
 **Статус:** Черновик для согласования  
-**Версия спецификации:** 0.7
+**Версия спецификации:** 0.8
 
 ## 1. Назначение
 
@@ -16,11 +16,12 @@
 
 ## 2. Идентификаторы
 
-1. Идентификатор сущности — путь её файла от корня репозитория без расширения `.json`, например
-   `schemas/components/badge/Badge`. Он совпадает с ключом `ref` в `sharedPluginData` объектов Figma
-   (`figma-mapping.md`, раздел 7.1).
+1. Идентификатор контракта — логический `<слой>/<сущность>/<Имя>` без корня `contracts/` и без `definitions/`,
+   например `components/badge/Badge` и `components/badge/BadgeContent`; у внутреннего контракта темы — путь от
+   корня репозитория без `.json`, например `themes/default/ColorPalette` (`schema-format.md`, раздел 6). Он
+   совпадает с ключом `ref` в `sharedPluginData` объектов Figma (`figma-mapping.md`, раздел 7.1).
 2. Вариант, пример или символ указывается после `#`: `themes/default/ColorPalette#gold68`,
-   `schemas/components/badge/Badge#count`, `schemas/foundation/icon/Icon#close`.
+   `components/badge/Badge#count`, `foundation/icon/Icon#close`.
 
 ## 3. Структура
 
@@ -29,22 +30,22 @@
   "specVersions": { "schemaFormat": "0.18", "figmaMapping": "0.16", "documentationManifest": "0.3", "bundleFormat": "0.2" },
   "theme": "default",
   "contracts": {
-    "schemas/components/badge/Badge": { "name": "Badge", "extends": "schemas/core/component/Component", "…": "…" }
+    "components/badge/Badge": { "name": "Badge", "extends": "core/component/Component", "…": "…" }
   },
   "values": {
-    "schemas/foundation/colorRole/ColorRole": {
+    "foundation/colorRole/ColorRole": {
       "valueType": "color",
       "modes": [
         { "name": "light", "values": { "primary": { "alias": "themes/default/ColorPalette#gold68" } } }
       ]
     }
   },
-  "figma": { "schemas/foundation/spacing/Spacing": { "scopes": ["GAP"] } },
-  "samples": { "schemas/components/badge/Badge#count": { "Badge": { "…": "…" } } },
-  "icons": { "schemas/foundation/icon/Icon#close": { "svg": "<svg …>", "mirrored": false } },
-  "texts": { "schemas/components/badge/Badge": { "Назначение": "…", "Рекомендации по использованию": "…" } },
+  "figma": { "foundation/spacing/Spacing": { "scopes": ["GAP"] } },
+  "samples": { "components/badge/Badge#count": { "Badge": { "…": "…" } } },
+  "icons": { "foundation/icon/Icon#close": { "svg": "<svg …>", "mirrored": false } },
+  "texts": { "components/badge/Badge": { "Назначение": "…", "Рекомендации по использованию": "…" } },
   "documentation": { "figma/documentation/elements/heading": { "holes": { "…": "…" }, "model": { "Text": { "…": "…" } } } },
-  "manifests": { "schemas/core/layout/Layout": { "sections": [ { "id": "overview", "type": "overview" } ] } }
+  "manifests": { "core/layout/Layout": { "sections": [ { "id": "overview", "type": "overview" } ] } }
 }
 ```
 
@@ -54,7 +55,7 @@
 | `theme`         | Имя темы. Пока всегда `default`.                                                 |
 | `contracts`     | Все контракты репозитория по идентификаторам (раздел 3.1).                       |
 | `values`        | Файлы значений темы по идентификатору контракта, к которому они относятся (3.2). |
-| `figma`         | Файлы `<Имя>.figma.json` по идентификатору контракта (раздел 3.6).               |
+| `figma`         | Файлы `figma.json` по идентификатору контракта (раздел 3.6).                     |
 | `samples`       | Примеры моделей из каталогов `samples/` (раздел 3.3).                            |
 | `icons`         | Рисунки символов (раздел 3.4).                                                   |
 | `texts`         | Разделы README сущностей (раздел 3.5).                                           |
@@ -70,7 +71,7 @@
 ### 3.2. Значения
 
 1. Ключ — идентификатор контракта, на который ссылается `$ref` файла значений, например
-   `schemas/foundation/spacing/Spacing` или `themes/default/ColorPalette` для внутреннего контракта темы.
+   `foundation/spacing/Spacing` или `themes/default/ColorPalette` для внутреннего контракта темы.
 2. `valueType` — примитив строкой или `{ "$ref": "<идентификатор>" }`.
 3. `modes` — массив режимов в порядке файла значений; первый режим — режим по умолчанию.
 4. Алиас (`schema-format.md`, раздел 9.3) не разворачивается в величину и записывается как
@@ -97,24 +98,24 @@
 
 ### 3.6. Отображение в Figma
 
-1. Ключ — идентификатор контракта, на который ссылается `$ref` файла `<Имя>.figma.json` (`figma-mapping.md`,
+1. Ключ — идентификатор контракта, на который ссылается `$ref` файла `figma.json` (`figma-mapping.md`,
    раздел 6).
 2. Значение — содержимое файла без `$ref`. Ссылки внутри, если появятся, переписываются по разделу 3.1.
 
 ### 3.7. Элементы оформления документации
 
-1. Ключ — путь файла от корня репозитория без `.json`: элемента оформления, например
-   `figma/documentation/elements/heading`, превью величин, например `figma/documentation/previews/spacing`, или
-   демонстрации, например `figma/documentation/demos/layout/widthSizing`.
+1. Ключ — путь файла без `.json`: превью величин и демонстрации лежат в сущности, и путь берётся от `contracts/`,
+   например `foundation/spacing/preview` и `core/layout/demos/widthSizing`; элемент оформления — от корня
+   репозитория, например `figma/documentation/elements/heading`.
 2. Значение — содержимое файла как есть: `holes` и `model` (`figma-documentation.md`, раздел 5).
 
 ### 3.8. Манифесты документации
 
-1. Ключ — идентификатор контракта, на который ссылается `$ref` манифеста `<Имя>.docs.json`
+1. Ключ — идентификатор контракта, на который ссылается `$ref` манифеста `docs.json`
    (`documentation-manifest.md`, раздел 3).
 2. Значение — содержимое манифеста без `$ref`; `demo` примеров заменено идентификатором демонстрации в
-   `documentation` (раздел 3.7), например `figma/documentation/demos/layout/widthSizing`, а `sample` — ключом примера в
-   `samples` (раздел 3.3), например `schemas/components/text/Text#label` для `label` в манифесте `Text` и для
+   `documentation` (раздел 3.7), например `core/layout/demos/widthSizing`, а `sample` — ключом примера в
+   `samples` (раздел 3.3), например `components/text/Text#label` для `label` в манифесте `Text` и для
    `Text#label` в манифесте другого компонента.
 3. Каждая демонстрация манифеста есть в `documentation`, каждый пример — в `samples`.
 

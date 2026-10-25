@@ -1,7 +1,7 @@
 {
   "name": "Image",
   "type": "object",
-  "extends": "../../core/component/Component",
+  "extends": "core/component/Component",
   "appearanceContext": [
     "plain",
     "control"

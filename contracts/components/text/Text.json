@@ -1,7 +1,7 @@
 {
   "name": "Text",
   "type": "object",
-  "extends": "../../core/component/Component",
+  "extends": "core/component/Component",
   "appearanceContext": [
     "plain",
     "control"
@@ -21,7 +21,7 @@
     },
     {
       "name": "typography",
-      "$ref": "../../foundation/typographyRole/TypographyRole",
+      "$ref": "foundation/typographyRole/TypographyRole",
       "required": true,
       "description": "Роль типографики всего текста: шрифт, размер, межстрочный интервал"
     },

@@ -9,7 +9,7 @@
   },
   "oneOf": [
     {
-      "$ref": "../../foundation/spacing/Spacing",
+      "$ref": "foundation/spacing/Spacing",
       "name": "all"
     },
     {

@@ -12,13 +12,13 @@
     },
     {
       "name": "typography",
-      "$ref": "../../foundation/typographyRole/TypographyRole",
+      "$ref": "foundation/typographyRole/TypographyRole",
       "required": false,
       "description": "Роль типографики фрагмента"
     },
     {
       "name": "color",
-      "$ref": "../../foundation/colorRole/ColorRole",
+      "$ref": "foundation/colorRole/ColorRole",
       "required": false,
       "description": "Цвет фрагмента"
     },
@@ -30,7 +30,7 @@
     },
     {
       "name": "click",
-      "$ref": "../../core/event/EventData",
+      "$ref": "core/event/EventData",
       "required": false,
       "description": "Нажатие на фрагмент (ссылка): данные о том, что нужно сделать",
       "releaseVersions": {

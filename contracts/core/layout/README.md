@@ -10,22 +10,25 @@
 
 ## Состав
 
-| Файл                              | Роль                                                             |
-|-----------------------------------|------------------------------------------------------------------|
-| `Layout.json`                     | Публичный контракт: ширина, высота, положение.                   |
-| `LayoutDimension.json`            | Размер по оси: способ задания, минимум, максимум.                |
-| `LayoutSizing.json`               | Способ задания размера: `hug`, `fill` или `fixed`.               |
-| `LayoutSizingMode.json`           | Перечисление способов без величины: `hug`, `fill`.               |
-| `LayoutPosition.json`             | Положение: `flow` или `pinned`.                                  |
-| `LayoutPositionMode.json`         | Перечисление положений без параметров: `flow`.                   |
-| `LayoutPinned.json`               | Закрепление относительно родителя.                               |
-| `LayoutPinHorizontal.json`        | Закрепление по горизонтали: `start`, `end`, `center`, `stretch`. |
-| `LayoutPinVertical.json`          | Закрепление по вертикали: `top`, `bottom`, `center`, `stretch`.  |
-| `LayoutPinOffset.json`            | Закрепление к стороне или центру со смещением.                   |
-| `LayoutPinStretchHorizontal.json` | Растяжение между левой и правой сторонами.                       |
-| `LayoutPinStretchVertical.json`   | Растяжение между верхней и нижней сторонами.                     |
-| `LayoutPinReference.json`         | Точка отсчёта смещений: `edge`, `content`.                       |
-| `samples/`                        | Примеры значений: `min.json`, `max.json`.                        |
+| Файл                                          | Роль                                                             |
+|-----------------------------------------------|------------------------------------------------------------------|
+| `Layout.json`                                 | Публичный контракт: ширина, высота, положение.                   |
+| `definitions/LayoutDimension.json`            | Размер по оси: способ задания, минимум, максимум.                |
+| `definitions/LayoutSizing.json`               | Способ задания размера: `hug`, `fill` или `fixed`.               |
+| `definitions/LayoutSizingMode.json`           | Перечисление способов без величины: `hug`, `fill`.               |
+| `definitions/LayoutPosition.json`             | Положение: `flow` или `pinned`.                                  |
+| `definitions/LayoutPositionMode.json`         | Перечисление положений без параметров: `flow`.                   |
+| `definitions/LayoutPinned.json`               | Закрепление относительно родителя.                               |
+| `definitions/LayoutPinHorizontal.json`        | Закрепление по горизонтали: `start`, `end`, `center`, `stretch`. |
+| `definitions/LayoutPinVertical.json`          | Закрепление по вертикали: `top`, `bottom`, `center`, `stretch`.  |
+| `definitions/LayoutPinOffset.json`            | Закрепление к стороне или центру со смещением.                   |
+| `definitions/LayoutPinStretchHorizontal.json` | Растяжение между левой и правой сторонами.                       |
+| `definitions/LayoutPinStretchVertical.json`   | Растяжение между верхней и нижней сторонами.                     |
+| `definitions/LayoutPinReference.json`         | Точка отсчёта смещений: `edge`, `content`.                       |
+| `docs.json`                                   | Манифест документации Figma: секции страницы и примеры.          |
+| `changelog.json`                              | Журнал изменений API.                                            |
+| `demos/`                                      | Демонстрации для страницы документации Figma.                    |
+| `samples/`                                    | Примеры значений: `min.json`, `max.json`.                        |
 
 ## Варианты
 

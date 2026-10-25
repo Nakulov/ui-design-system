@@ -9,7 +9,7 @@
       "inline": true
     },
     {
-      "$ref": "../../foundation/size/Size",
+      "$ref": "foundation/size/Size",
       "name": "fixed"
     }
   ]

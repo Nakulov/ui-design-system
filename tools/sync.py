@@ -9,7 +9,7 @@
 import sys
 
 import idea
-from contracts import ROOT, SCHEMAS, load_registry
+from contracts import CONTRACTS, ROOT, load_registry
 from samples import dumps, generate, render, required_samples
 
 
@@ -28,7 +28,7 @@ def main():
     write(idea.PATH, idea.json_schemas(registry))
 
     failed = False
-    for readme in sorted(SCHEMAS.glob("*/*/README.md")):
+    for readme in sorted(CONTRACTS.glob("*/*/README.md")):
         text, problems = render(readme)
         for problem in problems:
             print(f"{readme.relative_to(ROOT)}: {problem}")

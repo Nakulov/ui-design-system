@@ -1,5 +1,5 @@
 {
-  "$ref": "../../schemas/foundation/colorRole/ColorRole",
+  "$ref": "foundation/colorRole/ColorRole",
   "valueType": "color",
   "modes": [
     {

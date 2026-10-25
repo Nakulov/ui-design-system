@@ -16,19 +16,19 @@
     },
     {
       "name": "layout",
-      "$ref": "../layout/Layout",
+      "$ref": "core/layout/Layout",
       "required": true,
       "description": "Размеры и положение компонента внутри родителя"
     },
     {
       "name": "padding",
-      "$ref": "../padding/Padding",
+      "$ref": "core/padding/Padding",
       "required": true,
       "description": "Внутренние отступы корня компонента"
     },
     {
       "name": "appearance",
-      "$ref": "../appearance/Appearance",
+      "$ref": "core/appearance/Appearance",
       "required": true,
       "description": "Оформление корня компонента по состояниям: фон, тень, скругление, обводка, обрезка"
     },
@@ -45,7 +45,7 @@
       "name": "events",
       "type": "array",
       "items": {
-        "$ref": "../event/Event"
+        "$ref": "core/event/Event"
       },
       "uniqueVariants": true,
       "required": false,

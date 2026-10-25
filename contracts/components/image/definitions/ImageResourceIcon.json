@@ -5,13 +5,13 @@
   "properties": [
     {
       "name": "name",
-      "$ref": "../../foundation/icon/Icon",
+      "$ref": "foundation/icon/Icon",
       "required": true,
       "description": "Символ"
     },
     {
       "name": "color",
-      "$ref": "../../foundation/colorRole/ColorRole",
+      "$ref": "foundation/colorRole/ColorRole",
       "required": true,
       "sample": "onSurfaceMuted",
       "description": "Цвет символа"

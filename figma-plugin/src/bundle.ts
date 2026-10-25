@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.7";
+export const SUPPORTED_FORMAT = "0.8";
 
 /** Идентификатор сущности: путь от корня репозитория без .json; вариант — после «#» (раздел 2). */
 export type Id = string;
@@ -28,7 +28,7 @@ export type Values = {
 
 export type Icon = { svg: string; mirrored: boolean };
 
-/** Содержимое <Имя>.figma.json без $ref (раздел 3.6); у foundation-сущности — figma-mapping.md, раздел 6.3. */
+/** Содержимое figma.json без $ref (раздел 3.6); у foundation-сущности — figma-mapping.md, раздел 6.3. */
 export type FigmaProject = { scopes?: string[]; publish?: boolean; [field: string]: unknown };
 
 export type Bundle = {

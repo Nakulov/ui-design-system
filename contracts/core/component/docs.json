@@ -17,12 +17,12 @@
       "examples": [
         {
           "id": "anchors",
-          "demo": "component/indicatorAnchors",
+          "demo": "indicatorAnchors",
           "caption": "anchor: центр индикатора — в точке угла формы"
         },
         {
           "id": "cutout",
-          "demo": "component/indicatorCutout",
+          "demo": "indicatorCutout",
           "caption": "gap вырезает носитель вокруг индикатора"
         }
       ]

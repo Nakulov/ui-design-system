@@ -8,7 +8,7 @@
       "name": "text"
     },
     {
-      "$ref": "../image/ImageSource",
+      "$ref": "components/image/ImageSource",
       "name": "image"
     }
   ]

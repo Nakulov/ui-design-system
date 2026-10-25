@@ -39,6 +39,8 @@ def generate(registry, contract, mode):
     def value(kind, name, hint=None):
         if hint is not None:
             return hint
+        if kind is None:
+            return None  # ссылка не разрешилась: об этом сообщает проверка ссылок
         if isinstance(kind, str):
             return PLACEHOLDERS[kind](name)
         if kind.id == COMPONENT:

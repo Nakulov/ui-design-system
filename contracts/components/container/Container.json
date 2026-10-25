@@ -1,7 +1,7 @@
 {
   "name": "Container",
   "type": "object",
-  "extends": "../../core/component/Component",
+  "extends": "core/component/Component",
   "appearanceContext": [
     "plain",
     "control"
@@ -23,7 +23,7 @@
       "name": "children",
       "type": "array",
       "items": {
-        "$ref": "../../core/component/Component"
+        "$ref": "core/component/Component"
       },
       "required": false,
       "description": "Дети в порядке расположения; порядок совпадает с порядком слоёв в Figma. Если не заданы, контейнер — оформленный блок без содержимого"

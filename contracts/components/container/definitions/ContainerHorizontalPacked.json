@@ -5,7 +5,7 @@
   "properties": [
     {
       "name": "gap",
-      "$ref": "../../foundation/spacing/Spacing",
+      "$ref": "foundation/spacing/Spacing",
       "required": true,
       "description": "Промежуток между соседними детьми"
     },

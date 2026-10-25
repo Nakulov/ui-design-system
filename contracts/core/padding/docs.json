@@ -17,17 +17,17 @@
       "examples": [
         {
           "id": "all",
-          "demo": "padding/all",
+          "demo": "all",
           "caption": "all: одинаково со всех сторон"
         },
         {
           "id": "symmetric",
-          "demo": "padding/symmetric",
+          "demo": "symmetric",
           "caption": "symmetric: по горизонтали и вертикали"
         },
         {
           "id": "sides",
-          "demo": "padding/sides",
+          "demo": "sides",
           "caption": "sides: каждая сторона отдельно"
         }
       ]

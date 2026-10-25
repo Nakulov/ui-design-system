@@ -62,7 +62,7 @@ cd figma-plugin && npm ci && npm run build         # плагин: dist/
 |------------------------|---------------------------------------------|
 | Направление и этапы    | `ROADMAP.md`                                |
 | Спецификации           | `specifications/`                           |
-| Контракты, примеры     | `schemas/` (`samples/` в каталогах сущностей) |
+| Контракты, примеры     | `contracts/` (`samples/` в каталогах сущностей) |
 | Темы                   | `themes/`                                   |
 | Плагин                 | `figma-plugin/`                             |
 | Скиллы процесса        | `.claude/skills/groom`, `take`, `contract-authoring` |

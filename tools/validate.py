@@ -22,8 +22,9 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, COMPONENT, DEMOS, HOLE_KINDS, PREVIEWS, ROOT, SCHEMAS, THEMES, Contract, Registry, fill,
-                       is_contract, is_element, is_sample, is_skipped, pascal, ref_path)
+from contracts import (APPEARANCE, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PREVIEW, ROOT, SERVICE_DIRS,
+                       SERVICE_FILES, THEMES, Contract, Registry, fill, id_path, is_contract, is_element, is_sample,
+                       is_skipped, pascal, ref_id)
 import idea
 from samples import dumps, generate, render, required_samples
 
@@ -42,12 +43,12 @@ SPECS = {
 VERSION_RE = re.compile(r"^\*\*Версия спецификации:\*\*\s*(\S+)", re.M)
 
 # Символы: рисунки в теме проверяются как одноцветные SVG (foundation Icon, README).
-ICON = "schemas/foundation/icon/Icon"
+ICON = "foundation/icon/Icon"
 SVG_PAINTS = ("fill", "stroke", "stop-color", "color")
 SVG_NO_PAINT = {"none", "currentcolor", "inherit", "transparent"}
 
 # Типы, которые Figma не отображает (figma-mapping.md, раздел 4.1, правило 3).
-FIGMA_UNREPRESENTABLE = {"schemas/core/event/Event", "schemas/core/event/EventData"}
+FIGMA_UNREPRESENTABLE = {"core/event/Event", "core/event/EventData"}
 
 # Области применения переменных Figma по типу переменной (figma-mapping.md, раздел 6.3).
 FIGMA_SCOPES = {
@@ -67,6 +68,9 @@ README_SECTIONS = [
     "Назначение", "Состав", "Варианты", "Рекомендации по использованию", "Ограничения и открытые вопросы",
 ]
 LOWER_CAMEL = re.compile(r"[a-z][A-Za-z0-9]*")
+PASCAL = re.compile(r"[A-Z][A-Za-z0-9]*")
+# Ссылка: имя контракта в своей сущности или теме либо идентификатор (раздел 6).
+REF = re.compile(r"([a-z][A-Za-z0-9]*/[a-z][A-Za-z0-9]*/)?[A-Z][A-Za-z0-9]*")
 # Подмножество Markdown раздела «Рекомендации по использованию» (раздел 11.2): запрещённые конструкции.
 USAGE_SECTION = "Рекомендации по использованию"
 USAGE_FORBIDDEN = [
@@ -116,12 +120,12 @@ def walk(node):
 
 
 def refs(path, data):
-    """Пути всех ссылок файла: $ref, extends."""
+    """Идентификаторы всех ссылок файла: $ref, extends."""
     for node in walk(data):
         for key in ("$ref", "extends"):
             ref = node.get(key)
-            if isinstance(ref, str) and not ref.startswith("/") and not ref.endswith(".json"):
-                yield ref_path(path, ref)
+            if isinstance(ref, str) and REF.fullmatch(ref):
+                yield ref_id(path, ref)
 
 
 def check_refs(path, data):
@@ -129,31 +133,65 @@ def check_refs(path, data):
         for key in ("$ref", "extends"):
             ref = node.get(key)
             if isinstance(ref, str):
-                if ref.startswith("/") or ref.endswith(".json"):
-                    error(path, f"{key} «{ref}»: путь без ведущего / и без .json")
-                elif not ref_path(path, ref).is_file():
-                    error(path, f"{key} «{ref}»: файл не найден")
+                if not REF.fullmatch(ref):
+                    error(path, f"{key} «{ref}»: имя контракта или идентификатор <слой>/<сущность>/<Имя> (раздел 6)")
+                elif id_path(ref_id(path, ref)) is None:
+                    error(path, f"{key} «{ref}»: контракт не найден")
 
 
 # Организация файлов (разделы 10, 11).
 
 def entities():
-    """Каталоги сущностей: schemas/<слой>/<сущность>."""
-    for layer in sorted(p for p in SCHEMAS.iterdir() if p.is_dir()):
+    """Каталоги сущностей: contracts/<слой>/<сущность>."""
+    for layer in sorted(p for p in CONTRACTS.iterdir() if p.is_dir()):
         yield from sorted(p for p in layer.iterdir() if p.is_dir())
 
 
+def visible(path):
+    return not path.name.startswith(".")
+
+
+def check_layout():
+    """Раскладка contracts/: слои, сущности, служебные имена и definitions/ (раздел 11.1, правила 1–5)."""
+    for path in sorted(filter(visible, CONTRACTS.iterdir())):
+        if not path.is_dir():
+            error(path, "в contracts/ только каталоги слоёв (раздел 11.1, правило 1)")
+        elif path.name == "themes":
+            error(path, "слой themes не допускается: идентификаторы совпали бы с внутренними контрактами тем "
+                        "(раздел 11.1, правило 1)")
+        else:
+            for item in sorted(p for p in filter(visible, path.iterdir()) if not p.is_dir()):
+                error(item, "в каталоге слоя только каталоги сущностей (раздел 11.1, правило 1)")
+    for entity in entities():
+        main = f"{pascal(entity.name)}.json"
+        allowed = ", ".join([main, *sorted(SERVICE_FILES), *(f"{d}/" for d in sorted(SERVICE_DIRS))])
+        for item in sorted(filter(visible, entity.iterdir())):
+            if item.name not in (SERVICE_DIRS if item.is_dir() else SERVICE_FILES | {main}):
+                error(item, f"посторонний файл сущности, допустимы: {allowed} (раздел 11.1, правило 5)")
+        definitions = entity / DEFINITIONS
+        for item in sorted(filter(visible, definitions.iterdir())) if definitions.is_dir() else []:
+            if item.is_dir() or item.suffix != ".json" or not PASCAL.fullmatch(item.stem):
+                error(item, f"в {DEFINITIONS}/ только файлы <Имя>.json, без вложенных каталогов (раздел 11.1, правило 3)")
+            elif item.name == main:
+                error(item, f"имя совпадает с главным контрактом {main} (раздел 11.1, правило 3)")
+        for folder in ("samples", DEMOS):
+            for item in sorted(filter(visible, (entity / folder).iterdir())) if (entity / folder).is_dir() else []:
+                if item.is_dir() or item.suffix != ".json":
+                    error(item, f"в {folder}/ только файлы <имя>.json (раздел 11.1, правило 5)")
+
+
 def check_files(registry, referenced):
+    check_layout()
     for contract in registry:
         if contract.name != contract.path.stem:
             error(contract.path, f"name «{contract.name}» не совпадает с именем файла")
-        if contract.kind == "helper" and contract.path not in referenced:
+        if contract.kind == "helper" and contract.id not in referenced:
             error(contract.path, "вспомогательное определение, на которое никто не ссылается")
     for entity in entities():
         if not LOWER_CAMEL.fullmatch(entity.name):
             error(entity, "имя каталога сущности не в lowerCamelCase")
         if not (entity / f"{pascal(entity.name)}.json").is_file():
-            error(entity, f"нет публичного контракта {pascal(entity.name)}.json (раздел 11.1, правило 2)")
+            error(entity, f"нет главного контракта {pascal(entity.name)}.json (раздел 11.1, правило 2)")
         readme = entity / "README.md"
         if not readme.is_file():
             error(entity, "нет README.md (раздел 11.2)")
@@ -412,7 +450,7 @@ def check_component(registry, contract):
 def value_type(path, data, registry):
     """Тип величин файла: примитив или Contract; None, если ссылка не разрешилась."""
     kind = data["valueType"]
-    return kind if isinstance(kind, str) else registry.by_path.get(ref_path(path, kind["$ref"]))
+    return kind if isinstance(kind, str) else registry.by_id.get(ref_id(path, kind["$ref"]))
 
 
 def values_file(theme_file, target):
@@ -424,7 +462,7 @@ def values_file(theme_file, target):
 
 
 def check_values(registry, values, path, data):
-    target = registry.by_path.get(ref_path(path, data["$ref"]))
+    target = registry.by_id.get(ref_id(path, data["$ref"]))
     if target is None:
         return
     if target.kind == "helper":
@@ -500,7 +538,7 @@ def check_alias(registry, values, path, mode_name, alias, at):
     """Алиас разрешается, без циклов, с тем же valueType (раздел 9.3)."""
     origin, kind, seen = path, value_type(path, values[path], registry), set()
     while True:
-        target = registry.by_path.get(ref_path(path, alias["$ref"]))
+        target = registry.by_id.get(ref_id(path, alias["$ref"]))
         if target is None:
             return
         path = values_file(path, target)
@@ -542,13 +580,13 @@ def check_themes(registry, values):
 
 
 def check_figma_foundation(registry, values, figma):
-    """<Имя>.figma.json foundation-сущностей с примитивным valueType (figma-mapping.md, раздел 6.3)."""
+    """figma.json foundation-сущностей с примитивным valueType (figma-mapping.md, раздел 6.3)."""
     default = THEMES / "default"
     for contract in registry:
         if contract.kind != "public" or contract.layer != "foundation":
             continue
         data = values.get(default / f"{contract.name}.values.json")
-        path = contract.path.with_name(f"{contract.name}.figma.json")
+        path = contract.entity / "figma.json"
         primitive = data is not None and isinstance(data["valueType"], str)
         if not primitive:
             if path in figma:
@@ -606,13 +644,13 @@ def figma_mapping(registry, owner, prop):
 
 
 def check_figma_components(registry, figma):
-    """<Имя>.figma.json компонентов: образцы и переопределения свойств (figma-mapping.md, разделы 4, 6, 9)."""
+    """figma.json компонентов: образцы и переопределения свойств (figma-mapping.md, разделы 4, 6, 9)."""
     for contract in registry:
         if contract.kind != "public" or "extends" not in contract.data or contract.name == "Container":
             continue
         if contract.data.get("releaseVersions", {}).get("figma") == "willNotBeReleased":
             continue
-        path = contract.path.with_name(f"{contract.name}.figma.json")
+        path = contract.entity / "figma.json"
         project = figma.get(path)
         if not isinstance(project, dict):
             error(contract.path, f"нет {path.name}: образец Figma-компонента (figma-mapping.md, раздел 6)")
@@ -696,7 +734,7 @@ def check_elements(registry, elements):
         if not isinstance(data, dict) or set(data) != {"holes", "model"} or not isinstance(data["holes"], dict):
             error(path, "ожидается объект с полями holes и model (figma-documentation.md, раздел 5)")
             continue
-        if path.parent.parent == DEMOS and data["holes"]:
+        if path.parent.name == DEMOS and data["holes"]:
             error(path, "у демонстрации нет дырок: holes пустой (figma-documentation.md, раздел 5)")
         if path.read_text() != dumps(data):
             mismatch(path, path.read_text(), dumps(data), "формат не канонический: отступ 2, каждое поле на своей строке")
@@ -726,11 +764,11 @@ def check_previews(registry, values, elements):
     expected = {}
     for contract in registry:
         if contract.kind == "public" and contract.layer == "foundation" and THEMES / "default" / f"{contract.name}.values.json" in values:
-            expected[PREVIEWS / f"{contract.path.parent.name}.json"] = contract
+            expected[contract.entity / PREVIEW] = contract
     for path, contract in sorted(expected.items()):
         if path not in elements:
             error(contract.path, f"нет превью величин {path.relative_to(ROOT)} (figma-documentation.md, раздел 5)")
-    for path in sorted(p for p in elements if p.parent == PREVIEWS):
+    for path in sorted(p for p in elements if p.name == PREVIEW):
         if path not in expected:
             error(path, "превью без публичной foundation-сущности с файлом значений")
         elif set(elements[path].get("holes", {})) != {"value"}:
@@ -747,7 +785,7 @@ SAMPLE_SECTIONS = {"overview", "variants"}
 
 def manifest_owners(registry):
     """Сущности, у которых обязателен манифест: публичные компоненты и core, видимые в Figma (раздел 2)."""
-    return {contract.path.with_name(f"{contract.name}.docs.json"): contract for contract in registry
+    return {contract.entity / "docs.json": contract for contract in registry
             if contract.kind == "public" and contract.layer in ("components", "core")
             and contract.data.get("releaseVersions", {}).get("figma") != "willNotBeReleased"}
 
@@ -832,16 +870,16 @@ def check_manifests(registry, manifests, elements):
                     if sample_file(registry, owner, example.get("sample")) is None:
                         error(path, f"{where}: sample «{example.get('sample')}» — нет примера компонента; min и max не используются (раздел 5.1)")
                     continue
-                demo = DEMOS / f"{example.get('demo')}.json"
+                demo = owner.entity / DEMOS / f"{example.get('demo')}.json"
                 if not isinstance(example.get("demo"), str) or demo not in elements:
-                    error(path, f"{where}: demo «{example.get('demo')}» — нет файла в {DEMOS.relative_to(ROOT)} (раздел 5.2)")
+                    error(path, f"{where}: demo «{example.get('demo')}» — нет файла в {DEMOS}/ сущности (раздел 5.2)")
                 else:
                     used.add(demo)
             for name in duplicates(example_ids):
                 error(path, f"{at}: id примера «{name}» повторяется")
         for name in duplicates(ids):
             error(path, f"id секции «{name}» повторяется")
-    for path in sorted(p for p in elements if p.parent.parent == DEMOS and p not in used):
+    for path in sorted(p for p in elements if p.parent.name == DEMOS and p not in used):
         error(path, "демонстрация не используется ни одним манифестом")
 
 
@@ -850,10 +888,10 @@ def check_manifests(registry, manifests, elements):
 def changelog_targets(registry, public):
     """Пути target сущности: свойства, варианты и значения через точку от публичного контракта по ссылкам внутри
     каталога."""
-    entity, result = public.path.parent, set()
+    entity, result = public.entity, set()
 
     def visit(contract, prefix, seen):
-        if contract is None or contract.path.parent != entity or contract in seen:
+        if contract is None or contract.entity != entity or contract in seen:
             return
         seen = seen | {contract}
         for prop in contract.data.get("properties", []):
@@ -877,7 +915,7 @@ def covers(outer, inner):
 def check_changelogs(registry, changelogs):
     for entity in entities():
         name = pascal(entity.name)
-        path = entity / f"{name}.changelog.json"
+        path = entity / "changelog.json"
         if not path.is_file():
             error(entity, f"нет журнала изменений {path.name} (раздел 11.4)")
             continue
@@ -890,7 +928,7 @@ def check_changelogs(registry, changelogs):
         for newer, older in zip(entries, entries[1:]):
             if newer["date"] < older["date"]:
                 error(path, f"дата {older['date']} после {newer['date']}: записи идут от новых к старым")
-        public = registry.by_path.get(entity / f"{name}.json")
+        public = registry.by_entity.get(entity)
         if public is None:
             continue
         targets = changelog_targets(registry, public)
@@ -931,14 +969,17 @@ def check_changelog_entries(base):
     schema_format = json.loads((ROOT / "spec-versions.json").read_text())["schemaFormat"]
     if (old("spec-versions.json") or {}).get("schemaFormat") != schema_format:
         return
-    old_files = set(git("ls-tree", "-r", "--name-only", fork, "--", "schemas").split())
+    old_files = [ROOT / f for f in git("ls-tree", "-r", "--name-only", fork, "--", CONTRACTS.name).split()]
+
+    def entity_contracts(entity, files):
+        """Файлы контрактов сущности: главный в корне и вспомогательные в definitions/."""
+        return [f for f in files if f.parent in (entity, entity / DEFINITIONS) and is_contract(f)]
+
     for entity in entities():
-        name = pascal(entity.name)
-        path = entity / f"{name}.changelog.json"
-        directory = entity.relative_to(ROOT).as_posix()
-        now = {p.name: api(parse(p.read_text())) for p in entity.glob("*.json") if is_contract(p)}
-        before = {Path(f).name: api(old(f)) for f in old_files
-                  if f.endswith(".json") and Path(f).parent.as_posix() == directory and is_contract(ROOT / f)}
+        path = entity / "changelog.json"
+        current = [*entity.glob("*.json"), *entity.glob(f"{DEFINITIONS}/*.json")]
+        now = {p.name: api(parse(p.read_text())) for p in entity_contracts(entity, current)}
+        before = {p.name: api(old(p.relative_to(ROOT).as_posix())) for p in entity_contracts(entity, old_files)}
         if now == before or not path.is_file():
             continue
         entries = (parse(path.read_text()) or {}).get("entries")
@@ -994,11 +1035,12 @@ def main():
             continue
         check_refs(path, data)
         referenced.update(refs(path, data))
-        if path.name.endswith(".figma.json"):
+        service = path.is_relative_to(CONTRACTS) and path.name in SERVICE_FILES
+        if service and path.name == "figma.json":
             figma[path] = data
-        elif path.name.endswith(".docs.json"):
+        elif service and path.name == "docs.json":
             manifests[path] = data
-        elif path.name.endswith(".changelog.json"):
+        elif service and path.name == "changelog.json":
             if check_structure(path, data, CHANGELOG_SCHEMA):
                 changelogs[path] = data
         elif path.name.endswith(".values.json"):

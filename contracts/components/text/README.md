@@ -12,20 +12,22 @@
 
 ## Состав
 
-| Файл                  | Роль                                                                     |
-|-----------------------|--------------------------------------------------------------------------|
-| `Text.json`           | Публичный контракт: содержимое и стиль всего текста.                     |
-| `TextContent.json`    | Содержимое: `plain` (строка) или `rich` (фрагменты).                     |
-| `TextRich.json`       | Текст из фрагментов.                                                     |
-| `TextSpan.json`       | Фрагмент: `text` или `icon`; набор видов расширяется.                    |
-| `TextSpanText.json`   | Текстовый фрагмент: значение, стиль, нажатие.                            |
-| `TextSpanIcon.json`   | Символ внутри текста: имя из словаря `Icon`, роль, цвет.                 |
-| `TextColor.json`      | Заливка текста: `solid`; набор видов расширяется.                        |
-| `TextDecoration.json` | Линия: `underline`, `strikethrough`.                                     |
-| `TextAlignment.json`  | Выравнивание строк: `start`, `center`, `end`.                            |
-| `TextTruncation.json` | Место многоточия: `start`, `middle`, `end`.                              |
-| `Text.figma.json`     | Figma-компоненты `Text` и `text/icon`: образцы, свойства.                |
-| `samples/`            | Примеры: `min`, `max`, `priceWithLink`, `inStock`, `label`, `iconLabel`. |
+| Файл                              | Роль                                                                     |
+|-----------------------------------|--------------------------------------------------------------------------|
+| `Text.json`                       | Публичный контракт: содержимое и стиль всего текста.                     |
+| `definitions/TextContent.json`    | Содержимое: `plain` (строка) или `rich` (фрагменты).                     |
+| `definitions/TextRich.json`       | Текст из фрагментов.                                                     |
+| `definitions/TextSpan.json`       | Фрагмент: `text` или `icon`; набор видов расширяется.                    |
+| `definitions/TextSpanText.json`   | Текстовый фрагмент: значение, стиль, нажатие.                            |
+| `definitions/TextSpanIcon.json`   | Символ внутри текста: имя из словаря `Icon`, роль, цвет.                 |
+| `definitions/TextColor.json`      | Заливка текста: `solid`; набор видов расширяется.                        |
+| `definitions/TextDecoration.json` | Линия: `underline`, `strikethrough`.                                     |
+| `definitions/TextAlignment.json`  | Выравнивание строк: `start`, `center`, `end`.                            |
+| `definitions/TextTruncation.json` | Место многоточия: `start`, `middle`, `end`.                              |
+| `figma.json`                      | Figma-компоненты `Text` и `text/icon`: образцы, свойства.                |
+| `docs.json`                       | Манифест документации Figma: секции страницы и примеры.                  |
+| `changelog.json`                  | Журнал изменений API.                                                    |
+| `samples/`                        | Примеры: `min`, `max`, `priceWithLink`, `inStock`, `label`, `iconLabel`. |
 
 ## Варианты
 
@@ -266,7 +268,7 @@ sealed interface TextSpan {
   текста: у фрагмента цвет — `ColorRole`, потому что градиент на часть текста не поддерживает `AttributedString`.
 - Цвет текста по состояниям (например, у ссылки при нажатии) `control` не выражает: для этого нужен отдельный
   компонент.
-- В библиотеке Figma `Text` — образец `label`, `text/icon` — образец `iconLabel` (`Text.figma.json`). `content` —
+- В библиотеке Figma `Text` — образец `label`, `text/icon` — образец `iconLabel` (`figma.json`). `content` —
   text-свойство; `typography`, `color`, `decoration`, `alignment` и `maxLines` — переопределения текстового слоя, а не
   variant: дизайнер меняет их в панели текста. `truncation` в Figma не отображается: многоточие только в конце.
 - Значений по умолчанию в формате пока нет, поэтому `typography`, `color` и `alignment` обязательны.

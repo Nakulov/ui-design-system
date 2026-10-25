@@ -14,8 +14,14 @@ const LABEL_FONT: FontName = { family: "Inter", style: "Regular" };
 const GENERATED = ["min", "max"];
 /** Строка элементов оформления, превью и демонстраций документации (figma-documentation.md, раздел 5). */
 const DOCUMENTATION = "figma/documentation/elements";
-/** Демонстрации подписываются с сущностью: `Documentation#layout/widthSizing`. */
-const DEMOS = "figma/documentation/demos/";
+/** Превью и демонстрации лежат в сущности и подписываются с ней: `Documentation#layout/widthSizing`,
+ *  `Documentation#spacing/preview`; элементы оформления — по имени: `Documentation#heading`. */
+const IN_ENTITY = /^[a-z][A-Za-z0-9]*\/([a-z][A-Za-z0-9]*)\/(?:demos\/)?([a-z][A-Za-z0-9]*)$/;
+
+function label(key: string): string {
+  const match = key.startsWith(DOCUMENTATION) ? null : IN_ENTITY.exec(key);
+  return match ? `${match[1]}/${match[2]}` : key.split("/").pop()!;
+}
 
 /** Строка страницы: идентификатор, имя и карточки — ключ, подпись, модель. */
 type Row = { id: Id; name: string; cards: [string, string, unknown][] };
@@ -56,7 +62,7 @@ export class SamplesBuilder {
     const groups = new Map<Id, Row>();
     for (const [key, model] of Object.entries(this.bundle.samples)) {
       const contract = key.split("#")[0];
-      if (!contract.startsWith("schemas/components/")) continue;
+      if (!contract.startsWith("components/")) continue;
       const name = this.bundle.contracts[contract].name;
       const row = groups.get(contract) ?? { id: contract, name, cards: [] };
       row.cards.push([key, `${name}#${key.split("#")[1]}`, model]);
@@ -65,7 +71,7 @@ export class SamplesBuilder {
     const elements = Object.entries(this.bundle.documentation ?? {});
     const documentation: Row = {
       id: DOCUMENTATION, name: "Documentation",
-      cards: elements.map(([key, element]: [string, Element]) => [key, `Documentation#${key.startsWith(DEMOS) ? key.slice(DEMOS.length) : key.split("/").pop()}`,
+      cards: elements.map(([key, element]: [string, Element]) => [key, `Documentation#${label(key)}`,
         fill(element.model, Object.fromEntries(Object.entries(element.holes).map(([name, hole]) => [name, hole.sample])))]),
     };
     const ordered = [...groups.values()].sort((a, b) => a.id.localeCompare(b.id));

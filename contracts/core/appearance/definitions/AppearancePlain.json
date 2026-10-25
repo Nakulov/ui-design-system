@@ -12,13 +12,13 @@
     },
     {
       "name": "shadow",
-      "$ref": "../../foundation/elevation/Elevation",
+      "$ref": "foundation/elevation/Elevation",
       "required": false,
       "description": "Тень. Если не задана, тени нет"
     },
     {
       "name": "cornerRadius",
-      "$ref": "../../foundation/cornerRadius/CornerRadius",
+      "$ref": "foundation/cornerRadius/CornerRadius",
       "required": false,
       "description": "Скругление углов. Если не задано, углы прямые"
     },
