@@ -2,7 +2,8 @@
 """Проверка контрактов, файлов значений и версий спецификаций (schema-format.md, раздел 12).
 
 Запуск: python3 tools/validate.py [--base <git ref>]
-С --base дополнительно проверяется, что изменённые спецификации повысили версию.
+С --base дополнительно проверяется, что изменённые спецификации повысили версию, а изменённый API контрактов
+сущности записан в её журнал изменений.
 Выход 1, если найдены ошибки. Зависимости: pip install -r tools/requirements.txt.
 """
 
@@ -13,6 +14,7 @@ import re
 import subprocess
 import sys
 import xml.etree.ElementTree as ElementTree
+from pathlib import Path
 
 try:
     from jsonschema import Draft202012Validator
@@ -28,6 +30,7 @@ from samples import dumps, generate, render, required_samples
 # Мета-схемы структуры файлов (schema-format.md, раздел 12).
 CONTRACT_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/contract.schema.json").read_text()))
 VALUES_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/values.schema.json").read_text()))
+CHANGELOG_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/changelog.schema.json").read_text()))
 
 # Спецификации с версией в spec-versions.json (schema-format.md, раздел 11.3).
 SPECS = {
@@ -70,6 +73,8 @@ USAGE_FORBIDDEN = [
     (re.compile(r"^\s*\|"), "таблица"), (re.compile(r"^\s*(```|~~~)"), "блок кода"), (re.compile(r"^\s*#"), "подзаголовок"),
     (re.compile(r"^\s*>"), "цитата"), (re.compile(r"!\["), "картинка"), (re.compile(r"</?[A-Za-z!]"), "HTML"),
 ]
+# Поля контракта, изменение которых не меняет API и не требует записи в журнал (раздел 11.4).
+NOT_API = {"description", "sample", "releaseVersions"}
 DIFF_LINES = 40  # строк диффа на файл в сообщении об устаревшем файле
 
 errors = {}
@@ -77,6 +82,10 @@ errors = {}
 
 def error(path, message):
     errors.setdefault(f"{path.relative_to(ROOT)}: {message}")
+
+
+def git(*args):
+    return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True, check=True).stdout
 
 
 def json_files():
@@ -128,26 +137,31 @@ def check_refs(path, data):
 
 # Организация файлов (разделы 10, 11).
 
+def entities():
+    """Каталоги сущностей: schemas/<слой>/<сущность>."""
+    for layer in sorted(p for p in SCHEMAS.iterdir() if p.is_dir()):
+        yield from sorted(p for p in layer.iterdir() if p.is_dir())
+
+
 def check_files(registry, referenced):
     for contract in registry:
         if contract.name != contract.path.stem:
             error(contract.path, f"name «{contract.name}» не совпадает с именем файла")
         if contract.kind == "helper" and contract.path not in referenced:
             error(contract.path, "вспомогательное определение, на которое никто не ссылается")
-    for layer in sorted(p for p in SCHEMAS.iterdir() if p.is_dir()):
-        for entity in sorted(p for p in layer.iterdir() if p.is_dir()):
-            if not LOWER_CAMEL.fullmatch(entity.name):
-                error(entity, "имя каталога сущности не в lowerCamelCase")
-            if not (entity / f"{pascal(entity.name)}.json").is_file():
-                error(entity, f"нет публичного контракта {pascal(entity.name)}.json (раздел 11.1, правило 2)")
-            readme = entity / "README.md"
-            if not readme.is_file():
-                error(entity, "нет README.md (раздел 11.2)")
-                continue
-            sections = re.findall(r"^## (.+?)\s*$", readme.read_text(), re.M)
-            if sections != README_SECTIONS:
-                error(readme, f"разделы {sections}, ожидаются {README_SECTIONS} (раздел 11.2)")
-            check_usage(readme)
+    for entity in entities():
+        if not LOWER_CAMEL.fullmatch(entity.name):
+            error(entity, "имя каталога сущности не в lowerCamelCase")
+        if not (entity / f"{pascal(entity.name)}.json").is_file():
+            error(entity, f"нет публичного контракта {pascal(entity.name)}.json (раздел 11.1, правило 2)")
+        readme = entity / "README.md"
+        if not readme.is_file():
+            error(entity, "нет README.md (раздел 11.2)")
+            continue
+        sections = re.findall(r"^## (.+?)\s*$", readme.read_text(), re.M)
+        if sections != README_SECTIONS:
+            error(readme, f"разделы {sections}, ожидаются {README_SECTIONS} (раздел 11.2)")
+        check_usage(readme)
     for theme in sorted(p for p in THEMES.iterdir() if p.is_dir()):
         if not LOWER_CAMEL.fullmatch(theme.name):
             error(theme, "имя темы не в lowerCamelCase (раздел 9.4)")
@@ -831,6 +845,110 @@ def check_manifests(registry, manifests, elements):
         error(path, "демонстрация не используется ни одним манифестом")
 
 
+# Журнал изменений (раздел 11.4).
+
+def changelog_targets(registry, public):
+    """Пути target сущности: свойства, варианты и значения через точку от публичного контракта по ссылкам внутри
+    каталога."""
+    entity, result = public.path.parent, set()
+
+    def visit(contract, prefix, seen):
+        if contract is None or contract.path.parent != entity or contract in seen:
+            return
+        seen = seen | {contract}
+        for prop in contract.data.get("properties", []):
+            result.add(prefix + prop["name"])
+            ref = prop.get("$ref") or prop.get("items", {}).get("$ref")
+            visit(registry.resolve(contract, ref), f"{prefix}{prop['name']}.", seen)
+        for variant in registry.variants(contract):
+            result.add(prefix + variant.name)
+            if isinstance(variant.target, Contract):
+                visit(variant.target, f"{prefix}{variant.name}.", seen)
+
+    visit(public, "", frozenset())
+    return result
+
+
+def covers(outer, inner):
+    """Запись о target outer относится и к inner: та же цель, предок или сущность целиком."""
+    return outer is None or inner == outer or inner.startswith(outer + ".")
+
+
+def check_changelogs(registry, changelogs):
+    for entity in entities():
+        name = pascal(entity.name)
+        path = entity / f"{name}.changelog.json"
+        if not path.is_file():
+            error(entity, f"нет журнала изменений {path.name} (раздел 11.4)")
+            continue
+        data = changelogs.get(path)
+        if data is None:
+            continue
+        if data["$ref"] != name:
+            error(path, f"$ref «{data['$ref']}», ожидается публичный контракт каталога «{name}»")
+        entries = data["entries"]
+        for newer, older in zip(entries, entries[1:]):
+            if newer["date"] < older["date"]:
+                error(path, f"дата {older['date']} после {newer['date']}: записи идут от новых к старым")
+        public = registry.by_path.get(entity / f"{name}.json")
+        if public is None:
+            continue
+        targets = changelog_targets(registry, public)
+        for i, entry in enumerate(entries):
+            target = entry.get("target")
+            # Состояние цели определяет самая новая запись о её добавлении или удалении.
+            if target is None or any(covers(e.get("target"), target) and e["kind"] != "changed" for e in entries[:i]):
+                continue
+            if entry["kind"] == "removed" and target in targets:
+                error(path, f"target «{target}» удалён, но есть в контрактах каталога")
+            elif entry["kind"] != "removed" and target not in targets:
+                error(path, f"target «{target}» нет в контрактах каталога")
+
+
+def api(node):
+    """Контракт без полей, не влияющих на API (раздел 11.4)."""
+    if isinstance(node, dict):
+        return {key: api(value) for key, value in node.items() if key not in NOT_API}
+    if isinstance(node, list):
+        return [api(value) for value in node]
+    return node
+
+
+def check_changelog_entries(base):
+    """Изменённый API контрактов каталога записан в журнал новой записью с issue; перенос формата — исключение."""
+    fork = git("merge-base", base, "HEAD").strip()
+
+    def parse(text):
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            return None  # о некорректном JSON сообщает основная проверка
+
+    def old(path):
+        result = subprocess.run(["git", "show", f"{fork}:{path}"], cwd=ROOT, capture_output=True, text=True)
+        return parse(result.stdout) if result.returncode == 0 else None
+
+    schema_format = json.loads((ROOT / "spec-versions.json").read_text())["schemaFormat"]
+    if (old("spec-versions.json") or {}).get("schemaFormat") != schema_format:
+        return
+    old_files = set(git("ls-tree", "-r", "--name-only", fork, "--", "schemas").split())
+    for entity in entities():
+        name = pascal(entity.name)
+        path = entity / f"{name}.changelog.json"
+        directory = entity.relative_to(ROOT).as_posix()
+        now = {p.name: api(parse(p.read_text())) for p in entity.glob("*.json") if is_contract(p)}
+        before = {Path(f).name: api(old(f)) for f in old_files
+                  if f.endswith(".json") and Path(f).parent.as_posix() == directory and is_contract(ROOT / f)}
+        if now == before or not path.is_file():
+            continue
+        entries = (parse(path.read_text()) or {}).get("entries")
+        if not isinstance(entries, list):
+            continue
+        old_entries = (old(path.relative_to(ROOT).as_posix()) or {}).get("entries", [])
+        if not any(isinstance(e, dict) and "issue" in e for e in entries if e not in old_entries):
+            error(path, "контракты каталога изменили API, а новой записи с issue в журнале нет (раздел 11.4)")
+
+
 # Версии спецификаций (раздел 11.3).
 
 def check_spec_versions():
@@ -844,9 +962,6 @@ def check_spec_versions():
 
 
 def check_spec_bumps(base):
-    def git(*args):
-        return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True, check=True).stdout
-
     # Сравнение с точкой ответвления, включая незакоммиченные правки.
     fork = git("merge-base", base, "HEAD").strip()
     changed = git("diff", "--name-only", fork).split()
@@ -862,10 +977,10 @@ def check_spec_bumps(base):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--base", help="git ref, с которым сравниваются спецификации")
+    parser.add_argument("--base", help="git ref, с которым сравниваются спецификации и контракты")
     args = parser.parse_args()
 
-    contracts, values, figma, elements, manifests, referenced = [], {}, {}, {}, {}, set()
+    contracts, values, figma, elements, manifests, changelogs, referenced = [], {}, {}, {}, {}, {}, set()
     for path in json_files():
         try:
             data = json.loads(path.read_text())
@@ -883,6 +998,9 @@ def main():
             figma[path] = data
         elif path.name.endswith(".docs.json"):
             manifests[path] = data
+        elif path.name.endswith(".changelog.json"):
+            if check_structure(path, data, CHANGELOG_SCHEMA):
+                changelogs[path] = data
         elif path.name.endswith(".values.json"):
             if check_structure(path, data, VALUES_SCHEMA):
                 values[path] = data
@@ -909,10 +1027,12 @@ def main():
     check_overview()
     check_samples(registry)
     check_idea(registry)
+    check_changelogs(registry, changelogs)
 
     check_spec_versions()
     if args.base:
         check_spec_bumps(args.base)
+        check_changelog_entries(args.base)
 
     for line in errors:
         print(line)

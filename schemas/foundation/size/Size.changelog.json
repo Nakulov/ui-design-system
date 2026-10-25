@@ -1,0 +1,10 @@
+{
+  "$ref": "Size",
+  "entries": [
+    {
+      "date": "2026-10-21",
+      "kind": "added",
+      "description": "Сущность добавлена"
+    }
+  ]
+}

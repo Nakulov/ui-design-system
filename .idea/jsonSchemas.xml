@@ -396,6 +396,23 @@
             </SchemaInfo>
           </value>
         </entry>
+        <entry key="Журнал изменений">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Журнал изменений" />
+              <option name="relativePathToSchema" value="specifications/changelog.schema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="pattern" value="true" />
+                    <option name="path" value="*.changelog.json" />
+                    <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
       </map>
     </state>
   </component>
