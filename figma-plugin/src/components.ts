@@ -132,6 +132,9 @@ export class ComponentsBuilder {
       const name = variant.values.map(([property, value]) => `${property}=${value}`).join(", ");
       const node = old.get(name) ?? figma.createComponent();
       old.delete(name);
+      // Подмена символа в слое, привязанном к свойству, меняет значение свойства во всём наборе: привязки снимаются
+      // до отрисовки и ставятся заново в `properties`.
+      for (const layer of node.children) if (Object.keys(layer.componentPropertyReferences ?? {}).length) layer.componentPropertyReferences = {};
       (set ?? page).appendChild(node);
       await this.draw(node, variant, target, tokens);
       node.name = name;
@@ -166,11 +169,19 @@ export class ComponentsBuilder {
   /** Свойства Figma на слоях с местами `text`, `icon`, `leadingIcon`, `trailingIcon` (раздел 6.2, правило 4). */
   private async properties(owner: ComponentNode | ComponentSetNode, nodes: ComponentNode[], target: Target) {
     const isIcon = target.name === "text/icon";
-    for (const node of nodes) {
+    // Значение свойства одно на весь Component Set: его задаёт первый вариант со слоем, вариант с другим значением
+    // получает своё свойство `<имя> (<значения варианта>)` (раздел 6.2, правило 4).
+    const first = new Map<string, string | boolean>();
+    for (const [index, node] of nodes.entries()) {
+      const define = (name: string, type: "TEXT" | "BOOLEAN" | "INSTANCE_SWAP", value: string | boolean) => {
+        if (!first.has(name)) first.set(name, value);
+        if (first.get(name) === value) return this.define(owner, name, type, value);
+        return this.define(owner, `${name} (${target.variants[index].values.map(([, v]) => v).join(", ")})`, type, value);
+      };
       const layer = (slot: string) => node.children.find((n) => ref(n, "slot") === slot);
       const text = layer("text");
       if (text?.type === "TEXT" && TEXT_PROPERTY[target.contract]) {
-        text.componentPropertyReferences = { characters: this.define(owner, TEXT_PROPERTY[target.contract], "TEXT", text.characters) };
+        text.componentPropertyReferences = { characters: define(TEXT_PROPERTY[target.contract], "TEXT", text.characters) };
       }
       const icons: [string, string | undefined][] = isIcon ? [["leadingIcon", "leading"], ["trailingIcon", "trailing"]] : [["icon", undefined]];
       for (const [slot, visibility] of icons) {
@@ -178,8 +189,8 @@ export class ComponentsBuilder {
         if (icon?.type !== "INSTANCE") continue;
         const main = await icon.getMainComponentAsync();
         if (!main) continue;
-        const references: { [key: string]: string } = { mainComponent: this.define(owner, slot, "INSTANCE_SWAP", main.id) };
-        if (visibility) references.visible = this.define(owner, visibility, "BOOLEAN", true);
+        const references: { [key: string]: string } = { mainComponent: define(slot, "INSTANCE_SWAP", main.id) };
+        if (visibility) references.visible = define(visibility, "BOOLEAN", true);
         icon.componentPropertyReferences = references;
       }
     }
