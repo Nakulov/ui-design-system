@@ -1,7 +1,7 @@
 # Отображение контрактов в Figma
 
 **Статус:** Черновик для согласования  
-**Версия спецификации:** 0.29
+**Версия спецификации:** 0.30
 
 ## 1. Назначение
 
@@ -521,7 +521,7 @@ Figma-компонент или вариант Component Set. Устройств
 
 | Поле                            | Figma                                                                                                                                                                                                                                                               |
 |---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`                            | `sharedPluginData`, пространство имён `uiContracts`, ключ `id`. Дизайнер его не видит.                                                                                                                                                                              |
+| `id`                            | `sharedPluginData`, пространство имён `uiContracts`, ключ `id`, и имя слоя `<Компонент> · <id>` (без `id` — `<Компонент>`), в том числе экземпляра. У модели с индикаторами так называется носитель; обёртка и `carrier` — нет.                                     |
 | `layout.width`, `layout.height` | `layoutSizingHorizontal` / `layoutSizingVertical`: `hug` — HUG, `fill` — FILL, `fixed` — FIXED с размером из `Size`. `min` и `max` — `minWidth`, `maxWidth`, `minHeight`, `maxHeight`.                                                                              |
 | `layout.position: flow`         | `layoutPositioning = AUTO`.                                                                                                                                                                                                                                         |
 | `layout.position: pinned`       | `layoutPositioning = ABSOLUTE`, констрейнты: `start`/`top` — MIN, `end`/`bottom` — MAX, `center` — CENTER, `stretch` — STRETCH; смещения переводятся в координаты.                                                                                                  |
