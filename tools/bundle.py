@@ -67,6 +67,15 @@ def collect_figma():
     return result
 
 
+def collect_changelogs():
+    """Журналы изменений по идентификатору публичного контракта, без $ref (раздел 3.10)."""
+    result = {}
+    for file in sorted(CONTRACTS.glob("*/*/changelog.json")):
+        data = json.loads(file.read_text())
+        result[ref_id(file, data["$ref"])] = {k: v for k, v in data.items() if k != "$ref"}
+    return result
+
+
 def collect_samples(registry):
     result = {}
     for file in sorted(CONTRACTS.glob("*/*/samples/*.json")):
@@ -202,6 +211,7 @@ def main():
         "texts": collect_texts(registry),
         "documentation": collect_documentation(),
         "manifests": collect_manifests(registry),
+        "changelogs": collect_changelogs(),
     }
     problems = list(dangling(bundle))
     for problem in problems:
@@ -213,7 +223,7 @@ def main():
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(bundle, ensure_ascii=False, indent=2) + "\n")
-    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests"))
+    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests", "changelogs"))
     print(f"Набор собран: {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({counts})")
     return 0
 

@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.9";
+export const SUPPORTED_FORMAT = "0.10";
 
 /** Идентификатор сущности: путь от корня репозитория без .json; вариант — после «#» (раздел 2). */
 export type Id = string;
@@ -47,7 +47,21 @@ export type Bundle = {
   documentation: Record<Id, Element>;
   /** Манифесты документации по идентификатору контракта (раздел 3.8). */
   manifests: Record<Id, Manifest>;
+  /** Журналы изменений по идентификатору публичного контракта (раздел 3.10). */
+  changelogs: Record<Id, Changelog>;
 };
+
+/** Запись журнала изменений (schema-format.md, раздел 11.4); from — только у renamed. */
+export type ChangelogEntry = {
+  date: string;
+  issue?: number;
+  kind: "added" | "changed" | "removed" | "renamed";
+  target?: string;
+  from?: string;
+  description: string;
+};
+
+export type Changelog = { entries: ChangelogEntry[] };
 
 /** Пример секции: демонстрация core или пример компонента по идентификатору и подпись (documentation-manifest.md, раздел 5). */
 export type ManifestExample = { id: string; demo?: Id; sample?: Id; caption?: string };
@@ -67,7 +81,7 @@ export type Summary = {
   counts: Record<(typeof SECTIONS)[number], number>;
 };
 
-const SECTIONS = ["contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests"] as const;
+const SECTIONS = ["contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests", "changelogs"] as const;
 
 /** Совпадает основная версия, а до 1.0 — и дополнительная (раздел 4, правило 1). */
 export function isSupported(version: string): boolean {

@@ -1,6 +1,6 @@
 {
-  "schemaFormat": "0.23",
+  "schemaFormat": "0.24",
   "figmaMapping": "0.25",
   "documentationManifest": "0.8",
-  "bundleFormat": "0.9"
+  "bundleFormat": "0.10"
 }
