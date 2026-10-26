@@ -584,7 +584,7 @@ export class Renderer {
 
   /**
    * Носитель и индикаторы во фрейме-обёртке с Auto Layout: обёртка повторяет размер носителя и занимает его место у
-   * родителя, индикаторы и маска выреза лежат в ней с абсолютной позицией. Носитель — во фрейме `carrier` без
+   * родителя, якоря индикаторов и маска выреза лежат в ней с абсолютной позицией. Носитель — во фрейме `carrier` без
    * обрезки: маска Figma не режет фрейм с `clipsContent` (раздел 10.2, правило 4).
    */
   private async indicated(name: string, model: Base, parent: FrameNode, old: SceneNode | undefined, path: string, at: string, key: string): Promise<FrameNode | undefined> {
@@ -620,12 +620,19 @@ export class Renderer {
     }
     const carrier = await this.component({ [name]: { ...model, indicators: undefined, layout: flow } }, slot, carrierKept, path, key);
     for (const leftover of carrierKept.values()) leftover.remove();
-    const placed: [FrameNode, Indicator][] = [];
+    const placed: [FrameNode, FrameNode, Indicator][] = [];
     for (const [index, indicator] of (model.indicators as Indicator[]).entries()) {
-      const node = await this.component(indicator.content, wrapper, kept, `${at}.indicators[${index}]`, `indicators[${index}]`);
-      if (!node) continue;
-      node.layoutPositioning = "ABSOLUTE";
-      placed.push([node, indicator]);
+      const slotKey = `indicators[${index}]`;
+      const key = Object.values(indicator.content)[0].id ?? slotKey;
+      const anchor = await this.anchor(wrapper, kept, key);
+      const node = await this.component(indicator.content, anchor.frame, anchor.kept, `${at}.indicators[${index}]`, slotKey);
+      for (const leftover of anchor.kept.values()) leftover.remove();
+      if (!node) {
+        anchor.frame.remove();
+        continue;
+      }
+      node.layoutPositioning = "AUTO";
+      placed.push([anchor.frame, node, indicator]);
     }
     for (const leftover of kept.values()) leftover.remove();
     if (carrier) this.placements.push(() => this.cutout(wrapper, carrier, placed, at));
@@ -633,36 +640,74 @@ export class Renderer {
   }
 
   /**
-   * Центры индикаторов — в точках углов носителя, маска — прямоугольник с запасом минус формы индикаторов, расширенные
+   * Якорь индикатора — Auto Layout 0×0 с выравниванием по центру: держит центр индикатора на точке угла, когда
+   * содержимое индикатора меняется. Индикатор обёртки, нарисованной без якорей, переносится в якорь (раздел 10.2,
+   * правило 4).
+   */
+  private async anchor(wrapper: FrameNode, kept: Kept, key: string): Promise<{ frame: FrameNode; kept: Kept }> {
+    const old = kept.get(key);
+    kept.delete(key);
+    let frame: FrameNode;
+    let inner: Kept;
+    if (old?.type === "FRAME" && ref(old, "role") === "anchor") {
+      frame = old;
+      inner = await this.reset(frame);
+    } else {
+      frame = figma.createFrame();
+      inner = new Map();
+      if (old) inner.set(key, old);
+    }
+    wrapper.appendChild(frame);
+    frame.name = "anchor";
+    mark(frame, "anchor", "role");
+    mark(frame, key, "slot");
+    frame.fills = [];
+    frame.clipsContent = false;
+    frame.layoutMode = "HORIZONTAL";
+    frame.primaryAxisAlignItems = frame.counterAxisAlignItems = "CENTER";
+    frame.primaryAxisSizingMode = frame.counterAxisSizingMode = "FIXED";
+    frame.itemSpacing = 0;
+    frame.paddingLeft = frame.paddingRight = frame.paddingTop = frame.paddingBottom = 0;
+    // Figma хранит нулевой размер как 0.0001.
+    frame.resize(0, 0);
+    frame.layoutPositioning = "ABSOLUTE";
+    return { frame, kept: inner };
+  }
+
+  /**
+   * Центры якорей индикаторов — в точках углов носителя, маска — прямоугольник с запасом минус формы индикаторов, расширенные
    * на `gap`. Маска режет слои над собой: индикаторы с вырезом лежат под ней и видны сквозь вырез, без выреза — над
    * носителем.
    */
-  private cutout(wrapper: FrameNode, carrier: FrameNode, placed: [FrameNode, Indicator][], at: string) {
+  private cutout(wrapper: FrameNode, carrier: FrameNode, placed: [FrameNode, FrameNode, Indicator][], at: string) {
     const cuts: { x: number; y: number; width: number; height: number; radii: number[]; constraints: Constraints }[] = [];
     const below: FrameNode[] = [];
-    for (const [node, { anchor, gap }] of placed) {
+    for (const [holder, node, { anchor, gap }] of placed) {
       const end = anchor.endsWith("End");
       const bottom = anchor.startsWith("bottom");
       const corner = `${bottom ? "bottom" : "top"}${end ? "Right" : "Left"}Radius` as const;
       // Середина дуги скругления под 45°; у прямого угла — вершина.
       const inset = Math.min(carrier[corner], carrier.width / 2, carrier.height / 2) * (1 - Math.SQRT1_2);
-      node.x = (end ? carrier.width - inset : inset) - node.width / 2;
-      node.y = (bottom ? carrier.height - inset : inset) - node.height / 2;
-      node.constraints = { horizontal: end ? "MAX" : "MIN", vertical: bottom ? "MAX" : "MIN" };
+      const cx = end ? carrier.width - inset : inset;
+      const cy = bottom ? carrier.height - inset : inset;
+      holder.x = cx - holder.width / 2;
+      holder.y = cy - holder.height / 2;
+      holder.constraints = { horizontal: end ? "MAX" : "MIN", vertical: bottom ? "MAX" : "MIN" };
       if (gap === undefined) {
-        wrapper.appendChild(node);
+        wrapper.appendChild(holder);
         continue;
       }
       const g = this.tokens.number(SPACING, gap);
       const radii = [node.topLeftRadius, node.topRightRadius, node.bottomRightRadius, node.bottomLeftRadius].map((r) => r + g);
-      cuts.push({ x: node.x - g, y: node.y - g, width: node.width + 2 * g, height: node.height + 2 * g, radii, constraints: node.constraints });
-      wrapper.insertChild(below.length, node);
-      below.push(node);
+      const [x, y] = [cx - node.width / 2, cy - node.height / 2];
+      cuts.push({ x: x - g, y: y - g, width: node.width + 2 * g, height: node.height + 2 * g, radii, constraints: holder.constraints });
+      wrapper.insertChild(below.length, holder);
+      below.push(holder);
     }
     if (!cuts.length) return;
     // Запас маски — всё, что рисуют носитель и индикаторы, включая тень.
     const [ox, oy] = [wrapper.absoluteTransform[0][2], wrapper.absoluteTransform[1][2]];
-    const boxes = [carrier, ...placed.map(([node]) => node)].map((n) => n.absoluteRenderBounds ?? n.absoluteBoundingBox).filter((b): b is Rect => b !== null);
+    const boxes = [carrier, ...placed.map(([, node]) => node)].map((n) => n.absoluteRenderBounds ?? n.absoluteBoundingBox).filter((b): b is Rect => b !== null);
     const left = Math.min(...boxes.map((b) => b.x)) - ox - 1;
     const top = Math.min(...boxes.map((b) => b.y)) - oy - 1;
     const right = Math.max(...boxes.map((b) => b.x + b.width)) - ox + 1;
