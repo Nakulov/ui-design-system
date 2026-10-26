@@ -967,8 +967,10 @@ export class Renderer {
     this.attach(frame, layer);
     layer.name = "image";
     layer.resize(size.width, size.height);
-    if (layout.width.sizing !== "hug") layer.layoutSizingHorizontal = "FILL";
-    if (layout.height.sizing !== "hug") layer.layoutSizingVertical = "FILL";
+    // У оси `hug` с `min` или `max` слой растягивается: корень обнимает собственный размер картинки в пределах min и max,
+    // и картинка вписывается в него по `scale`, как на платформах (правило 3).
+    if (layout.width.sizing !== "hug" || frame.minWidth !== null || frame.maxWidth !== null) layer.layoutSizingHorizontal = "FILL";
+    if (layout.height.sizing !== "hug" || frame.minHeight !== null || frame.maxHeight !== null) layer.layoutSizingVertical = "FILL";
     layer.fills = [{ type: "IMAGE", imageHash: image.hash, scaleMode: remote.scale === "fit" ? "FIT" : "FILL" }];
     if (remote.alignment !== "center") this.placements.push(() => this.alignImage(layer, image.hash, size, remote));
   }
