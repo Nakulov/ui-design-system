@@ -22,9 +22,9 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PREVIEW, ROOT, SERVICE_DIRS,
-                       SERVICE_FILES, THEMES, Contract, Registry, fill, id_path, is_contract, is_element, is_sample,
-                       is_skipped, pascal, ref_id)
+from contracts import (APPEARANCE, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PREVIEW, ROOT, SCREENS,
+                       SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, id_path, is_contract, is_element,
+                       is_sample, is_screen, is_skipped, pascal, ref_id)
 import idea
 from samples import dumps, generate, render, required_samples
 
@@ -300,6 +300,32 @@ def check_samples(registry):
             if not problems and text != readme.read_text():
                 mismatch(readme, readme.read_text(), text,
                          "блок примера не совпадает с файлом: python3 tools/sync.py")
+
+
+def check_screens(registry):
+    """Демо-экраны: модель в формате примеров с корнем-компонентом слоя components (bundle-format.md, раздел 3.9)."""
+    if not SCREENS.is_dir():
+        return
+    roots = {c.name for c in registry if c.kind == "public" and c.layer == "components"}
+    for path in sorted(filter(visible, SCREENS.iterdir())):
+        if path.is_dir() or path.suffix != ".json":
+            error(path, "в screens/ только файлы <имя>.json")
+            continue
+        if not LOWER_CAMEL.fullmatch(path.stem):
+            error(path, "имя экрана не в lowerCamelCase")
+        try:
+            value = json.loads(path.read_text())
+        except json.JSONDecodeError as e:
+            error(path, f"некорректный JSON: {e}")
+            continue
+        if not (isinstance(value, dict) and len(value) == 1 and next(iter(value)) in roots):
+            error(path, f"экран записывается объектом с одним ключом — компонентом: {', '.join(sorted(roots))}")
+            continue
+        if path.read_text() != dumps(value):
+            mismatch(path, path.read_text(), dumps(value),
+                     "формат экрана не канонический: отступ 2, каждое поле на своей строке")
+        for problem in registry.value_errors(value, registry.by_id[COMPONENT], "модель"):
+            error(path, problem)
 
 
 def check_idea(registry):
@@ -1028,7 +1054,7 @@ def main():
         except json.JSONDecodeError as e:
             error(path, f"некорректный JSON: {e}")
             continue
-        if path.name.endswith(".schema.json") or is_sample(path):
+        if path.name.endswith(".schema.json") or is_sample(path) or is_screen(path):
             continue
         if is_element(path):
             elements[path] = data
@@ -1068,6 +1094,7 @@ def main():
     check_manifests(registry, manifests, elements)
     check_overview()
     check_samples(registry)
+    check_screens(registry)
     check_idea(registry)
     check_changelogs(registry, changelogs)
 

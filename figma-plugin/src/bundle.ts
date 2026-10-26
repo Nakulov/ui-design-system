@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.8";
+export const SUPPORTED_FORMAT = "0.9";
 
 /** Идентификатор сущности: путь от корня репозитория без .json; вариант — после «#» (раздел 2). */
 export type Id = string;
@@ -38,6 +38,8 @@ export type Bundle = {
   values: Record<Id, Values>;
   figma: Record<Id, FigmaProject>;
   samples: Record<Id, unknown>;
+  /** Демо-экраны по имени файла (раздел 3.9). */
+  screens: Record<string, unknown>;
   icons: Record<Id, Icon>;
   /** Разделы README: заголовок → исходный Markdown. */
   texts: Record<Id, Record<string, string>>;
@@ -65,7 +67,7 @@ export type Summary = {
   counts: Record<(typeof SECTIONS)[number], number>;
 };
 
-const SECTIONS = ["contracts", "values", "figma", "samples", "icons", "texts", "documentation", "manifests"] as const;
+const SECTIONS = ["contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests"] as const;
 
 /** Совпадает основная версия, а до 1.0 — и дополнительная (раздел 4, правило 1). */
 export function isSupported(version: string): boolean {

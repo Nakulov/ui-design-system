@@ -5,7 +5,7 @@ import { DocumentationBuilder } from "./documentation";
 import { FoundationBuilder } from "./foundation";
 import type { ToPlugin, ToUi } from "./messages";
 import type { Report } from "./report";
-import { SamplesBuilder } from "./samples";
+import { SamplesBuilder, SCREENS } from "./samples";
 
 /** Открытый набор. */
 let bundle: Bundle | undefined;
@@ -22,6 +22,7 @@ figma.ui.onmessage = async (message: ToPlugin) => {
   else if (message.type === "buildComponents") await run("Строятся компоненты…", "Компоненты построены", "Компоненты не построены", (b) => new ComponentsBuilder(b).build());
   else if (message.type === "buildDocumentation") await run("Строится документация…", "Документация построена", "Документация не построена", (b) => new DocumentationBuilder(b).build());
   else if (message.type === "renderSamples") await run("Рисуются примеры…", "Примеры отрисованы", "Примеры не отрисованы", (b) => new SamplesBuilder(b).build());
+  else if (message.type === "renderScreens") await run("Рисуются экраны…", "Экраны отрисованы", "Экраны не отрисованы", (b) => new SamplesBuilder(b, SCREENS).build());
 };
 
 async function run(busy: string, done: string, failed: string, build: (bundle: Bundle) => Promise<Report>) {

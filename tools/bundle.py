@@ -13,7 +13,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from contracts import CONTRACTS, DEMOS, ELEMENTS, PREVIEW, ROOT, THEMES, element_id, load_registry, ref_id
+from contracts import CONTRACTS, DEMOS, ELEMENTS, PREVIEW, ROOT, SCREENS, THEMES, element_id, load_registry, ref_id
 
 THEME = "default"
 ICON = "foundation/icon/Icon"
@@ -74,6 +74,11 @@ def collect_samples(registry):
         if owner is not None:
             result[f"{owner.id}#{file.stem}"] = json.loads(file.read_text())
     return result
+
+
+def collect_screens():
+    """Демо-экраны по имени файла без .json (раздел 3.9)."""
+    return {file.stem: json.loads(file.read_text()) for file in sorted(SCREENS.glob("*.json"))}
 
 
 def collect_icons(values, theme_dir):
@@ -192,6 +197,7 @@ def main():
         "values": values,
         "figma": collect_figma(),
         "samples": collect_samples(registry),
+        "screens": collect_screens(),
         "icons": collect_icons(values, theme_dir),
         "texts": collect_texts(registry),
         "documentation": collect_documentation(),
@@ -207,7 +213,7 @@ def main():
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(bundle, ensure_ascii=False, indent=2) + "\n")
-    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "icons", "texts", "documentation", "manifests"))
+    counts = ", ".join(f"{key}: {len(bundle[key])}" for key in ("contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests"))
     print(f"Набор собран: {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({counts})")
     return 0
 
