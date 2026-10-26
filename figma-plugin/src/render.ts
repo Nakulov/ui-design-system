@@ -61,6 +61,11 @@ function isAuto(parent: BaseNode): boolean {
   return "layoutMode" in parent && parent.layoutMode !== "NONE";
 }
 
+/** Имя слоя модели: `<Компонент> · <id>`, без `id` — `<Компонент>` (раздел 10.2). */
+function layerName(name: string, id: string | undefined): string {
+  return id ? `${name} · ${id}` : name;
+}
+
 /** Вариант значения `oneOf` или `enum`: имя и значение (`schema-format.md`, раздел 4.5). */
 function variant<T = unknown>(value: unknown): [string, T] {
   if (typeof value === "string") return [value, undefined as T];
@@ -245,7 +250,7 @@ export class Renderer {
     }
     const kept = await this.reset(frame);
     parent.appendChild(frame);
-    if (frame.type === "FRAME") frame.name = name;
+    if (frame.type === "FRAME") frame.name = layerName(name, model.id);
     mark(frame, contract);
     mark(frame, model.id ?? "", "id");
     mark(frame, key, "slot");
@@ -306,6 +311,7 @@ export class Renderer {
     } else node = main.createInstance();
     try {
       parent.appendChild(node);
+      node.name = layerName(name, model.id);
       mark(node, contract);
       mark(node, model.id ?? "", "id");
       mark(node, key, "slot");

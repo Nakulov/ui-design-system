@@ -163,7 +163,7 @@
       },
       {
         "Container": {
-          "id": "chat-anna",
+          "id": "chatAnna",
           "layout": {
             "width": {
               "sizing": "fill"
@@ -196,7 +196,6 @@
           "children": [
             {
               "Image": {
-                "id": "avatar",
                 "layout": {
                   "width": {
                     "sizing": {
@@ -275,7 +274,6 @@
             },
             {
               "Container": {
-                "id": "body",
                 "layout": {
                   "width": {
                     "sizing": "fill"
@@ -305,7 +303,6 @@
                 "children": [
                   {
                     "Container": {
-                      "id": "title",
                       "layout": {
                         "width": {
                           "sizing": "fill"
@@ -335,7 +332,6 @@
                       "children": [
                         {
                           "Text": {
-                            "id": "name",
                             "layout": {
                               "width": {
                                 "sizing": "fill"
@@ -363,7 +359,6 @@
                         },
                         {
                           "Text": {
-                            "id": "time",
                             "layout": {
                               "width": {
                                 "sizing": "hug"
@@ -394,7 +389,6 @@
                   },
                   {
                     "Container": {
-                      "id": "preview",
                       "layout": {
                         "width": {
                           "sizing": "fill"
@@ -424,7 +418,6 @@
                       "children": [
                         {
                           "Text": {
-                            "id": "message",
                             "layout": {
                               "width": {
                                 "sizing": "fill"
@@ -452,7 +445,6 @@
                         },
                         {
                           "Badge": {
-                            "id": "unread",
                             "layout": {
                               "width": {
                                 "sizing": "hug"
@@ -498,7 +490,7 @@
       },
       {
         "Container": {
-          "id": "chat-boris",
+          "id": "chatBoris",
           "layout": {
             "width": {
               "sizing": "fill"
@@ -531,7 +523,6 @@
           "children": [
             {
               "Image": {
-                "id": "avatar",
                 "layout": {
                   "width": {
                     "sizing": {
@@ -576,7 +567,6 @@
             },
             {
               "Container": {
-                "id": "body",
                 "layout": {
                   "width": {
                     "sizing": "fill"
@@ -606,7 +596,6 @@
                 "children": [
                   {
                     "Container": {
-                      "id": "title",
                       "layout": {
                         "width": {
                           "sizing": "fill"
@@ -636,7 +625,6 @@
                       "children": [
                         {
                           "Text": {
-                            "id": "name",
                             "layout": {
                               "width": {
                                 "sizing": "fill"
@@ -664,7 +652,6 @@
                         },
                         {
                           "Text": {
-                            "id": "time",
                             "layout": {
                               "width": {
                                 "sizing": "hug"
@@ -695,7 +682,6 @@
                   },
                   {
                     "Container": {
-                      "id": "preview",
                       "layout": {
                         "width": {
                           "sizing": "fill"
@@ -725,7 +711,6 @@
                       "children": [
                         {
                           "Text": {
-                            "id": "message",
                             "layout": {
                               "width": {
                                 "sizing": "fill"
@@ -753,7 +738,6 @@
                         },
                         {
                           "Badge": {
-                            "id": "unread",
                             "layout": {
                               "width": {
                                 "sizing": {
@@ -791,7 +775,7 @@
       },
       {
         "Container": {
-          "id": "chat-team",
+          "id": "chatTeam",
           "layout": {
             "width": {
               "sizing": "fill"
@@ -824,7 +808,6 @@
           "children": [
             {
               "Image": {
-                "id": "avatar",
                 "layout": {
                   "width": {
                     "sizing": {
@@ -862,7 +845,6 @@
             },
             {
               "Container": {
-                "id": "body",
                 "layout": {
                   "width": {
                     "sizing": "fill"
@@ -892,7 +874,6 @@
                 "children": [
                   {
                     "Container": {
-                      "id": "title",
                       "layout": {
                         "width": {
                           "sizing": "fill"
@@ -922,7 +903,6 @@
                       "children": [
                         {
                           "Text": {
-                            "id": "name",
                             "layout": {
                               "width": {
                                 "sizing": "fill"
@@ -950,7 +930,6 @@
                         },
                         {
                           "Text": {
-                            "id": "time",
                             "layout": {
                               "width": {
                                 "sizing": "hug"
@@ -981,7 +960,6 @@
                   },
                   {
                     "Container": {
-                      "id": "preview",
                       "layout": {
                         "width": {
                           "sizing": "fill"
@@ -1011,7 +989,6 @@
                       "children": [
                         {
                           "Text": {
-                            "id": "message",
                             "layout": {
                               "width": {
                                 "sizing": "fill"
@@ -1052,7 +1029,6 @@
                         },
                         {
                           "Badge": {
-                            "id": "unread",
                             "layout": {
                               "width": {
                                 "sizing": "hug"
@@ -1096,7 +1072,7 @@
       },
       {
         "Container": {
-          "id": "chat-shop",
+          "id": "chatShop",
           "layout": {
             "width": {
               "sizing": "fill"
@@ -1129,7 +1105,6 @@
           "children": [
             {
               "Image": {
-                "id": "avatar",
                 "layout": {
                   "width": {
                     "sizing": {
@@ -1174,7 +1149,6 @@
             },
             {
               "Container": {
-                "id": "body",
                 "layout": {
                   "width": {
                     "sizing": "fill"
@@ -1204,7 +1178,6 @@
                 "children": [
                   {
                     "Container": {
-                      "id": "title",
                       "layout": {
                         "width": {
                           "sizing": "fill"
@@ -1234,7 +1207,6 @@
                       "children": [
                         {
                           "Text": {
-                            "id": "name",
                             "layout": {
                               "width": {
                                 "sizing": "fill"
@@ -1262,7 +1234,6 @@
                         },
                         {
                           "Text": {
-                            "id": "time",
                             "layout": {
                               "width": {
                                 "sizing": "hug"
@@ -1293,7 +1264,6 @@
                   },
                   {
                     "Container": {
-                      "id": "preview",
                       "layout": {
                         "width": {
                           "sizing": "fill"
@@ -1323,7 +1293,6 @@
                       "children": [
                         {
                           "Text": {
-                            "id": "message",
                             "layout": {
                               "width": {
                                 "sizing": "fill"
@@ -1351,7 +1320,6 @@
                         },
                         {
                           "Badge": {
-                            "id": "unread",
                             "layout": {
                               "width": {
                                 "sizing": "hug"
