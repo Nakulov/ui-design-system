@@ -1,0 +1,149 @@
+{
+  "holes": {
+    "platform": {
+      "kind": "text",
+      "sample": "Android"
+    },
+    "version": {
+      "kind": "text",
+      "sample": "1.5"
+    },
+    "targets": {
+      "kind": "text",
+      "sample": "truncation"
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "symmetric": {
+          "horizontal": "m",
+          "vertical": "s"
+        }
+      },
+      "appearance": {
+        "plain": {
+          "background": {
+            "solid": "surface"
+          },
+          "cornerRadius": "xs"
+        }
+      },
+      "arrangement": {
+        "horizontal": {
+          "alignment": "center",
+          "distribution": {
+            "packed": {
+              "gap": "m",
+              "position": "start"
+            }
+          }
+        }
+      },
+      "children": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": {
+                    "custom": {
+                      "value": 120
+                    }
+                  }
+                }
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "$platform"
+            },
+            "typography": "bodySmall",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": {
+                    "custom": {
+                      "value": 80
+                    }
+                  }
+                }
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "$version"
+            },
+            "typography": "bodySmall",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "fill"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "$targets"
+            },
+            "typography": "code",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  }
+}

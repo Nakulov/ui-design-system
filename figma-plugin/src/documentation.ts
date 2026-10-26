@@ -28,6 +28,17 @@ function inherit(parent: Release, own: unknown): Release {
   return result;
 }
 
+/** Версия `a` позже `b`; уровень без версии — раньше любой версии. */
+function later(a: string | undefined, b: string | undefined): boolean {
+  if (!a) return false;
+  if (!b) return true;
+  const [x, y] = [a, b].map((v) => v.split(".").map(Number));
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    if ((x[i] ?? 0) !== (y[i] ?? 0)) return (x[i] ?? 0) > (y[i] ?? 0);
+  }
+  return false;
+}
+
 /** Фрагменты строки по подмножеству Markdown: код, жирный, ссылка (schema-format.md, раздел 11.2). */
 function inline(text: string): Span[] {
   const spans: Span[] = [];
@@ -143,7 +154,7 @@ export class DocumentationBuilder {
     });
   }
 
-  /** Страница core или компонента по манифесту: Overview, Properties, примеры, Usage, History (figma-documentation.md, разделы 3.3, 3.4). */
+  /** Страница core или компонента по манифесту: Overview, Properties, примеры, Usage, Platform Support, History (figma-documentation.md, разделы 3.3, 3.4). */
   private manifest(id: Id): Model {
     const contract = this.bundle.contracts[id];
     return this.element(`${ELEMENTS}page`, {
@@ -164,6 +175,8 @@ export class DocumentationBuilder {
         const usage = this.markdown(this.bundle.texts[id]?.[USAGE]);
         return usage.length ? [this.section(title, usage)] : [];
       }
+      case "platformSupport":
+        return [this.platformSupport(id, contract, title)];
       case "history":
         return [this.history(id, title)];
       default:
@@ -220,6 +233,63 @@ export class DocumentationBuilder {
       return row(name, kind?.name ?? String(element.type ?? "—"), own ? kind?.description ?? "—" : "—",
         element.releaseVersions ?? kind?.releaseVersions);
     });
+  }
+
+  /** Выпуски по платформам: первой строкой — контракт, ниже — уровни, с которых начинается более поздняя версия,
+   *  по возрастанию версий (figma-documentation.md, раздел 3.3). */
+  private platformSupport(id: Id, contract: Contract, title: string): Model {
+    const release = inherit({}, contract.releaseVersions);
+    const levels = this.levels(id.slice(0, id.lastIndexOf("/") + 1), contract, "", release, new Set());
+    const rows = PLATFORMS.flatMap(([key, name]) => {
+      const own = release[key];
+      if (own?.status !== "released") return [this.releaseRow(name, "—", "не выпущено")];
+      const groups = new Map<string, string[]>();
+      for (const level of levels) {
+        const version = level.release[key]?.version;
+        if (level.release[key]?.status !== "released" || !later(version, level.parent[key]?.version)) continue;
+        groups.set(version!, [...(groups.get(version!) ?? []), level.path]);
+      }
+      const versions = [...groups.keys()].sort((a, b) => (later(a, b) ? 1 : later(b, a) ? -1 : 0));
+      return [this.releaseRow(name, own.version ?? "✓", contract.name),
+        ...versions.map((version) => this.releaseRow("", version, groups.get(version)!.join(", ")))];
+    });
+    return this.section(title, [this.element(`${ELEMENTS}table`, { rows })]);
+  }
+
+  private releaseRow(platform: string, version: string, targets: string): Model {
+    return this.element(`${ELEMENTS}releaseRow`, { platform, version, targets });
+  }
+
+  /** Уровни контракта с путями в формате `target` журнала: свойства, варианты `oneOf` и значения по ссылкам внутри
+   *  каталога (schema-format.md, раздел 11.4, правило 2); статусы — итоговые, `parent` — итоговые статусы родителя. */
+  private levels(directory: string, contract: Contract, prefix: string, release: Release, seen: Set<Contract>): { path: string; release: Release; parent: Release }[] {
+    if (seen.has(contract)) return [];
+    seen = new Set([...seen, contract]);
+    const inside = (ref: unknown) => (typeof ref === "string" && ref.startsWith(directory) ? this.bundle.contracts[ref] : undefined);
+    const result: { path: string; release: Release; parent: Release }[] = [];
+    const level = (name: string, node: Record<string, unknown>, nested?: Contract) => {
+      const own = inherit(release, node.releaseVersions);
+      result.push({ path: prefix + name, release: own, parent: release });
+      if (nested) result.push(...this.levels(directory, nested, `${prefix}${name}.`, own, seen));
+    };
+    for (const prop of (contract.properties ?? []) as Record<string, unknown>[]) {
+      level(String(prop.name), prop, inside(prop.$ref ?? (prop.items as Record<string, unknown> | undefined)?.$ref));
+    }
+    for (const value of (contract.values ?? []) as Record<string, unknown>[]) level(String(value.name), value);
+    for (const element of (contract.oneOf ?? []) as Record<string, unknown>[]) {
+      const target = typeof element.$ref === "string" ? this.bundle.contracts[element.$ref] : undefined;
+      if (element.inline && target) {
+        // Развёрнутые значения входят в путь без имени элемента; сравниваются с контрактом, содержащим `oneOf`.
+        const own = inherit(release, element.releaseVersions);
+        for (const value of (target.values ?? []) as Record<string, unknown>[]) {
+          result.push({ path: prefix + String(value.name), release: inherit(own, value.releaseVersions), parent: release });
+        }
+        continue;
+      }
+      const name = String(element.name ?? (target ? target.name[0].toLowerCase() + target.name.slice(1) : ""));
+      level(name, element, inside(element.$ref));
+    }
+    return result;
   }
 
   /** История изменений: строки журнала `changelog.json` от новых к старым (figma-documentation.md, раздел 3). */

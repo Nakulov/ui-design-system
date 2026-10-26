@@ -33,6 +33,11 @@
       "title": "Usage"
     },
     {
+      "id": "platformSupport",
+      "type": "platformSupport",
+      "title": "Platform Support"
+    },
+    {
       "id": "history",
       "type": "history",
       "title": "History"
