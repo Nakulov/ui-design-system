@@ -313,7 +313,7 @@ export class DocumentationBuilder {
       page.name = name;
       return page;
     };
-    const library = ["components", "samples"].map((role) => figma.root.children.find((p) => ref(p, "role") === role)).filter((p): p is PageNode => !!p);
+    const library = ["components", "samples", "screens"].map((role) => figma.root.children.find((p) => ref(p, "role") === role)).filter((p): p is PageNode => !!p);
     const ordered = [overview, separator("separator:foundation", "——— Foundation ———"), ...foundation,
       ...(core.length ? [separator("separator:core", "——— Core ———"), ...core] : []),
       ...(components.length ? [separator("separator:components", "——— Components ———"), ...components] : []),

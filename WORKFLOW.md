@@ -53,7 +53,8 @@ cd figma-plugin && npm ci && npm run build         # плагин: dist/
 
 1. Figma Desktop → **Plugins → Development → UI Design System** (первый раз: Import plugin from manifest… →
    `figma-plugin/manifest.json`).
-2. Открыть `build/bundle.json` → «Построить foundation» → «Отрисовать примеры».
+2. Открыть `build/bundle.json` → «Построить foundation» → «Отрисовать примеры»; для проверки импорта и обновления
+   макетов — «Построить компоненты» → «Отрисовать экраны».
 3. Сказать Claude «отрисовал»; после его проверки — посмотреть самим и подтвердить.
 
 ## Где что лежит
@@ -63,6 +64,7 @@ cd figma-plugin && npm ci && npm run build         # плагин: dist/
 | Направление и этапы    | `ROADMAP.md`                                |
 | Спецификации           | `specifications/`                           |
 | Контракты, примеры     | `contracts/` (`samples/` в каталогах сущностей) |
+| Демо-экраны            | `screens/`                                  |
 | Темы                   | `themes/`                                   |
 | Плагин                 | `figma-plugin/`                             |
 | Скиллы процесса        | `.claude/skills/groom`, `take`, `contract-authoring` |

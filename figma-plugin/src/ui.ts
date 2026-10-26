@@ -1,4 +1,4 @@
-// Окно плагина: выбор набора, сводка, построение foundation и компонентов, отрисовка примеров и отчёт.
+// Окно плагина: выбор набора, сводка, построение foundation и компонентов, отрисовка примеров и экранов, отчёт.
 import type { Summary } from "./bundle";
 import type { ToPlugin, ToUi } from "./messages";
 import type { ReportData } from "./report";
@@ -8,6 +8,7 @@ const COUNTS: Record<keyof Summary["counts"], string> = {
   values: "Файлы значений",
   figma: "Отображение в Figma",
   samples: "Примеры",
+  screens: "Экраны",
   icons: "Символы",
   texts: "README",
   documentation: "Элементы документации",
@@ -23,6 +24,7 @@ const report = element<HTMLDivElement>("report");
 const foundation = element<HTMLButtonElement>("foundation");
 const components = element<HTMLButtonElement>("components");
 const samples = element<HTMLButtonElement>("samples");
+const screens = element<HTMLButtonElement>("screens");
 const documentation = element<HTMLButtonElement>("documentation");
 
 function send(message: ToPlugin) {
@@ -70,6 +72,7 @@ element<HTMLButtonElement>("open").onclick = () => file.click();
 foundation.onclick = () => send({ type: "buildFoundation" });
 components.onclick = () => send({ type: "buildComponents" });
 samples.onclick = () => send({ type: "renderSamples" });
+screens.onclick = () => send({ type: "renderScreens" });
 documentation.onclick = () => send({ type: "buildDocumentation" });
 
 file.onchange = async () => {
@@ -82,7 +85,7 @@ onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => {
   const message = event.data.pluginMessage;
   error.hidden = message.type !== "error";
   status.hidden = message.type !== "busy";
-  foundation.disabled = components.disabled = samples.disabled = documentation.disabled = message.type === "busy" || (message.type === "error" && summary.hidden === true);
+  foundation.disabled = components.disabled = samples.disabled = screens.disabled = documentation.disabled = message.type === "busy" || (message.type === "error" && summary.hidden === true);
   if (message.type === "error") {
     error.textContent = message.message;
   } else if (message.type === "busy") {
@@ -90,7 +93,7 @@ onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => {
   } else if (message.type === "loaded") {
     report.hidden = true;
     showSummary(message.summary);
-    foundation.disabled = components.disabled = samples.disabled = documentation.disabled = false;
+    foundation.disabled = components.disabled = samples.disabled = screens.disabled = documentation.disabled = false;
   } else {
     showReport(message.title, message.report);
   }

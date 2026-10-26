@@ -1,10 +1,17 @@
-// Страница Samples: отрисовка примеров моделей компонентов для проверки ядра отрисовки (figma-mapping.md, раздел 10).
+// Страницы Samples и Screens: отрисовка примеров моделей компонентов для проверки ядра отрисовки (figma-mapping.md,
+// раздел 10) и демо-экранов для проверки импорта (bundle-format.md, раздел 3.9). Ядро и обновление на месте общие.
 import type { Bundle, Element, Id } from "./bundle";
 import { COLOR, mark, ref } from "./ids";
 import { Renderer, Tokens } from "./render";
 import { Report } from "./report";
 
-const ROLE = "samples";
+/** Страница построителя: роль страницы и корня, имя страницы, вид объектов в отчёте. */
+export type Kind = { role: string; name: string; counted: string };
+
+export const SAMPLES: Kind = { role: "samples", name: "Samples", counted: "примеры" };
+export const SCREENS: Kind = { role: "screens", name: "Screens", counted: "экраны" };
+/** Строка экранов: экраны лежат одной строкой, ключ карточки — `screens/<имя>`. */
+const SCREENS_ROW = "screens";
 const CARD_WIDTH = 360;
 /** Элементы документации растягиваются по ширине страницы: карточки шире. */
 const DOCUMENTATION_CARD_WIDTH = 600;
@@ -51,13 +58,43 @@ function child<T extends SceneNode>(parent: ChildrenMixin, test: (node: SceneNod
 export class SamplesBuilder {
   private readonly report = new Report();
 
-  constructor(private readonly bundle: Bundle) {}
+  constructor(private readonly bundle: Bundle, private readonly kind: Kind = SAMPLES) {}
 
   async build(): Promise<Report> {
     const tokens = await Tokens.load(this.bundle);
     await figma.loadFontAsync(LABEL_FONT);
     const page = await this.page();
     const root = this.root(page);
+    const ordered = this.kind === SCREENS ? this.screens() : this.samples();
+    const rows = new Map(root.children.filter((n): n is FrameNode => n.type === "FRAME").map((n) => [ref(n), n]));
+    for (const group of ordered) {
+      let row = rows.get(group.id);
+      rows.delete(group.id);
+      if (!row) {
+        row = figma.createFrame();
+        mark(row, group.id);
+      }
+      root.appendChild(row);
+      row.name = group.name;
+      autoLayout(row, "HORIZONTAL", 24);
+      row.counterAxisAlignItems = "MIN";
+      await this.cards(row, group.cards, tokens);
+    }
+    for (const row of rows.values()) {
+      for (const card of row.children) if (ref(card)) this.report.deleted(this.kind.counted);
+      row.remove();
+    }
+    await figma.setCurrentPageAsync(page);
+    return this.report;
+  }
+
+  /** Экраны по имени файла — одной строкой (bundle-format.md, раздел 3.9). */
+  private screens(): Row[] {
+    const cards = Object.entries(this.bundle.screens).map(([name, model]): [string, string, unknown] => [`screens/${name}`, name, model]);
+    return cards.length ? [{ id: SCREENS_ROW, name: "Screens", cards }] : [];
+  }
+
+  private samples(): Row[] {
     // Примеры публичных контрактов компонентов; примеры core — фрагменты модели и не рисуются.
     const groups = new Map<Id, Row>();
     for (const [key, model] of Object.entries(this.bundle.samples)) {
@@ -76,62 +113,43 @@ export class SamplesBuilder {
     };
     const ordered = [...groups.values()].sort((a, b) => a.id.localeCompare(b.id));
     if (documentation.cards.length) ordered.push(documentation);
-    const rows = new Map(root.children.filter((n): n is FrameNode => n.type === "FRAME").map((n) => [ref(n), n]));
-    for (const group of ordered) {
-      let row = rows.get(group.id);
-      rows.delete(group.id);
-      if (!row) {
-        row = figma.createFrame();
-        mark(row, group.id);
-      }
-      root.appendChild(row);
-      row.name = group.name;
-      autoLayout(row, "HORIZONTAL", 24);
-      row.counterAxisAlignItems = "MIN";
-      await this.cards(row, group.cards, tokens);
-    }
-    for (const row of rows.values()) {
-      for (const card of row.children) if (ref(card)) this.report.deleted("примеры");
-      row.remove();
-    }
-    await figma.setCurrentPageAsync(page);
-    return this.report;
+    return ordered;
   }
 
   private async page(): Promise<PageNode> {
     await figma.loadAllPagesAsync();
-    let page = figma.root.children.find((p) => ref(p, "role") === ROLE);
+    let page = figma.root.children.find((p) => ref(p, "role") === this.kind.role);
     if (!page) {
       page = figma.createPage();
-      page.name = "Samples";
-      mark(page, ROLE, "role");
+      page.name = this.kind.name;
+      mark(page, this.kind.role, "role");
     }
     return page;
   }
 
   private root(page: PageNode): FrameNode {
-    let root = child(page, (n): n is FrameNode => n.type === "FRAME" && ref(n, "role") === ROLE);
+    let root = child(page, (n): n is FrameNode => n.type === "FRAME" && ref(n, "role") === this.kind.role);
     if (!root) {
       root = figma.createFrame();
       page.appendChild(root);
-      mark(root, ROLE, "role");
+      mark(root, this.kind.role, "role");
     }
-    root.name = "Samples";
+    root.name = this.kind.name;
     autoLayout(root, "VERTICAL", 48);
     return root;
   }
 
-  /** Карточки примеров: подпись `<Компонент>#<пример>` и отрисованная модель. */
+  /** Карточки примеров и экранов: подпись (`<Компонент>#<пример>` или имя экрана) и отрисованная модель. */
   private async cards(row: FrameNode, samples: [string, string, unknown][], tokens: Tokens) {
     const cards = new Map(row.children.filter((n): n is FrameNode => n.type === "FRAME").map((n) => [ref(n), n]));
     for (const [key, label, model] of samples) {
       let card = cards.get(key);
       cards.delete(key);
-      if (card) this.report.updated("примеры");
+      if (card) this.report.updated(this.kind.counted);
       else {
         card = figma.createFrame();
         mark(card, key);
-        this.report.created("примеры");
+        this.report.created(this.kind.counted);
       }
       row.appendChild(card);
       card.name = label;
@@ -159,7 +177,7 @@ export class SamplesBuilder {
       for (const node of reuse.values()) node.remove();
     }
     for (const card of cards.values()) {
-      if (ref(card)) this.report.deleted("примеры");
+      if (ref(card)) this.report.deleted(this.kind.counted);
       card.remove();
     }
   }
