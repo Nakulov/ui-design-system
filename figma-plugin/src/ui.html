@@ -19,6 +19,7 @@
   th, td { padding: 4px 0; text-align: left; border-bottom: 1px solid var(--figma-color-border); }
   th { font-weight: 400; color: var(--figma-color-text-secondary); }
   td { text-align: right; font-variant-numeric: tabular-nums; }
+  .imports { margin-top: 0; }
   .error { margin-top: 12px; padding: 8px; border-radius: 6px; color: var(--figma-color-text-danger); background: var(--figma-color-bg-danger-tertiary); }
   [hidden] { display: none; }
 </style>
@@ -39,6 +40,8 @@
     <button id="screens" disabled>Отрисовать экраны</button>
     <button id="documentation" disabled>Построить документацию</button>
   </div>
+  <h2>В файле</h2>
+  <table id="imports" class="imports"></table>
   <input id="file" type="file" accept=".json,application/json" hidden>
   <div id="error" class="error" hidden></div>
   <div id="status" class="status" hidden></div>

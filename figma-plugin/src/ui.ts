@@ -1,6 +1,6 @@
-// Окно плагина: загрузка набора с GitHub или из файла, сводка, построение foundation и компонентов, отрисовка примеров и экранов, отчёт.
+// Окно плагина: загрузка набора с GitHub или из файла, метки сборок в файле, сводка, построение foundation и компонентов, отрисовка примеров и экранов, отчёт.
 import { DEFAULT_URL, type Source, type Summary } from "./bundle";
-import type { ToPlugin, ToUi } from "./messages";
+import type { Build, Imports, ToPlugin, ToUi } from "./messages";
 import type { ReportData } from "./report";
 
 const COUNTS: Record<keyof Summary["counts"], string> = {
@@ -16,18 +16,31 @@ const COUNTS: Record<keyof Summary["counts"], string> = {
   changelogs: "Журналы изменений",
 };
 
+const BUILDS: Record<Build, string> = {
+  foundation: "Foundation",
+  components: "Компоненты",
+  documentation: "Документация",
+  samples: "Примеры",
+  screens: "Экраны",
+};
+
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const file = element<HTMLInputElement>("file");
 const url = element<HTMLInputElement>("url");
 const error = element<HTMLDivElement>("error");
 const status = element<HTMLDivElement>("status");
 const summary = element<HTMLTableElement>("summary");
+const importsTable = element<HTMLTableElement>("imports");
 const report = element<HTMLDivElement>("report");
 const foundation = element<HTMLButtonElement>("foundation");
 const components = element<HTMLButtonElement>("components");
 const samples = element<HTMLButtonElement>("samples");
 const screens = element<HTMLButtonElement>("screens");
 const documentation = element<HTMLButtonElement>("documentation");
+
+/** Метки сборок в файле и источник открытого набора, с которым они сравниваются. */
+let imports: Imports = {};
+let opened: Source | undefined;
 
 function send(message: ToPlugin) {
   parent.postMessage({ pluginMessage: message }, "*");
@@ -51,6 +64,25 @@ function sourceText(source: Source): string {
     source.dirty && "есть незакоммиченные изменения",
   ];
   return parts.filter(Boolean).join(" · ");
+}
+
+/** Сравнение сборки в файле с открытым набором (figma-mapping.md, раздел 7, правило 11). */
+function compare(built: Source, bundle: Source): string {
+  if (built.dirty || bundle.dirty || !built.commit || !bundle.commit) return "нельзя сравнить";
+  if (built.commit === bundle.commit) return "совпадает";
+  const difference = Date.parse(built.committedAt ?? "") - Date.parse(bundle.committedAt ?? "");
+  if (!difference) return "нельзя сравнить";
+  return difference < 0 ? "отстаёт" : "новее набора";
+}
+
+function showImports() {
+  importsTable.replaceChildren();
+  for (const [key, label] of Object.entries(BUILDS)) {
+    const value = imports[key as Build];
+    const text = value ? sourceText(value.source) : "не строилось";
+    row(importsTable, label, value && opened ? `${text} · ${compare(value.source, opened)}` : text);
+    if (value) importsTable.rows[importsTable.rows.length - 1].title = `Собрано ${new Date(value.importedAt).toLocaleString("ru-RU")}`;
+  }
 }
 
 function showSummary(data: Summary) {
@@ -120,6 +152,11 @@ function show(message: ToUi) {
     url.value = message.url;
     return;
   }
+  if (message.type === "imports") {
+    imports = message.imports;
+    showImports();
+    return;
+  }
   error.hidden = message.type !== "error";
   status.hidden = message.type !== "busy";
   foundation.disabled = components.disabled = samples.disabled = screens.disabled = documentation.disabled = message.type === "busy" || (message.type === "error" && summary.hidden === true);
@@ -129,6 +166,8 @@ function show(message: ToUi) {
     status.textContent = message.message;
   } else if (message.type === "loaded") {
     report.hidden = true;
+    opened = message.summary.source;
+    showImports();
     showSummary(message.summary);
     foundation.disabled = components.disabled = samples.disabled = screens.disabled = documentation.disabled = false;
   } else {
