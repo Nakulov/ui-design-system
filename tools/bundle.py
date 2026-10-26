@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Сборка набора данных плагина Figma (bundle-format.md).
 
-Запуск: python3 tools/bundle.py [--out <файл>]
+Запуск: python3 tools/bundle.py [--out <файл>] [--branch <ветка>]
 Сначала выполняются проверки tools/validate.py; при ошибках набор не собирается.
-По умолчанию набор записывается в build/bundle.json. Выход 1 при ошибках.
+По умолчанию набор записывается в build/bundle.json. --branch задаёт ветку источника при detached HEAD (CI).
+Выход 1 при ошибках.
 """
 
 import argparse
@@ -145,6 +146,31 @@ def collect_manifests(registry):
     return result
 
 
+def git(*args):
+    """Вывод команды git в корне репозитория или None, если git или репозитория нет."""
+    try:
+        result = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True)
+    except FileNotFoundError:
+        return None
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
+def collect_source(branch):
+    """Состояние репозитория, из которого собран набор (раздел 3.11)."""
+    commit = git("rev-parse", "HEAD")
+    if commit is None:
+        return {"commit": None, "committedAt": None, "branch": None, "dirty": False}
+    if branch is None:
+        current = git("rev-parse", "--abbrev-ref", "HEAD")
+        branch = current if current and current != "HEAD" else None
+    return {
+        "commit": commit,
+        "committedAt": git("show", "-s", "--format=%cI", "HEAD"),
+        "branch": branch,
+        "dirty": bool(git("status", "--porcelain")),
+    }
+
+
 def dangling(bundle):
     """Ссылки набора на отсутствующие сущности (раздел 5, правило 3)."""
     contracts, values = bundle["contracts"], bundle["values"]
@@ -188,6 +214,7 @@ def dangling(bundle):
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", default=str(ROOT / "build" / "bundle.json"), help="файл набора")
+    parser.add_argument("--branch", help="ветка источника, если HEAD отсоединён (CI)")
     args = parser.parse_args()
 
     check = subprocess.run([sys.executable, str(ROOT / "tools" / "validate.py")], capture_output=True, text=True)
@@ -201,6 +228,7 @@ def main():
     values = collect_values(theme_dir)
     bundle = {
         "specVersions": json.loads((ROOT / "spec-versions.json").read_text()),
+        "source": collect_source(args.branch),
         "theme": THEME,
         "contracts": {c.id: rewrite_refs(c.data, c.path) for c in sorted(registry, key=lambda c: c.id)},
         "values": values,

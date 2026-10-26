@@ -35,3 +35,29 @@ jobs:
           npm ci
           npm run typecheck
           npm run build
+
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}bundle.json
+    steps:
+      - uses: actions/checkout@v4
+      - name: Зависимости
+        run: python3 -m pip install -r tools/requirements.txt
+      - name: Набор данных плагина
+        run: python3 tools/bundle.py --branch dev --out build/pages/bundle.json
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/pages
+      - id: deploy
+        uses: actions/deploy-pages@v4

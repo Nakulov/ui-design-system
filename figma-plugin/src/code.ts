@@ -1,5 +1,5 @@
 // Основной поток плагина: доступ к документу Figma.
-import { type Bundle, readBundle } from "./bundle";
+import { type Bundle, type Origin, readBundle } from "./bundle";
 import { ComponentsBuilder } from "./components";
 import { DocumentationBuilder } from "./documentation";
 import { FoundationBuilder } from "./foundation";
@@ -10,14 +10,19 @@ import { SamplesBuilder, SCREENS } from "./samples";
 /** Открытый набор. */
 let bundle: Bundle | undefined;
 
+/** Ключ clientStorage с адресом набора, изменённым пользователем (bundle-format.md, раздел 6). */
+const URL_KEY = "bundleUrl";
+
 figma.showUI(__html__, { width: 360, height: 560, themeColors: true });
+figma.clientStorage.getAsync(URL_KEY).then((url) => send({ type: "url", url: typeof url === "string" ? url : "" }));
 
 function send(message: ToUi) {
   figma.ui.postMessage(message);
 }
 
 figma.ui.onmessage = async (message: ToPlugin) => {
-  if (message.type === "load") load(message.text);
+  if (message.type === "load") load(message.text, message.origin);
+  else if (message.type === "saveUrl") await (message.url ? figma.clientStorage.setAsync(URL_KEY, message.url) : figma.clientStorage.deleteAsync(URL_KEY));
   else if (message.type === "buildFoundation") await run("Строится foundation…", "Foundation построен", "Foundation не построен", (b) => new FoundationBuilder(b).build());
   else if (message.type === "buildComponents") await run("Строятся компоненты…", "Компоненты построены", "Компоненты не построены", (b) => new ComponentsBuilder(b).build());
   else if (message.type === "buildDocumentation") await run("Строится документация…", "Документация построена", "Документация не построена", (b) => new DocumentationBuilder(b).build());
@@ -40,7 +45,7 @@ async function run(busy: string, done: string, failed: string, build: (bundle: B
   }
 }
 
-function load(text: string) {
+function load(text: string, origin: Origin) {
   let data: unknown;
   try {
     data = JSON.parse(text);
@@ -48,7 +53,7 @@ function load(text: string) {
     send({ type: "error", message: `Некорректный JSON: ${(e as Error).message}` });
     return;
   }
-  const result = readBundle(data);
+  const result = readBundle(data, origin);
   if ("error" in result) {
     bundle = undefined;
     send({ type: "error", message: result.error });

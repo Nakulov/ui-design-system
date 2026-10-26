@@ -8,6 +8,6 @@
   "documentAccess": "dynamic-page",
   "networkAccess": {
     "allowedDomains": ["*"],
-    "reasoning": "Картинки моделей (Image.source.remote) загружаются с серверов приложений по адресу из модели"
+    "reasoning": "Набор данных загружается с GitHub Pages или по адресу, указанному пользователем; картинки моделей (Image.source.remote) — с серверов приложений по адресу из модели"
   }
 }
