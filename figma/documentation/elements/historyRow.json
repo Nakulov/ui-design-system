@@ -1,0 +1,257 @@
+{
+  "holes": {
+    "date": {
+      "kind": "text",
+      "sample": "2026-11-02 · #97"
+    },
+    "kind": {
+      "kind": "text",
+      "sample": "Добавлено"
+    },
+    "target": {
+      "kind": "text",
+      "sample": "truncation"
+    },
+    "description": {
+      "kind": "spans",
+      "sample": [
+        {
+          "text": {
+            "value": "Свойство "
+          }
+        },
+        {
+          "text": {
+            "value": "truncation",
+            "typography": "code"
+          }
+        },
+        {
+          "text": {
+            "value": ": обрезка текста, который не помещается"
+          }
+        }
+      ]
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "symmetric": {
+          "horizontal": "m",
+          "vertical": "s"
+        }
+      },
+      "appearance": {
+        "plain": {
+          "background": {
+            "solid": "surface"
+          },
+          "cornerRadius": "xs"
+        }
+      },
+      "arrangement": {
+        "horizontal": {
+          "alignment": "top",
+          "distribution": {
+            "packed": {
+              "gap": "m",
+              "position": "start"
+            }
+          }
+        }
+      },
+      "children": [
+        {
+          "Container": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": {
+                    "custom": {
+                      "value": 200
+                    }
+                  }
+                }
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "arrangement": {
+              "vertical": {
+                "alignment": "start",
+                "distribution": {
+                  "packed": {
+                    "gap": "xs",
+                    "position": "top"
+                  }
+                }
+              }
+            },
+            "children": [
+              {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "$date"
+                  },
+                  "typography": "code",
+                  "color": {
+                    "solid": "onSurface"
+                  },
+                  "alignment": "start"
+                }
+              },
+              {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "$kind"
+                  },
+                  "typography": "caption",
+                  "color": {
+                    "solid": "onSurfaceMuted"
+                  },
+                  "alignment": "start"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Container": {
+            "layout": {
+              "width": {
+                "sizing": "fill"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "arrangement": {
+              "vertical": {
+                "alignment": "start",
+                "distribution": {
+                  "packed": {
+                    "gap": "xs",
+                    "position": "top"
+                  }
+                }
+              }
+            },
+            "children": [
+              {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "$target"
+                  },
+                  "typography": "code",
+                  "color": {
+                    "solid": "onSurface"
+                  },
+                  "alignment": "start"
+                }
+              },
+              {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "rich": {
+                      "spans": "$description"
+                    }
+                  },
+                  "typography": "bodySmall",
+                  "color": {
+                    "solid": "onSurface"
+                  },
+                  "alignment": "start"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

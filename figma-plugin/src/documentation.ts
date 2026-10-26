@@ -1,5 +1,5 @@
 // Страницы документации: описание системы, страницы foundation, core и компонентов (figma-documentation.md, разделы 3, 5).
-import type { Bundle, Contract, Element, Id, ManifestExample, ManifestSection } from "./bundle";
+import type { Bundle, ChangelogEntry, Contract, Element, Id, ManifestExample, ManifestSection } from "./bundle";
 import { isMain, mark, ref } from "./ids";
 import { Renderer, Tokens } from "./render";
 import { Report } from "./report";
@@ -12,6 +12,7 @@ const OVERVIEW = "docs/overview";
 const USAGE = "Рекомендации по использованию";
 const GAP = 120;
 const PLATFORMS: [string, string][] = [["android", "Android"], ["ios", "iOS"], ["figma", "Figma"]];
+const KINDS: Record<ChangelogEntry["kind"], string> = { added: "Добавлено", changed: "Изменено", removed: "Удалено", renamed: "Переименовано" };
 
 type Span = { text: { value: string; typography?: string; color?: string; decoration?: string } };
 type Model = Record<string, unknown>;
@@ -142,7 +143,7 @@ export class DocumentationBuilder {
     });
   }
 
-  /** Страница core или компонента по манифесту: Overview, Properties, примеры, Usage (figma-documentation.md, разделы 3.3, 3.4). */
+  /** Страница core или компонента по манифесту: Overview, Properties, примеры, Usage, History (figma-documentation.md, разделы 3.3, 3.4). */
   private manifest(id: Id): Model {
     const contract = this.bundle.contracts[id];
     return this.element(`${ELEMENTS}page`, {
@@ -163,6 +164,8 @@ export class DocumentationBuilder {
         const usage = this.markdown(this.bundle.texts[id]?.[USAGE]);
         return usage.length ? [this.section(title, usage)] : [];
       }
+      case "history":
+        return [this.history(id, title)];
       default:
         return [this.section(title, [this.grid(section.examples ?? [])])];
     }
@@ -219,6 +222,17 @@ export class DocumentationBuilder {
     });
   }
 
+  /** История изменений: строки журнала `changelog.json` от новых к старым (figma-documentation.md, раздел 3). */
+  private history(id: Id, title: string): Model {
+    const rows = (this.bundle.changelogs[id]?.entries ?? []).map((entry) => this.element(`${ELEMENTS}historyRow`, {
+      date: entry.issue ? `${entry.date} · #${entry.issue}` : entry.date,
+      kind: KINDS[entry.kind],
+      target: entry.kind === "renamed" ? `${entry.from} → ${entry.target}` : entry.target ?? "—",
+      description: inline(entry.description),
+    }));
+    return this.section(title, [this.element(`${ELEMENTS}table`, { rows })]);
+  }
+
   /** Выпущенные платформы с версией через « · »; если нигде не выпущено — «не выпущено». */
   private platforms(release: Release): string {
     const released = PLATFORMS.filter(([key]) => release[key]?.status === "released")
@@ -226,7 +240,7 @@ export class DocumentationBuilder {
     return released.length ? released.join(" · ") : "не выпущено";
   }
 
-  /** Страница foundation по правилу: Overview, Values, Usage (figma-documentation.md, раздел 3). */
+  /** Страница foundation по правилу: Overview, Values, Usage, History (figma-documentation.md, раздел 3). */
   private entity(id: Id): Model {
     const contract = this.bundle.contracts[id];
     const values = this.bundle.values[id];
@@ -241,6 +255,7 @@ export class DocumentationBuilder {
         this.element(`${ELEMENTS}description`, { text: contract.description }),
         this.section("Values", [this.element(`${ELEMENTS}table`, { rows })]),
         ...(usage.length ? [this.section("Usage", usage)] : []),
+        this.history(id, "History"),
       ],
     });
   }

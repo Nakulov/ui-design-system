@@ -58,6 +58,11 @@
       "id": "usage",
       "type": "usage",
       "title": "Usage"
+    },
+    {
+      "id": "history",
+      "type": "history",
+      "title": "History"
     }
   ]
 }
