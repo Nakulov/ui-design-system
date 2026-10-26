@@ -1,7 +1,13 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.10";
+export const SUPPORTED_FORMAT = "0.11";
+
+/** Адрес набора на GitHub Pages по умолчанию (раздел 6). */
+export const DEFAULT_URL = "https://nakulov.github.io/ui-design-system/bundle.json";
+
+/** Откуда открыт набор: с GitHub или из файла (раздел 6). */
+export type Origin = "github" | "file";
 
 /** Идентификатор сущности: путь от корня репозитория без .json; вариант — после «#» (раздел 2). */
 export type Id = string;
@@ -31,8 +37,12 @@ export type Icon = { svg: string; mirrored: boolean };
 /** Содержимое figma.json без $ref (раздел 3.6); у foundation-сущности — figma-mapping.md, раздел 6.3. */
 export type FigmaProject = { scopes?: string[]; publish?: boolean; [field: string]: unknown };
 
+/** Состояние репозитория, из которого собран набор (раздел 3.11); вне Git — null. */
+export type Source = { commit: string | null; committedAt: string | null; branch: string | null; dirty: boolean };
+
 export type Bundle = {
   specVersions: Record<string, string>;
+  source: Source;
   theme: string;
   contracts: Record<Id, Contract>;
   values: Record<Id, Values>;
@@ -77,6 +87,7 @@ export type Element = { holes: Record<string, { kind: HoleKind; sample: unknown 
 
 export type Summary = {
   specVersions: Record<string, string>;
+  source: Source;
   theme: string;
   counts: Record<(typeof SECTIONS)[number], number>;
 };
@@ -91,7 +102,7 @@ export function isSupported(version: string): boolean {
 }
 
 /** Проверяет набор; возвращает набор со сводкой или текст ошибки. */
-export function readBundle(data: unknown): { bundle: Bundle; summary: Summary } | { error: string } {
+export function readBundle(data: unknown, origin: Origin): { bundle: Bundle; summary: Summary } | { error: string } {
   if (typeof data !== "object" || data === null) {
     return { error: "Файл не является набором данных: ожидается объект JSON" };
   }
@@ -101,14 +112,17 @@ export function readBundle(data: unknown): { bundle: Bundle; summary: Summary } 
     return { error: "В наборе нет specVersions.bundleFormat: файл собран не tools/bundle.py" };
   }
   if (!isSupported(version)) {
-    return { error: `Набор формата ${version}, плагин поддерживает ${SUPPORTED_FORMAT}: пересоберите набор или обновите плагин` };
+    // Набор с GitHub всегда из актуального dev: отстаёт плагин (раздел 4, правило 2).
+    const fix = origin === "github" ? "обновите плагин (git pull, npm run build)" : "пересоберите набор или обновите плагин";
+    return { error: `Набор формата ${version}, плагин поддерживает ${SUPPORTED_FORMAT}: ${fix}` };
   }
   const missing: string[] = SECTIONS.filter((key) => typeof candidate[key] !== "object" || candidate[key] === null);
   if (typeof candidate.theme !== "string") missing.unshift("theme");
+  if (typeof candidate.source !== "object" || candidate.source === null) missing.unshift("source");
   if (missing.length > 0) {
     return { error: `В наборе нет разделов: ${missing.join(", ")}` };
   }
   const bundle = candidate as Bundle;
   const counts = Object.fromEntries(SECTIONS.map((key) => [key, Object.keys(bundle[key]).length])) as Summary["counts"];
-  return { bundle, summary: { specVersions: bundle.specVersions, theme: bundle.theme, counts } };
+  return { bundle, summary: { specVersions: bundle.specVersions, source: bundle.source, theme: bundle.theme, counts } };
 }

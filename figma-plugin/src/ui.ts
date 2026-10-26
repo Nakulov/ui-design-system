@@ -1,5 +1,5 @@
-// Окно плагина: выбор набора, сводка, построение foundation и компонентов, отрисовка примеров и экранов, отчёт.
-import type { Summary } from "./bundle";
+// Окно плагина: загрузка набора с GitHub или из файла, сводка, построение foundation и компонентов, отрисовка примеров и экранов, отчёт.
+import { DEFAULT_URL, type Source, type Summary } from "./bundle";
 import type { ToPlugin, ToUi } from "./messages";
 import type { ReportData } from "./report";
 
@@ -18,6 +18,7 @@ const COUNTS: Record<keyof Summary["counts"], string> = {
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const file = element<HTMLInputElement>("file");
+const url = element<HTMLInputElement>("url");
 const error = element<HTMLDivElement>("error");
 const status = element<HTMLDivElement>("status");
 const summary = element<HTMLTableElement>("summary");
@@ -40,8 +41,21 @@ function row(table: HTMLTableElement, label: string, value: string | number) {
   tr.insertCell().textContent = String(value);
 }
 
+/** «dev · 48bcb86 · 26.10.2026 11:40»: время коммита как записано, без перевода в пояс пользователя (bundle-format.md, раздел 3.11). */
+function sourceText(source: Source): string {
+  const time = source.committedAt?.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})/);
+  const parts = [
+    source.branch,
+    source.commit?.slice(0, 7) ?? "вне Git",
+    time && `${time[3]}.${time[2]}.${time[1]} ${time[4]}`,
+    source.dirty && "есть незакоммиченные изменения",
+  ];
+  return parts.filter(Boolean).join(" · ");
+}
+
 function showSummary(data: Summary) {
   summary.replaceChildren();
+  row(summary, "Источник", sourceText(data.source));
   row(summary, "Тема", data.theme);
   for (const [key, label] of Object.entries(COUNTS)) row(summary, label, data.counts[key as keyof Summary["counts"]]);
   for (const [spec, version] of Object.entries(data.specVersions)) row(summary, spec, version);
@@ -69,6 +83,25 @@ function showReport(title: string, data: ReportData) {
   report.hidden = false;
 }
 
+url.placeholder = DEFAULT_URL;
+url.onchange = () => send({ type: "saveUrl", url: url.value.trim() });
+
+element<HTMLButtonElement>("github").onclick = async () => {
+  const address = url.value.trim() || DEFAULT_URL;
+  show({ type: "busy", message: "Загружается набор…" });
+  let response: Response;
+  try {
+    response = await fetch(address, { cache: "no-store" });
+  } catch {
+    show({ type: "error", message: `Не удалось загрузить набор: нет сети или сервер не разрешает загрузку (CORS) — ${address}` });
+    return;
+  }
+  if (!response.ok) {
+    show({ type: "error", message: `Не удалось загрузить набор: HTTP ${response.status} — ${address}` });
+    return;
+  }
+  send({ type: "load", text: await response.text(), origin: "github" });
+};
 element<HTMLButtonElement>("open").onclick = () => file.click();
 foundation.onclick = () => send({ type: "buildFoundation" });
 components.onclick = () => send({ type: "buildComponents" });
@@ -79,11 +112,14 @@ documentation.onclick = () => send({ type: "buildDocumentation" });
 file.onchange = async () => {
   const chosen = file.files?.[0];
   file.value = "";
-  if (chosen) send({ type: "load", text: await chosen.text() });
+  if (chosen) send({ type: "load", text: await chosen.text(), origin: "file" });
 };
 
-onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => {
-  const message = event.data.pluginMessage;
+function show(message: ToUi) {
+  if (message.type === "url") {
+    url.value = message.url;
+    return;
+  }
   error.hidden = message.type !== "error";
   status.hidden = message.type !== "busy";
   foundation.disabled = components.disabled = samples.disabled = screens.disabled = documentation.disabled = message.type === "busy" || (message.type === "error" && summary.hidden === true);
@@ -98,4 +134,6 @@ onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => {
   } else {
     showReport(message.title, message.report);
   }
-};
+}
+
+onmessage = (event: MessageEvent<{ pluginMessage: ToUi }>) => show(event.data.pluginMessage);
