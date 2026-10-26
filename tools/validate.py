@@ -803,9 +803,9 @@ def check_previews(registry, values, elements):
 
 # Манифесты документации (documentation-manifest.md).
 
-MANIFEST_SECTIONS = {"overview", "properties", "variants", "states", "layoutBehavior", "usage"}
+MANIFEST_SECTIONS = {"overview", "properties", "variants", "states", "layoutBehavior", "usage", "history"}
 DEMO_SECTIONS = {"variants", "states", "layoutBehavior"}
-COMPONENT_SECTIONS = {"overview", "properties", "variants", "usage"}
+COMPONENT_SECTIONS = {"overview", "properties", "variants", "usage", "history"}
 SAMPLE_SECTIONS = {"overview", "variants"}
 
 
@@ -905,6 +905,9 @@ def check_manifests(registry, manifests, elements):
                 error(path, f"{at}: id примера «{name}» повторяется")
         for name in duplicates(ids):
             error(path, f"id секции «{name}» повторяется")
+        kinds = [s.get("type") for s in data["sections"] if isinstance(s, dict)]
+        if kinds.count("history") != 1 or kinds[-1] != "history":
+            error(path, "секция history обязательна, одна и последняя (раздел 4.2)")
     for path in sorted(p for p in elements if p.parent.name == DEMOS and p not in used):
         error(path, "демонстрация не используется ни одним манифестом")
 
