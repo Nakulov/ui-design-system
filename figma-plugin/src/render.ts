@@ -321,6 +321,7 @@ export class Renderer {
       if (plain.overlay) this.overlay(frame, plain, kept, at);
       // Слои компонента, которых нет в модели, скрываются: менять состав экземпляра Figma не даёт.
       for (const leftover of kept.values()) leftover.visible = false;
+      await this.fixProperties(node);
       this.collapseEmpty(frame, model.layout);
       if (old && old !== node && !old.removed) old.remove();
       return frame;
@@ -329,6 +330,24 @@ export class Renderer {
       this.warn(at, `экземпляр не построен, нарисовано телом: ${(e as Error).message}`);
       return undefined;
     }
+  }
+
+  /**
+   * Instance swap- и boolean-свойства задаются экземпляру явно: значение слоя, совпавшее со значением компонента, иначе
+   * не закрепляется и после правки образца следует за компонентом. Text-свойство не задаётся: оно сбрасывает стили
+   * диапазонов (раздел 7, правило 9).
+   */
+  private async fixProperties(node: InstanceNode) {
+    const values: { [key: string]: string | boolean } = {};
+    for (const layer of node.children) {
+      const references = layer.componentPropertyReferences ?? {};
+      if (references.mainComponent && layer.type === "INSTANCE") {
+        const main = await layer.getMainComponentAsync();
+        if (main) values[references.mainComponent] = main.id;
+      }
+      if (references.visible) values[references.visible] = layer.visible;
+    }
+    if (Object.keys(values).length) node.setProperties(values);
   }
 
   /** Figma-компонент и значения его variant-свойств для модели (разделы 4.1, правила 12–13, и 10.5). */
