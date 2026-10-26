@@ -257,7 +257,7 @@ sealed interface ImageOrigin {
     "source": {
       "remote": {
         "origin": {
-          "url": "https://cdn.example.com/users/42/avatar.jpg"
+          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/avatar.jpg"
         },
         "scale": "crop",
         "alignment": "center",

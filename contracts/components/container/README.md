@@ -175,7 +175,7 @@ lineDistribution: oneOf               — строки (колонки) при �
           "source": {
             "remote": {
               "origin": {
-                "url": "https://cdn.example.com/promo/autumn.jpg"
+                "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
               },
               "scale": "crop",
               "alignment": "center",
@@ -303,7 +303,7 @@ lineDistribution: oneOf               — строки (колонки) при �
           "source": {
             "remote": {
               "origin": {
-                "url": "https://cdn.example.com/items/42.jpg"
+                "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
               },
               "scale": "crop",
               "alignment": "center",

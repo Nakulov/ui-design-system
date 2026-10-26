@@ -6,7 +6,7 @@
     {
       "name": "url",
       "type": "string",
-      "sample": "https://cdn.example.com/items/42.jpg"
+      "sample": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
     }
   ]
 }
