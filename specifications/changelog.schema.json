@@ -33,9 +33,14 @@
           "type": "integer",
           "minimum": 1
         },
-        "kind": { "enum": ["added", "changed", "removed"] },
+        "kind": { "enum": ["added", "changed", "removed", "renamed"] },
         "target": {
           "description": "Путь к свойству, варианту или значению через точку от публичного контракта; без него запись о сущности целиком.",
+          "type": "string",
+          "pattern": "^[a-z][A-Za-z0-9]*(\\.[a-z][A-Za-z0-9]*)*$"
+        },
+        "from": {
+          "description": "Прежний путь цели записи renamed, в формате target.",
           "type": "string",
           "pattern": "^[a-z][A-Za-z0-9]*(\\.[a-z][A-Za-z0-9]*)*$"
         },
@@ -45,7 +50,10 @@
           "minLength": 1
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": { "properties": { "kind": { "const": "renamed" } } },
+      "then": { "required": ["target", "from"] },
+      "else": { "not": { "required": ["from"] } }
     }
   }
 }

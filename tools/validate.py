@@ -938,6 +938,18 @@ def covers(outer, inner):
     return outer is None or inner == outer or inner.startswith(outer + ".")
 
 
+def states(entry):
+    """Пути, состояние которых задаёт запись: (путь, есть ли он в контрактах); changed состояние не задаёт."""
+    kind, target = entry["kind"], entry.get("target")
+    if kind == "added":
+        return [(target, True)]
+    if kind == "removed":
+        return [(target, False)]
+    if kind == "renamed":
+        return [(target, True), (entry["from"], False)]
+    return []
+
+
 def check_changelogs(registry, changelogs):
     for entity in entities():
         name = pascal(entity.name)
@@ -959,14 +971,16 @@ def check_changelogs(registry, changelogs):
             continue
         targets = changelog_targets(registry, public)
         for i, entry in enumerate(entries):
-            target = entry.get("target")
-            # Состояние цели определяет самая новая запись о её добавлении или удалении.
-            if target is None or any(covers(e.get("target"), target) and e["kind"] != "changed" for e in entries[:i]):
-                continue
-            if entry["kind"] == "removed" and target in targets:
-                error(path, f"target «{target}» удалён, но есть в контрактах каталога")
-            elif entry["kind"] != "removed" and target not in targets:
-                error(path, f"target «{target}» нет в контрактах каталога")
+            # Состояние цели определяет самая новая запись о её добавлении, удалении или переименовании.
+            newer = [p for e in entries[:i] for p, _ in states(e)]
+            for target, exists in states(entry) or [(entry.get("target"), True)]:
+                if target is None or any(covers(p, target) for p in newer):
+                    continue
+                field = "from" if exists is False and entry["kind"] == "renamed" else "target"
+                if not exists and target in targets:
+                    error(path, f"{field} «{target}» удалён, но есть в контрактах каталога")
+                elif exists and target not in targets:
+                    error(path, f"{field} «{target}» нет в контрактах каталога")
 
 
 def api(node):

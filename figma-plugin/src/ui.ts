@@ -13,6 +13,7 @@ const COUNTS: Record<keyof Summary["counts"], string> = {
   texts: "README",
   documentation: "Элементы документации",
   manifests: "Манифесты документации",
+  changelogs: "Журналы изменений",
 };
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
