@@ -1,6 +1,8 @@
-// Страницы документации: описание системы, страницы foundation, core и компонентов (figma-documentation.md, разделы 3, 5).
-import type { Bundle, ChangelogEntry, Contract, Element, Id, ManifestExample, ManifestSection } from "./bundle";
+// Страницы документации: описание системы, страницы foundation, core и компонентов, Release Checklist (figma-documentation.md, разделы 3, 5).
+import type { Bundle, ChangelogEntry, Contract, Element, Id, ManifestExample, ManifestSection, Source } from "./bundle";
+import { type Auto, AUTO_KEY, AutoChecks, type Check, type Checks, CHECKS_KEY, oldest, readJson, scope, stale } from "./checklist";
 import { isMain, mark, ref } from "./ids";
+import { readImports } from "./imports";
 import { Renderer, Tokens } from "./render";
 import { Report } from "./report";
 import { fill } from "./samples";
@@ -77,12 +79,14 @@ function blocks(markdown: string): { marker?: string; text: string }[] {
 export class DocumentationBuilder {
   private readonly report = new Report();
   private tokens!: Tokens;
+  private checks!: AutoChecks;
 
   constructor(private readonly bundle: Bundle) {}
 
   async build(): Promise<Report> {
     this.tokens = await Tokens.load(this.bundle);
     await figma.loadAllPagesAsync();
+    this.checks = new AutoChecks(this.bundle, readImports());
     const foundation = Object.entries(this.bundle.contracts)
       .filter(([id]) => id.startsWith("foundation/") && isMain(id) && this.bundle.values[id])
       .sort(([, a], [, b]) => a.name.localeCompare(b.name));
@@ -98,7 +102,9 @@ export class DocumentationBuilder {
       const result: PageNode[] = [];
       for (const [id, contract] of entities) {
         const page = await this.page((p) => ref(p) === id, contract.name, (p) => mark(p, id));
+        const warnings = this.report.data().warnings.length;
         await this.draw(page, id, build(id));
+        if (scope(id)) await this.checklist(page, id, this.report.data().warnings.length - warnings);
         result.push(page);
       }
       return result;
@@ -348,43 +354,107 @@ export class DocumentationBuilder {
     return "—";
   }
 
-  /** Область Generated Documentation пересобирается, Custom Documentation создаётся один раз (раздел 3). */
+  /** Generated Documentation пересобирается целиком (раздел 3). */
   private async draw(page: PageNode, id: Id, model: Model) {
+    await this.area(page, id, "generated", "Generated Documentation", model);
+    this.place(page);
+  }
+
+  /** Область плагина на странице: фрейм с ролью, перерисованный по модели. */
+  private async area(page: PageNode, id: Id, role: string, name: string, model: Model): Promise<FrameNode> {
     await figma.setCurrentPageAsync(page);
-    let generated = page.children.find((n) => ref(n, "role") === "generated") as FrameNode | undefined;
-    if (!generated) {
-      generated = figma.createFrame();
-      page.appendChild(generated);
-      mark(generated, "generated", "role");
-      mark(generated, id);
+    let frame = page.children.find((n) => ref(n, "role") === role) as FrameNode | undefined;
+    if (!frame) {
+      frame = figma.createFrame();
+      page.appendChild(frame);
+      mark(frame, role, "role");
+      mark(frame, id);
     }
-    generated.name = "Generated Documentation";
-    generated.layoutMode = "VERTICAL";
-    generated.primaryAxisSizingMode = "AUTO";
-    generated.counterAxisSizingMode = "AUTO";
-    generated.fills = [];
-    generated.clipsContent = false;
+    frame.name = name;
+    frame.layoutMode = "VERTICAL";
+    frame.primaryAxisSizingMode = "AUTO";
+    frame.counterAxisSizingMode = "AUTO";
+    frame.fills = [];
+    frame.clipsContent = false;
     const reuse = new Map<string, SceneNode>();
-    for (const node of [...generated.children]) {
+    for (const node of [...frame.children]) {
       if (ref(node, "slot")) reuse.set(ref(node, "slot"), node);
       else node.remove();
     }
-    await new Renderer(this.tokens, this.report, page.name).draw(model, generated, reuse);
+    await new Renderer(this.tokens, this.report, page.name).draw(model, frame, reuse);
     for (const node of reuse.values()) node.remove();
-    // На странице символов документация стоит слева от компонентов `icon/<имя>`.
-    const others = page.children.filter((n) => n !== generated && ref(n, "role") !== "custom");
-    generated.x = others.length ? Math.min(...others.map((n) => n.x)) - generated.width - GAP : 0;
-    generated.y = 0;
-    if (!page.children.some((n) => ref(n, "role") === "custom")) {
-      const custom = figma.createFrame();
-      page.appendChild(custom);
-      mark(custom, "custom", "role");
-      mark(custom, id);
-      custom.name = "Custom Documentation";
-      custom.resize(600, 400);
-      custom.x = generated.x;
-      custom.y = generated.y + generated.height + GAP;
+    return frame;
+  }
+
+  /**
+   * Generated Documentation — в начале координат или слева от других узлов страницы (на `Icon` — от компонентов
+   * символов), Release Checklist — слева от неё; прежние фреймы Custom Documentation не учитываются (раздел 3.2).
+   */
+  private place(page: PageNode) {
+    const own = ["generated", "checklist", "custom"];
+    const generated = page.children.find((n) => ref(n, "role") === "generated");
+    const checklist = page.children.find((n) => ref(n, "role") === "checklist");
+    const others = page.children.filter((n) => !own.includes(ref(n, "role")));
+    if (generated) {
+      generated.x = others.length ? Math.min(...others.map((n) => n.x)) - generated.width - GAP : 0;
+      generated.y = 0;
     }
+    if (checklist) {
+      checklist.x = (generated?.x ?? 0) - checklist.width - GAP;
+      checklist.y = 0;
+    }
+  }
+
+  /** Release Checklist сущности: автоматические пункты по проверкам, ручные отметки сохраняются (раздел 3.5). */
+  private async checklist(page: PageNode, id: Id, warnings: number) {
+    const auto: Auto = {};
+    for (const [number, reason] of Object.entries(await this.checks.run(id, scope(id)!, warnings))) {
+      auto[number] = reason === null;
+      if (reason) this.report.warn(`${page.name} › Release Checklist, пункт ${number}: ${reason}`);
+    }
+    const frame = page.children.find((n) => ref(n, "role") === "checklist");
+    await this.drawChecklist(page, id, auto, frame ? readJson<Checks>(frame, CHECKS_KEY) : {}, this.bundle.source);
+  }
+
+  /** Ручные отметки открытой страницы: меняются и перерисовываются без повторных проверок (раздел 3.5, правила 5, 8). */
+  async updateChecks(page: PageNode, change: (checks: Checks, current: Check) => Checks) {
+    const frame = page.children.find((n) => ref(n, "role") === "checklist");
+    if (!frame) throw new Error("на странице нет Release Checklist");
+    this.tokens = await Tokens.load(this.bundle);
+    const current = readImports().documentation?.source ?? this.bundle.source;
+    const checks = change(readJson<Checks>(frame, CHECKS_KEY), { commit: current.commit, committedAt: current.committedAt });
+    await this.drawChecklist(page, ref(frame), readJson<Auto>(frame, AUTO_KEY), checks, current);
+  }
+
+  /** Фрейм чеклиста: статус и счёт, сборка отметок, автоматические и ручные пункты; current — сборка документации в файле. */
+  private async drawChecklist(page: PageNode, id: Id, auto: Auto, checks: Checks, current: Source) {
+    const items = this.bundle.checklist.items.filter((item) => item.appliesTo.includes(scope(id)!));
+    const automatic = items.filter((item) => item.kind === "auto");
+    const manual = items.filter((item) => item.kind === "manual");
+    const status = inherit({}, this.bundle.contracts[id].releaseVersions).figma?.status ?? "—";
+    const passed = automatic.filter((item) => auto[item.number]).length;
+    const checked = manual.filter((item) => checks[item.number]).length;
+    const rows = (list: typeof items, mark: (number: number) => string) => list.map((item) => this.element(`${ELEMENTS}checklistRow`, {
+      mark: mark(item.number), number: String(item.number), text: inline(item.text),
+    }));
+    const first = oldest(checks);
+    const build = this.element(`${ELEMENTS}description`, {
+      text: first ? `Отметки на сборке ${first.commit?.slice(0, 7) ?? "вне Git"} · ${first.committedAt?.slice(0, 10) ?? "без даты"}` : "Отметок нет",
+    });
+    if (first && stale(checks, current)) (build.Text as Model).color = { solid: "error" };
+    const model = this.element(`${ELEMENTS}page`, {
+      sections: [
+        this.element(`${ELEMENTS}heading`, { text: "Release Checklist" }),
+        this.element(`${ELEMENTS}description`, { text: `Figma: ${status} · авто ${passed}/${automatic.length} · ручные ${checked}/${manual.length}` }),
+        build,
+        this.section("Автоматические", [this.element(`${ELEMENTS}table`, { rows: rows(automatic, (n) => (auto[n] ? "✓" : "✗")) })]),
+        this.section("Ручные", [this.element(`${ELEMENTS}table`, { rows: rows(manual, (n) => (checks[n] ? "✓" : "—")) })]),
+      ],
+    });
+    const frame = await this.area(page, id, "checklist", "Release Checklist", model);
+    mark(frame, JSON.stringify(auto), AUTO_KEY);
+    mark(frame, JSON.stringify(checks), CHECKS_KEY);
+    this.place(page);
   }
 
   /** Порядок страниц: Overview, Foundation, Core, Components, затем библиотека (раздел 3.2). */

@@ -18,11 +18,11 @@ const TEXT_PROPERTY: Record<string, string> = { Text: "content", Badge: "text" }
 type Project = { sample?: string; variants?: Record<string, Record<string, string>>; iconSample?: string };
 type Model = Record<string, { id?: string; appearance: Record<string, unknown>; [field: string]: unknown }>;
 /** Вариант Figma-компонента: значения variant-свойств, образец и его модель. */
-type Variant = { values: [string, string][]; sample: string; model: Model };
+export type Variant = { values: [string, string][]; sample: string; model: Model };
 /** Переименование значения variant-свойства из журнала изменений: свойство, прежнее и новое значение. */
 type Rename = [string, string, string];
 /** Figma-компонент: идентификатор (раздел 7.1), имя, контракт, варианты и переименования от старых к новым. */
-type Target = { id: Id; name: string; contract: string; variants: Variant[]; renames: Rename[] };
+export type Target = { id: Id; name: string; contract: string; variants: Variant[]; renames: Rename[] };
 
 export class ComponentsBuilder {
   private readonly report = new Report();
@@ -64,7 +64,7 @@ export class ComponentsBuilder {
   }
 
   /** Figma-компоненты по `figma.json` компонентов; `iconSample` даёт `text/icon` (раздел 10.5). */
-  private targets(): Target[] {
+  targets(): Target[] {
     const result: Target[] = [];
     for (const [id, data] of Object.entries(this.bundle.figma)) {
       const contract = this.bundle.contracts[id];

@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts"
 THEMES = ROOT / "themes"
 ELEMENTS = ROOT / "figma" / "documentation" / "elements"  # элементы оформления документации (figma-documentation.md, раздел 5)
+CHECKLIST = ROOT / "figma" / "releaseChecklist.json"  # пункты чеклиста готовности к релизу (figma-mapping.md, раздел 8.5)
 SCREENS = ROOT / "screens"  # демо-экраны: screens/<имя>.json в формате примеров (bundle-format.md, раздел 3.9)
 DEFINITIONS = "definitions"  # вспомогательные определения сущности (раздел 11.1)
 PREVIEW = "preview.json"  # превью величин foundation (figma-documentation.md, раздел 5)
@@ -34,7 +35,7 @@ PRIMITIVES = {
 
 def is_contract(path):
     """Контракт — <Имя>.json вне samples/, demos/ и screens/, не служебный файл сущности (раздел 11.1, правила 5, 8)."""
-    return (len(path.suffixes) == 1 and path != ROOT / "spec-versions.json" and not is_sample(path)
+    return (len(path.suffixes) == 1 and path not in (ROOT / "spec-versions.json", CHECKLIST) and not is_sample(path)
             and not is_screen(path) and not is_element(path) and not (path.is_relative_to(CONTRACTS) and path.name in SERVICE_FILES))
 
 

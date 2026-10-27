@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.11";
+export const SUPPORTED_FORMAT = "0.12";
 
 /** Адрес набора на GitHub Pages по умолчанию (раздел 6). */
 export const DEFAULT_URL = "https://nakulov.github.io/ui-design-system/bundle.json";
@@ -59,7 +59,16 @@ export type Bundle = {
   manifests: Record<Id, Manifest>;
   /** Журналы изменений по идентификатору публичного контракта (раздел 3.10). */
   changelogs: Record<Id, Changelog>;
+  /** Пункты чеклиста готовности к релизу в Figma (раздел 3.12). */
+  checklist: Checklist;
 };
+
+/** К чему применим пункт чеклиста (figma-mapping.md, раздел 8.5). */
+export type ChecklistScope = "component" | "container" | "foundation" | "core";
+
+export type ChecklistItem = { number: number; kind: "auto" | "manual"; text: string; appliesTo: ChecklistScope[] };
+
+export type Checklist = { items: ChecklistItem[] };
 
 /** Запись журнала изменений (schema-format.md, раздел 11.4); from — только у renamed. */
 export type ChangelogEntry = {
@@ -92,7 +101,16 @@ export type Summary = {
   counts: Record<(typeof SECTIONS)[number], number>;
 };
 
-const SECTIONS = ["contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests", "changelogs"] as const;
+const SECTIONS = ["contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests", "changelogs", "checklist"] as const;
+
+/** Сравнение сборки в файле с открытым набором (figma-mapping.md, раздел 7, правило 11). */
+export function compare(built: Source, bundle: Source): string {
+  if (built.dirty || bundle.dirty || !built.commit || !bundle.commit) return "нельзя сравнить";
+  if (built.commit === bundle.commit) return "совпадает";
+  const difference = Date.parse(built.committedAt ?? "") - Date.parse(bundle.committedAt ?? "");
+  if (!difference) return "нельзя сравнить";
+  return difference < 0 ? "отстаёт" : "новее набора";
+}
 
 /** Совпадает основная версия, а до 1.0 — и дополнительная (раздел 4, правило 1). */
 export function isSupported(version: string): boolean {
@@ -123,6 +141,8 @@ export function readBundle(data: unknown, origin: Origin): { bundle: Bundle; sum
     return { error: `В наборе нет разделов: ${missing.join(", ")}` };
   }
   const bundle = candidate as Bundle;
-  const counts = Object.fromEntries(SECTIONS.map((key) => [key, Object.keys(bundle[key]).length])) as Summary["counts"];
+  if (!Array.isArray(bundle.checklist.items)) return { error: "В наборе нет пунктов чеклиста: checklist.items" };
+  // У чеклиста считаются пункты, у остальных разделов — ключи.
+  const counts = Object.fromEntries(SECTIONS.map((key) => [key, key === "checklist" ? bundle.checklist.items.length : Object.keys(bundle[key]).length])) as Summary["counts"];
   return { bundle, summary: { specVersions: bundle.specVersions, source: bundle.source, theme: bundle.theme, counts } };
 }

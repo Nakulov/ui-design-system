@@ -22,7 +22,7 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PREVIEW, ROOT, SCREENS,
+from contracts import (APPEARANCE, CHECKLIST, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PREVIEW, ROOT, SCREENS,
                        SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, id_path, is_contract, is_element,
                        is_sample, is_screen, is_skipped, pascal, ref_id)
 import idea
@@ -225,6 +225,38 @@ def check_overview():
         error(path, "файл начинается с раздела «## …»")
     for match in re.finditer(r"^## [^\n]+\n(.*?)(?=^## |\Z)", text, re.M | re.S):
         check_subset(path, match.group(1), text[:match.start(1)].count("\n") + 1, "описании системы")
+
+
+def checklist_spec():
+    """Пункты чеклиста из figma-mapping.md, разделы 8.2 и 8.3: номер → вид, текст в одну строку, применимость."""
+    text = (ROOT / SPECS["figmaMapping"]).read_text()
+    full = re.search(r"^### 8\.2\..*?(?=^### 8\.3\.)", text, re.M | re.S).group(0)
+    short = re.search(r"^### 8\.3\..*?(?=^### 8\.4\.)", text, re.M | re.S).group(0)
+    items, kind = {}, None
+    for match in re.finditer(r"^(Автоматические|Ручные) пункты:|^(\d+)\. (.+(?:\n {3}.+)*)", full, re.M):
+        if match.group(1):
+            kind = "auto" if match.group(1) == "Автоматические" else "manual"
+        else:
+            items[int(match.group(2))] = {"kind": kind, "text": " ".join(line.strip() for line in match.group(3).split("\n")),
+                                          "appliesTo": ["component"]}
+    for entity, numbers in re.findall(r"^- (foundation|core|`Container`): пункты ([\d, ]+)", short, re.M):
+        for number in numbers.replace(" ", "").strip(",").split(","):
+            items[int(number)]["appliesTo"].append(entity.strip("`").lower())
+    return items
+
+
+def check_checklist():
+    """figma/releaseChecklist.json совпадает с figma-mapping.md, разделы 8.2 и 8.3 (раздел 8.5)."""
+    if not CHECKLIST.is_file():
+        error(CHECKLIST.parent, "нет releaseChecklist.json: пункты чеклиста готовности (figma-mapping.md, раздел 8.5)")
+        return
+    data = json.loads(CHECKLIST.read_text())
+    expected = [{"number": number, **item} for number, item in sorted(checklist_spec().items())]
+    actual = data.get("items") if isinstance(data, dict) and set(data) == {"items"} else None
+    if actual != expected:
+        mismatch(CHECKLIST, json.dumps({"items": actual}, ensure_ascii=False, indent=2),
+                 json.dumps({"items": expected}, ensure_ascii=False, indent=2),
+                 "не совпадает с figma-mapping.md, разделы 8.2 и 8.3 (раздел 8.5)")
 
 
 def check_subset(path, section, first, where):
@@ -1112,6 +1144,7 @@ def main():
     check_previews(registry, values, elements)
     check_manifests(registry, manifests, elements)
     check_overview()
+    check_checklist()
     check_samples(registry)
     check_screens(registry)
     check_idea(registry)
