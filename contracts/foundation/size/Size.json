@@ -4,7 +4,7 @@
   "description": "Размер компонента или его части: иконки, аватара, высоты кнопки и т. д. Значения задаются в условных единицах: dp на Android, pt на iOS, px в Figma",
   "sample": "m",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },

@@ -4,7 +4,7 @@
   "description": "Уровень приподнятости элемента над поверхностью, передаваемый тенью. Параметры тени задаются темой",
   "sample": "s",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },

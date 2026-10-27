@@ -4,7 +4,7 @@
   "description": "Семантическая роль текста: назначение стиля текста в интерфейсе. Параметры стиля (шрифт, размер, межстрочный интервал) задаются темой",
   "sample": "bodyMedium",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },

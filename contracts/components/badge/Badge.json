@@ -7,7 +7,7 @@
   ],
   "description": "Метка внимания: форма с текстом, символом или картинкой либо без содержимого. Ширина не меньше высоты: один знак — круг, длинный текст — таблетка",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },

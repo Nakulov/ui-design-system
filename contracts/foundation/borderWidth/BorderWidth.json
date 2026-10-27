@@ -4,7 +4,7 @@
   "description": "Толщина обводки или разделителя. Значения задаются в условных единицах: dp на Android, pt на iOS, px в Figma",
   "sample": "s",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },
