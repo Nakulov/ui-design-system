@@ -8,7 +8,7 @@
   ],
   "description": "Изображение: символ из словаря темы или картинка, загружаемая по адресу",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },
