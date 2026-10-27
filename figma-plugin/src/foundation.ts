@@ -17,7 +17,7 @@ type VariableSpec = {
   hidden: boolean;
 };
 
-type CollectionSpec = { ref: Id; name: string; modes: string[]; variables: VariableSpec[] };
+export type CollectionSpec = { ref: Id; name: string; modes: string[]; variables: VariableSpec[] };
 
 const PRIMITIVE_KIND: Record<string, Kind> = { color: "COLOR", integer: "FLOAT", float: "FLOAT", string: "STRING", boolean: "BOOLEAN" };
 
@@ -105,7 +105,7 @@ export class FoundationBuilder {
   }
 
   /** Коллекции: простые величины, параметры типографики и Elevation (раздел 3.1, правила 1–10). */
-  private collectionSpecs(): CollectionSpec[] {
+  collectionSpecs(): CollectionSpec[] {
     const specs: CollectionSpec[] = [];
     for (const [id, values] of this.entities()) {
       const contract = this.bundle.contracts[id];

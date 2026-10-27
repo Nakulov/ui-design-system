@@ -1,0 +1,147 @@
+{
+  "items": [
+    {
+      "number": 1,
+      "kind": "auto",
+      "text": "`validate.py` проходит на сборке импорта.",
+      "appliesTo": [
+        "component",
+        "foundation",
+        "core",
+        "container"
+      ]
+    },
+    {
+      "number": 2,
+      "kind": "auto",
+      "text": "Блок «В файле» показывает «совпадает».",
+      "appliesTo": [
+        "component",
+        "foundation",
+        "core",
+        "container"
+      ]
+    },
+    {
+      "number": 3,
+      "kind": "auto",
+      "text": "Вид, свойства, варианты и режимы соответствуют контракту (раздел 9, пункт 4).",
+      "appliesTo": [
+        "component",
+        "foundation"
+      ]
+    },
+    {
+      "number": 4,
+      "kind": "auto",
+      "text": "Значения привязаны к переменным.",
+      "appliesTo": [
+        "component"
+      ]
+    },
+    {
+      "number": 5,
+      "kind": "auto",
+      "text": "Страница документации нарисована, обязательные секции на месте.",
+      "appliesTo": [
+        "component",
+        "foundation",
+        "core",
+        "container"
+      ]
+    },
+    {
+      "number": 6,
+      "kind": "manual",
+      "text": "Варианты Component Set, включая состояния (раздел 3.5), и режимы коллекций компонента (раздел 3.3) правильны в светлой теме.",
+      "appliesTo": [
+        "component",
+        "foundation",
+        "core",
+        "container"
+      ]
+    },
+    {
+      "number": 7,
+      "kind": "manual",
+      "text": "То же в тёмной теме.",
+      "appliesTo": [
+        "component",
+        "foundation",
+        "core",
+        "container"
+      ]
+    },
+    {
+      "number": 8,
+      "kind": "manual",
+      "text": "Образцы и примеры читаются: без обрезки, наложений и пустот.",
+      "appliesTo": [
+        "component",
+        "container"
+      ]
+    },
+    {
+      "number": 9,
+      "kind": "manual",
+      "text": "Экземпляр из библиотеки переключает свойства и варианты без поломки вида.",
+      "appliesTo": [
+        "component"
+      ]
+    },
+    {
+      "number": 10,
+      "kind": "manual",
+      "text": "Ресайз соответствует контракту: hug и fill, min и max, длинный текст, отсутствие картинки.",
+      "appliesTo": [
+        "component",
+        "container"
+      ]
+    },
+    {
+      "number": 11,
+      "kind": "manual",
+      "text": "Индикаторы держатся на углах при ресайзе.",
+      "appliesTo": [
+        "component"
+      ]
+    },
+    {
+      "number": 12,
+      "kind": "manual",
+      "text": "Компонент собирается в `Container` по правилу «Сборка макетов в Figma».",
+      "appliesTo": [
+        "component",
+        "container"
+      ]
+    },
+    {
+      "number": 13,
+      "kind": "manual",
+      "text": "Описание и рекомендации в README понятны без контракта.",
+      "appliesTo": [
+        "component",
+        "container"
+      ]
+    },
+    {
+      "number": 14,
+      "kind": "manual",
+      "text": "Таблица свойств совпадает с панелью свойств Figma.",
+      "appliesTo": [
+        "component"
+      ]
+    },
+    {
+      "number": 15,
+      "kind": "manual",
+      "text": "Библиотека опубликована, обновление дошло до файла-потребителя.",
+      "appliesTo": [
+        "component",
+        "foundation",
+        "core",
+        "container"
+      ]
+    }
+  ]
+}

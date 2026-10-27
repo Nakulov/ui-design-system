@@ -14,7 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from contracts import CONTRACTS, DEMOS, ELEMENTS, PREVIEW, ROOT, SCREENS, THEMES, element_id, load_registry, ref_id
+from contracts import CHECKLIST, CONTRACTS, DEMOS, ELEMENTS, PREVIEW, ROOT, SCREENS, THEMES, element_id, load_registry, ref_id
 
 THEME = "default"
 ICON = "foundation/icon/Icon"
@@ -240,6 +240,7 @@ def main():
         "documentation": collect_documentation(),
         "manifests": collect_manifests(registry),
         "changelogs": collect_changelogs(),
+        "checklist": json.loads(CHECKLIST.read_text()),
     }
     problems = list(dangling(bundle))
     for problem in problems:

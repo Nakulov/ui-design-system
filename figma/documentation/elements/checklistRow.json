@@ -1,0 +1,163 @@
+{
+  "holes": {
+    "mark": {
+      "kind": "text",
+      "sample": "✓"
+    },
+    "number": {
+      "kind": "text",
+      "sample": "1"
+    },
+    "text": {
+      "kind": "spans",
+      "sample": [
+        {
+          "text": {
+            "value": "validate.py",
+            "typography": "code"
+          }
+        },
+        {
+          "text": {
+            "value": " проходит на сборке импорта."
+          }
+        }
+      ]
+    }
+  },
+  "model": {
+    "Container": {
+      "layout": {
+        "width": {
+          "sizing": "fill"
+        },
+        "height": {
+          "sizing": "hug"
+        },
+        "position": "flow"
+      },
+      "padding": {
+        "symmetric": {
+          "horizontal": "m",
+          "vertical": "s"
+        }
+      },
+      "appearance": {
+        "plain": {
+          "background": {
+            "solid": "surface"
+          },
+          "cornerRadius": "xs"
+        }
+      },
+      "arrangement": {
+        "horizontal": {
+          "alignment": "center",
+          "distribution": {
+            "packed": {
+              "gap": "m",
+              "position": "start"
+            }
+          }
+        }
+      },
+      "children": [
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": {
+                    "custom": {
+                      "value": 24
+                    }
+                  }
+                }
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "$mark"
+            },
+            "typography": "bodySmall",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": {
+                    "custom": {
+                      "value": 24
+                    }
+                  }
+                }
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "plain": "$number"
+            },
+            "typography": "bodySmall",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        },
+        {
+          "Text": {
+            "layout": {
+              "width": {
+                "sizing": "fill"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "content": {
+              "rich": {
+                "spans": "$text"
+              }
+            },
+            "typography": "bodySmall",
+            "color": {
+              "solid": "onSurface"
+            },
+            "alignment": "start"
+          }
+        }
+      ]
+    }
+  }
+}

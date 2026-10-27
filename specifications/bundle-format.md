@@ -1,7 +1,7 @@
 # Формат набора данных плагина
 
 **Статус:** Черновик для согласования  
-**Версия спецификации:** 0.11
+**Версия спецификации:** 0.12
 
 ## 1. Назначение
 
@@ -48,7 +48,8 @@
   "texts": { "components/badge/Badge": { "Назначение": "…", "Рекомендации по использованию": "…" } },
   "documentation": { "figma/documentation/elements/heading": { "holes": { "…": "…" }, "model": { "Text": { "…": "…" } } } },
   "manifests": { "core/layout/Layout": { "sections": [ { "id": "overview", "type": "overview" } ] } },
-  "changelogs": { "components/badge/Badge": { "entries": [ { "date": "2026-10-23", "kind": "added", "…": "…" } ] } }
+  "changelogs": { "components/badge/Badge": { "entries": [ { "date": "2026-10-23", "kind": "added", "…": "…" } ] } },
+  "checklist": { "items": [ { "number": 1, "kind": "auto", "text": "…", "appliesTo": ["component", "foundation", "core"] } ] }
 }
 ```
 
@@ -67,6 +68,7 @@
 | `documentation` | Элементы оформления документации, превью величин и демонстрации (раздел 3.7).    |
 | `manifests`     | Манифесты документации (раздел 3.8).                                             |
 | `changelogs`    | Журналы изменений сущностей (раздел 3.10).                                       |
+| `checklist`     | Пункты чеклиста готовности к релизу в Figma (раздел 3.12).                       |
 
 ### 3.1. Контракты
 
@@ -160,6 +162,12 @@
 
 Плагин показывает источник в сводке: ветку, короткий хеш и время коммита, а при `dirty: true` — пометку
 «есть незакоммиченные изменения».
+
+### 3.12. Чеклист готовности
+
+Содержимое `figma/releaseChecklist.json` как есть: `items` — пункты чеклиста готовности к релизу в Figma
+(`figma-mapping.md`, раздел 8.5). Плагин рисует их во фрейме Release Checklist (`figma-documentation.md`,
+раздел 3.5) и не держит их текст у себя.
 
 ## 4. Совместимость
 

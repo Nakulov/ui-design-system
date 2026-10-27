@@ -1,10 +1,11 @@
 // Основной поток плагина: доступ к документу Figma.
 import { type Bundle, type Origin, readBundle } from "./bundle";
+import { type Checks, view } from "./checklist";
 import { ComponentsBuilder } from "./components";
 import { DocumentationBuilder } from "./documentation";
 import { FoundationBuilder } from "./foundation";
-import { mark, ref } from "./ids";
-import type { Build, Import, Imports, ToPlugin, ToUi } from "./messages";
+import { readImports, writeImport } from "./imports";
+import type { Build, ToPlugin, ToUi } from "./messages";
 import type { Report } from "./report";
 import { SamplesBuilder, SCREENS } from "./samples";
 
@@ -14,16 +15,19 @@ let bundle: Bundle | undefined;
 /** Ключ clientStorage с адресом набора, изменённым пользователем (bundle-format.md, раздел 6). */
 const URL_KEY = "bundleUrl";
 
-/** Метки сборок на корне документа (figma-mapping.md, раздел 7, правило 11). */
-const IMPORTS_KEY = "imports";
-const BUILDS: Build[] = ["foundation", "components", "documentation", "samples", "screens"];
-
 figma.showUI(__html__, { width: 360, height: 560, themeColors: true });
 figma.clientStorage.getAsync(URL_KEY).then((url) => send({ type: "url", url: typeof url === "string" ? url : "" }));
 send({ type: "imports", imports: readImports() });
+sendChecklist();
+figma.on("currentpagechange", sendChecklist);
 
 function send(message: ToUi) {
   figma.ui.postMessage(message);
+}
+
+/** Ручные пункты Release Checklist открытой страницы (figma-documentation.md, раздел 3.5). */
+function sendChecklist() {
+  send({ type: "checklist", checklist: view(bundle, figma.currentPage) });
 }
 
 figma.ui.onmessage = async (message: ToPlugin) => {
@@ -34,7 +38,25 @@ figma.ui.onmessage = async (message: ToPlugin) => {
   else if (message.type === "buildDocumentation") await run("documentation", "Строится документация…", "Документация построена", "Документация не построена", (b) => new DocumentationBuilder(b).build());
   else if (message.type === "renderSamples") await run("samples", "Рисуются примеры…", "Примеры отрисованы", "Примеры не отрисованы", (b) => new SamplesBuilder(b).build());
   else if (message.type === "renderScreens") await run("screens", "Рисуются экраны…", "Экраны отрисованы", "Экраны не отрисованы", (b) => new SamplesBuilder(b, SCREENS).build());
+  else if (message.type === "toggleCheck") {
+    const key = String(message.number);
+    await check((checks, current) => {
+      const { [key]: old, ...rest } = checks;
+      return old ? rest : { ...checks, [key]: current };
+    });
+  } else if (message.type === "resetChecks") await check(() => ({}));
 };
+
+/** Меняет ручные отметки чеклиста открытой страницы и перерисовывает фрейм. */
+async function check(change: (checks: Checks, current: Checks[string]) => Checks) {
+  if (!bundle) return;
+  try {
+    await new DocumentationBuilder(bundle).updateChecks(figma.currentPage, change);
+  } catch (e) {
+    send({ type: "error", message: `Отметки не изменены: ${(e as Error).message}` });
+  }
+  sendChecklist();
+}
 
 async function run(key: Build, busy: string, done: string, failed: string, build: (bundle: Bundle) => Promise<Report>) {
   if (!bundle) {
@@ -50,6 +72,7 @@ async function run(key: Build, busy: string, done: string, failed: string, build
   } catch (e) {
     send({ type: "error", message: `${failed}: ${(e as Error).message}` });
   }
+  sendChecklist();
 }
 
 function load(text: string, origin: Origin) {
@@ -64,42 +87,10 @@ function load(text: string, origin: Origin) {
   if ("error" in result) {
     bundle = undefined;
     send({ type: "error", message: result.error });
+    sendChecklist();
     return;
   }
   bundle = result.bundle;
   send({ type: "loaded", summary: result.summary });
-}
-
-
-function isImport(value: unknown): value is Import {
-  if (typeof value !== "object" || value === null) return false;
-  const { source, importedAt } = value as Record<string, unknown>;
-  if (typeof source !== "object" || source === null || typeof importedAt !== "string") return false;
-  const { commit, committedAt, branch, dirty } = source as Record<string, unknown>;
-  const text = (field: unknown) => field === null || typeof field === "string";
-  return text(commit) && text(committedAt) && text(branch) && typeof dirty === "boolean";
-}
-
-/** Повреждённое значение или метка не по формату — «не строилось». */
-function readImports(): Imports {
-  let data: unknown;
-  try {
-    data = JSON.parse(ref(figma.root, IMPORTS_KEY) || "{}");
-  } catch {
-    return {};
-  }
-  const imports: Imports = {};
-  if (typeof data !== "object" || data === null) return imports;
-  for (const key of BUILDS) {
-    const value = (data as Record<string, unknown>)[key];
-    if (isImport(value)) imports[key] = value;
-  }
-  return imports;
-}
-
-/** Меняет только метку своей сборки. */
-function writeImport(key: Build, value: Import): Imports {
-  const imports = { ...readImports(), [key]: value };
-  mark(figma.root, JSON.stringify(imports), IMPORTS_KEY);
-  return imports;
+  sendChecklist();
 }

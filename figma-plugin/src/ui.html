@@ -21,6 +21,10 @@
   td { text-align: right; font-variant-numeric: tabular-nums; }
   .imports { margin-top: 0; }
   .error { margin-top: 12px; padding: 8px; border-radius: 6px; color: var(--figma-color-text-danger); background: var(--figma-color-bg-danger-tertiary); }
+  .hint { margin: 0; }
+  .check { display: flex; gap: 6px; align-items: flex-start; margin-bottom: 6px; color: var(--figma-color-text); }
+  .check input { margin: 2px 0 0; }
+  #resetChecks { margin-top: 4px; }
   [hidden] { display: none; }
 </style>
 </head>
@@ -39,6 +43,12 @@
     <button id="samples" disabled>Отрисовать примеры</button>
     <button id="screens" disabled>Отрисовать экраны</button>
     <button id="documentation" disabled>Построить документацию</button>
+  </div>
+  <h2>Release Checklist</h2>
+  <p id="checklistHint" class="hint">Откройте набор и страницу документации с фреймом Release Checklist.</p>
+  <div id="checklist" hidden>
+    <div id="checklistItems"></div>
+    <button id="resetChecks">Сбросить отметки</button>
   </div>
   <h2>В файле</h2>
   <table id="imports" class="imports"></table>

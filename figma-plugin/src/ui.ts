@@ -1,6 +1,6 @@
-// Окно плагина: загрузка набора с GitHub или из файла, метки сборок в файле, сводка, построение foundation и компонентов, отрисовка примеров и экранов, отчёт.
-import { DEFAULT_URL, type Source, type Summary } from "./bundle";
-import type { Build, Imports, ToPlugin, ToUi } from "./messages";
+// Окно плагина: загрузка набора с GitHub или из файла, метки сборок в файле, сводка, построение foundation и компонентов, отрисовка примеров и экранов, ручные отметки Release Checklist, отчёт.
+import { compare, DEFAULT_URL, type Source, type Summary } from "./bundle";
+import type { Build, ChecklistView, Imports, ToPlugin, ToUi } from "./messages";
 import type { ReportData } from "./report";
 
 const COUNTS: Record<keyof Summary["counts"], string> = {
@@ -14,6 +14,7 @@ const COUNTS: Record<keyof Summary["counts"], string> = {
   documentation: "Элементы документации",
   manifests: "Манифесты документации",
   changelogs: "Журналы изменений",
+  checklist: "Пункты чеклиста",
 };
 
 const BUILDS: Record<Build, string> = {
@@ -37,6 +38,9 @@ const components = element<HTMLButtonElement>("components");
 const samples = element<HTMLButtonElement>("samples");
 const screens = element<HTMLButtonElement>("screens");
 const documentation = element<HTMLButtonElement>("documentation");
+const checklist = element<HTMLDivElement>("checklist");
+const checklistHint = element<HTMLParagraphElement>("checklistHint");
+const checklistItems = element<HTMLDivElement>("checklistItems");
 
 /** Метки сборок в файле и источник открытого набора, с которым они сравниваются. */
 let imports: Imports = {};
@@ -64,15 +68,6 @@ function sourceText(source: Source): string {
     source.dirty && "есть незакоммиченные изменения",
   ];
   return parts.filter(Boolean).join(" · ");
-}
-
-/** Сравнение сборки в файле с открытым набором (figma-mapping.md, раздел 7, правило 11). */
-function compare(built: Source, bundle: Source): string {
-  if (built.dirty || bundle.dirty || !built.commit || !bundle.commit) return "нельзя сравнить";
-  if (built.commit === bundle.commit) return "совпадает";
-  const difference = Date.parse(built.committedAt ?? "") - Date.parse(bundle.committedAt ?? "");
-  if (!difference) return "нельзя сравнить";
-  return difference < 0 ? "отстаёт" : "новее набора";
 }
 
 function showImports() {
@@ -115,6 +110,23 @@ function showReport(title: string, data: ReportData) {
   report.hidden = false;
 }
 
+/** Ручные пункты Release Checklist открытой страницы с переключателями (figma-documentation.md, раздел 3.5). */
+function showChecklist(view: ChecklistView | null) {
+  checklist.hidden = !view;
+  checklistHint.hidden = !!view;
+  checklistItems.replaceChildren(...(view?.items ?? []).map((item) => {
+    const label = document.createElement("label");
+    label.className = "check";
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.checked = item.checked;
+    box.onchange = () => send({ type: "toggleCheck", number: item.number });
+    // Разметка Markdown в окне не нужна: код в строке показывается без обратных кавычек.
+    label.append(box, `${item.number}. ${item.text.replace(/`/g, "")}`);
+    return label;
+  }));
+}
+
 url.placeholder = DEFAULT_URL;
 url.onchange = () => send({ type: "saveUrl", url: url.value.trim() });
 
@@ -140,6 +152,7 @@ components.onclick = () => send({ type: "buildComponents" });
 samples.onclick = () => send({ type: "renderSamples" });
 screens.onclick = () => send({ type: "renderScreens" });
 documentation.onclick = () => send({ type: "buildDocumentation" });
+element<HTMLButtonElement>("resetChecks").onclick = () => send({ type: "resetChecks" });
 
 file.onchange = async () => {
   const chosen = file.files?.[0];
@@ -150,6 +163,10 @@ file.onchange = async () => {
 function show(message: ToUi) {
   if (message.type === "url") {
     url.value = message.url;
+    return;
+  }
+  if (message.type === "checklist") {
+    showChecklist(message.checklist);
     return;
   }
   if (message.type === "imports") {
