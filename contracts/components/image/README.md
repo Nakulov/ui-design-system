@@ -167,7 +167,7 @@ sealed interface ImageOrigin {
     "source": {
       "remote": {
         "origin": {
-          "url": "https://cdn.example.com/items/42.jpg"
+          "url": "https://cdn.example.invalid/items/42.jpg"
         },
         "scale": "crop",
         "alignment": "center",
