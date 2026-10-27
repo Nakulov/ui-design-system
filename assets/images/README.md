@@ -9,5 +9,5 @@
 | `product.jpg` | `ImageOrigin` (`sample`), `container/samples/productCard.json` | [Unsplash](https://images.unsplash.com/photo-1505740420928-5e560c06d30e), лицензия Unsplash |
 | `banner.jpg` | `container/samples/promoBanner.json` | [Unsplash](https://images.unsplash.com/photo-1507525428034-b723cf961d3e), лицензия Unsplash |
 
-Пример `image/samples/productPhoto.json` намеренно ссылается на недоступный адрес `cdn.example.com`: он показывает
-заглушку `error`.
+Пример `image/samples/productPhoto.json` намеренно ссылается на недоступный адрес `cdn.example.invalid` (домен `.invalid`
+зарезервирован, RFC 2606): он показывает заглушку `error`, плагин картинку не загружает и не предупреждает.

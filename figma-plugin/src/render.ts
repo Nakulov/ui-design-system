@@ -66,6 +66,12 @@ function layerName(name: string, id: string | undefined): string {
   return id ? `${name} · ${id}` : name;
 }
 
+/** Хост адреса в зарезервированном домене `.invalid` (RFC 2606): картинка заведомо недоступна (раздел 10.4). */
+function isUnreachable(url: string): boolean {
+  const host = /^[a-z][a-z0-9+.-]*:\/\/([^/?#:]+)/i.exec(url)?.[1].toLowerCase();
+  return host !== undefined && (host === "invalid" || host.endsWith(".invalid"));
+}
+
 /** Вариант значения `oneOf` или `enum`: имя и значение (`schema-format.md`, раздел 4.5). */
 function variant<T = unknown>(value: unknown): [string, T] {
   if (typeof value === "string") return [value, undefined as T];
@@ -999,18 +1005,22 @@ export class Renderer {
     }
     let image: Image;
     let size: { width: number; height: number };
+    // Хост в зарезервированном домене .invalid — заведомо недоступная картинка: её не загружают и не предупреждают
+    // (раздел 10.4, правило 4).
+    const unreachable = isUnreachable(remote.origin.url);
     try {
+      if (unreachable) throw new Error("хост в домене .invalid");
       image = await figma.createImageAsync(remote.origin.url);
       size = await image.getSizeAsync();
     } catch (e) {
       if ((frame as SceneNode).type === "INSTANCE") {
         // В экземпляре варианта remote нет слоя символа: остаётся заглушка компонента.
         kept.delete("image");
-        this.warn(at, `картинка ${remote.origin.url} не загрузилась, показана заглушка: ${(e as Error).message}`);
+        if (!unreachable) this.warn(at, `картинка ${remote.origin.url} не загрузилась, показана заглушка: ${(e as Error).message}`);
         return;
       }
       const fallback = remote.error ?? remote.placeholder;
-      this.warn(at, `картинка ${remote.origin.url} не загрузилась${fallback ? `, показан символ ${fallback.icon.name}` : ""}: ${(e as Error).message}`);
+      if (!unreachable) this.warn(at, `картинка ${remote.origin.url} не загрузилась${fallback ? `, показан символ ${fallback.icon.name}` : ""}: ${(e as Error).message}`);
       if (fallback) await this.resource(frame, fallback, undefined, kept, at);
       return;
     }
