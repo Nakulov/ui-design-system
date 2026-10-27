@@ -3,7 +3,7 @@
   "type": "object",
   "description": "Поведение компонента внутри родителя: размеры по осям и положение. Поведение родителя (направление, промежутки, отступы, выравнивание детей) задаётся полями контейнера",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },

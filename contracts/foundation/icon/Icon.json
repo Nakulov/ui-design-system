@@ -3,7 +3,7 @@
   "type": "oneOf",
   "description": "Символ — одноцветный векторный рисунок из словаря темы. Цвет задаёт место использования, размер — собственный размер рисунка или раскладка",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },

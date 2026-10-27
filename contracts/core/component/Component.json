@@ -3,7 +3,7 @@
   "type": "object",
   "description": "Базовая модель компонента. Каждый компонент содержит поля базовой модели",
   "releaseVersions": {
-    "figma": "notReleased",
+    "figma": "released",
     "android": "notReleased",
     "ios": "notReleased"
   },
