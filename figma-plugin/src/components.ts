@@ -17,11 +17,11 @@ const TEXT_PROPERTY: Record<string, string> = { Text: "content", Badge: "text" }
 
 type Project = { sample?: string; variants?: Record<string, Record<string, string>>; iconSample?: string };
 type Model = Record<string, { id?: string; appearance: Record<string, unknown>; [field: string]: unknown }>;
-/** Вариант Figma-компонента: значения variant-свойств, образец и его модель. */
+/** Variant Figma-компонента: значения variant-свойств, образец и его модель. */
 export type Variant = { values: [string, string][]; sample: string; model: Model };
 /** Переименование значения variant-свойства из журнала изменений: свойство, прежнее и новое значение. */
 type Rename = [string, string, string];
-/** Figma-компонент: идентификатор (раздел 7.1), имя, контракт, варианты и переименования от старых к новым. */
+/** Figma-компонент: идентификатор (раздел 7.1), имя, контракт, variant и переименования от старых к новым. */
 export type Target = { id: Id; name: string; contract: string; variants: Variant[]; renames: Rename[] };
 
 export class ComponentsBuilder {
@@ -95,7 +95,7 @@ export class ComponentsBuilder {
     return result;
   }
 
-  /** Варианты: образцы значений, умноженные на состояния оформления образца (раздел 3.5). */
+  /** Variant: образцы значений, умноженные на состояния оформления образца (раздел 3.5). */
   private variants(id: Id, name: string, samples: [[string, string][], string][]): Variant[] {
     const result: Variant[] = [];
     for (const [values, sample] of samples) {
@@ -128,7 +128,7 @@ export class ComponentsBuilder {
     if (!isSet) {
       let node = existing?.type === "COMPONENT" ? existing : undefined;
       if (existing?.type === "COMPONENT_SET") {
-        // Component Set → Component: вариант с тем же образцом выносится из набора и сохраняет ключ (раздел 7, правило 10).
+        // Component Set → Component: variant с тем же образцом выносится из набора и сохраняет ключ (раздел 7, правило 10).
         const variants = existing.children as ComponentNode[];
         node = variants.find((n) => ref(n, "sample") === target.variants[0].sample) ?? variants[0];
         page.appendChild(node);
@@ -148,7 +148,7 @@ export class ComponentsBuilder {
     const name = (values: [string, string][]) => values.map(([property, value]) => `${property}=${value}`).join(", ");
     const old = new Map((set?.children ?? []).map((n) => [n.name, n as ComponentNode]));
     if (existing?.type === "COMPONENT") {
-      // Component → Component Set: компонент становится вариантом с тем же образцом и сохраняет ключ (раздел 7, правило 10).
+      // Component → Component Set: компонент становится variant с тем же образцом и сохраняет ключ (раздел 7, правило 10).
       const variant = target.variants.find((v) => v.sample === ref(existing, "sample")) ?? target.variants[0];
       old.set(name(variant.values), existing);
     }
@@ -170,7 +170,7 @@ export class ComponentsBuilder {
     const result = set ?? figma.combineAsVariants(nodes, page);
     result.name = target.name;
     mark(result, target.id);
-    // Варианты в строку: у Component Set без Auto Layout растянутые корни образцов сохраняют размер.
+    // Variant в строку: у Component Set без Auto Layout растянутые корни образцов сохраняют размер.
     let x = VARIANT_GAP;
     for (const node of nodes) {
       result.appendChild(node);
@@ -183,7 +183,7 @@ export class ComponentsBuilder {
     return result;
   }
 
-  /** Переименовывает варианты по записям `renamed` журнала, если варианта с новым именем ещё нет (раздел 7, правило 3). */
+  /** Переименовывает variant по записям `renamed` журнала, если variant с новым именем ещё нет (раздел 7, правило 3). */
   private rename(old: Map<string, ComponentNode>, target: Target) {
     for (const [property, from, to] of target.renames) {
       for (const [name, node] of [...old]) {
@@ -191,12 +191,12 @@ export class ComponentsBuilder {
         if (renamed === name || old.has(renamed)) continue;
         old.delete(name);
         old.set(renamed, node);
-        this.report.warn(`${target.name}: вариант ${name} переименован в ${renamed}`);
+        this.report.warn(`${target.name}: variant ${name} переименован в ${renamed}`);
       }
     }
   }
 
-  /** Удаляет вариант и перечисляет его экземпляры в текущем файле (раздел 7, правило 6). */
+  /** Удаляет variant и перечисляет его экземпляры в текущем файле (раздел 7, правило 6). */
   private async removeVariant(node: ComponentNode, target: Target) {
     // Экземпляры по страницам: имя экземпляра — имя компонента, а страницы документации названы по сущностям.
     const pages = new Map<string, number>();
@@ -207,9 +207,9 @@ export class ComponentsBuilder {
     }
     const where = [...pages].sort((a, b) => b[1] - a[1]).map(([page, count]) => `${page} ×${count}`);
     const used = where.length ? `; экземпляры в этом файле: ${where.join(", ")}` : "";
-    this.report.warn(`${target.name}: вариант ${node.name} удалён${used}. В других файлах экземпляры останутся на удалённом компоненте без обновлений`);
+    this.report.warn(`${target.name}: variant ${node.name} удалён${used}. В других файлах экземпляры останутся на удалённом компоненте без обновлений`);
     node.remove();
-    this.report.deleted("варианты");
+    this.report.deleted("variant");
   }
 
   /** Тело образца в Figma-компонент; слои обновляются на месте (раздел 7, правило 8). */
@@ -224,8 +224,8 @@ export class ComponentsBuilder {
   /** Свойства Figma на слоях с местами `text`, `icon`, `leadingIcon`, `trailingIcon` (раздел 6.2, правило 4). */
   private async properties(owner: ComponentNode | ComponentSetNode, nodes: ComponentNode[], target: Target) {
     const isIcon = target.name === "text/icon";
-    // Значение свойства одно на весь Component Set: его задаёт первый вариант со слоем, вариант с другим значением
-    // получает своё свойство `<имя> (<значения варианта>)` (раздел 6.2, правило 4).
+    // Значение свойства Figma одно на весь Component Set: его задаёт первый variant со слоем, variant с другим значением
+    // получает своё свойство `<имя> (<значения variant>)` (раздел 6.2, правило 4).
     const first = new Map<string, string | boolean>();
     for (const [index, node] of nodes.entries()) {
       const define = (name: string, type: "TEXT" | "BOOLEAN" | "INSTANCE_SWAP", value: string | boolean) => {
@@ -249,8 +249,8 @@ export class ComponentsBuilder {
         icon.componentPropertyReferences = references;
       }
     }
-    // Свойство без слоя Figma не публикует (Unused properties): такое остаётся после выноса варианта из набора или
-    // удаления варианта, который один его использовал.
+    // Свойство без слоя Figma не публикует (Unused properties): такое остаётся после выноса variant из набора или
+    // удаления variant, который один его использовал.
     const used = new Set(nodes.flatMap((node) => node.findAll((n) => !!n.componentPropertyReferences).flatMap((n) => Object.values(n.componentPropertyReferences ?? {}))));
     for (const [key, definition] of Object.entries(owner.componentPropertyDefinitions)) {
       if (definition.type !== "VARIANT" && !used.has(key)) owner.deleteComponentProperty(key);

@@ -190,7 +190,7 @@ export class DocumentationBuilder {
     }
   }
 
-  /** Примеры: превью — демонстрация core или модель из `samples/` компонента, подпись — `caption`. Модель с шириной
+  /** Примеры: превью — демонстрация core или образец из `samples/` компонента, подпись — `caption`. Модель с шириной
    *  `fill` рисуется в карточке `exampleWide` ширины карточки Samples: у `example` её ширину задала бы подпись. */
   private grid(examples: ManifestExample[]): Model {
     const items = examples.map((example) => {

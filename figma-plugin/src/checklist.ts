@@ -105,8 +105,8 @@ export class AutoChecks {
         const actual = new Set(node.children.map((n) => n.name));
         const missing = [...expected].filter((name) => !actual.has(name));
         const extra = [...actual].filter((name) => !expected.has(name));
-        if (missing.length) problems.push(`${target.name}: нет вариантов ${missing.join("; ")}`);
-        if (extra.length) problems.push(`${target.name}: лишние варианты ${extra.join("; ")}`);
+        if (missing.length) problems.push(`${target.name}: нет variant ${missing.join("; ")}`);
+        if (extra.length) problems.push(`${target.name}: лишние variant ${extra.join("; ")}`);
       }
     }
     if (!problems.length && !this.targets.some((t) => t.id === id)) problems.push("нет figma.json или образцов");

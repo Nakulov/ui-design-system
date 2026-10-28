@@ -25,7 +25,7 @@
 | `figma.json`                    | Figma-компонент: образцы вариантов `content`.                    |
 | `docs.json`                     | Манифест документации Figma: секции страницы и примеры.          |
 | `changelog.json`                | Журнал изменений API.                                            |
-| `samples/`                      | Примеры моделей: `min.json`, `max.json`, `count`, `dot`, `icon`. |
+| `samples/`                      | Образцы: `min.json`, `max.json`, `count`, `dot`, `icon`.         |
 
 Картинка — `ImageSource` компонента `Image` (`components/image`).
 
@@ -84,7 +84,7 @@ sealed interface BadgeContent {
 }
 ```
 
-Сгенерированные примеры: [минимальная модель](samples/min.json) — только обязательные свойства,
+Сгенерированные образцы: [минимальная модель](samples/min.json) — только обязательные свойства,
 [полная модель](samples/max.json) — все свойства.
 
 Счётчик:
@@ -163,7 +163,7 @@ sealed interface BadgeContent {
 }
 ```
 
-Бейдж как индикатор на аватаре — пример `avatarOnline` в README `Image`.
+Бейдж как индикатор на аватаре — образец `avatarOnline` в README `Image`.
 
 ## Рекомендации по использованию
 

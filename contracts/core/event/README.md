@@ -17,7 +17,7 @@
 | `Event.json`                 | Публичный контракт: варианты событий.             |
 | `definitions/EventData.json` | Данные события: `payload`.                        |
 | `changelog.json`             | Журнал изменений API.                             |
-| `samples/`                   | Примеры значений: `click.json`, `longPress.json`. |
+| `samples/`                   | Образцы: `click.json`, `longPress.json`.          |
 
 ## Варианты
 
