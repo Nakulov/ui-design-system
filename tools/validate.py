@@ -205,7 +205,7 @@ def check_files(registry, referenced):
             error(theme, "имя темы не в lowerCamelCase (раздел 9.4)")
 
 
-# Примеры моделей (раздел 11.1, правило 8; раздел 11.2).
+# Образцы (раздел 11.1, правило 8; раздел 11.2).
 
 def check_usage(readme):
     """Раздел «Рекомендации по использованию» — подмножество Markdown для документации Figma (раздел 11.2)."""
@@ -291,24 +291,24 @@ def check_samples(registry):
             path = directory / f"{name}.json"
             expected = dumps(generate(registry, contract, name))
             if not path.is_file():
-                error(path, "нет примера: python3 tools/sync.py")
+                error(path, "нет образца: python3 tools/sync.py")
             elif path.read_text() != expected:
-                mismatch(path, path.read_text(), expected, "пример устарел: python3 tools/sync.py")
+                mismatch(path, path.read_text(), expected, "образец устарел: python3 tools/sync.py")
         kind = registry.by_id.get(COMPONENT) if "extends" in contract.data else contract
         for name, path in samples.items():
             if not LOWER_CAMEL.fullmatch(name):
-                error(path, "имя примера не в lowerCamelCase")
+                error(path, "имя образца не в lowerCamelCase")
             try:
                 value = json.loads(path.read_text())
             except json.JSONDecodeError as e:
                 error(path, f"некорректный JSON: {e}")
                 continue
             if kind is not contract and not (isinstance(value, dict) and list(value) == [contract.name]):
-                error(path, f"пример компонента записывается объектом с ключом «{contract.name}»")
+                error(path, f"образец компонента записывается объектом с ключом «{contract.name}»")
                 continue
             if path.read_text() != dumps(value):
                 mismatch(path, path.read_text(), dumps(value),
-                         "формат примера не канонический: отступ 2, каждое поле на своей строке")
+                         "формат образца не канонический: отступ 2, каждое поле на своей строке")
             for problem in registry.value_errors(value, kind, "модель"):
                 error(path, problem)
             for owner, node, at in registry.objects(value, kind, "модель"):
@@ -331,11 +331,11 @@ def check_samples(registry):
                 error(readme, problem)
             if not problems and text != readme.read_text():
                 mismatch(readme, readme.read_text(), text,
-                         "блок примера не совпадает с файлом: python3 tools/sync.py")
+                         "блок образца не совпадает с файлом: python3 tools/sync.py")
 
 
 def check_screens(registry):
-    """Демо-экраны: модель в формате примеров с корнем-компонентом слоя components (bundle-format.md, раздел 3.9)."""
+    """Демо-экраны: модель в формате образцов с корнем-компонентом слоя components (bundle-format.md, раздел 3.9)."""
     if not SCREENS.is_dir():
         return
     roots = {c.name for c in registry if c.kind == "public" and c.layer == "components"}
@@ -506,7 +506,7 @@ def check_component(registry, contract):
 # Файлы значений и темы (раздел 9).
 
 def value_type(path, data, registry):
-    """Тип величин файла: примитив или Contract; None, если ссылка не разрешилась."""
+    """Тип величин файла: примитивный тип или Contract; None, если ссылка не разрешилась."""
     kind = data["valueType"]
     return kind if isinstance(kind, str) else registry.by_id.get(ref_id(path, kind["$ref"]))
 
@@ -728,7 +728,7 @@ def check_figma_components(registry, figma):
             """Модель образца или None; корень — этот компонент без индикаторов (раздел 6.2, правило 1)."""
             file = contract.path.parent / "samples" / f"{name}.json" if isinstance(name, str) else None
             if file is None or not file.is_file():
-                error(path, f"{at}: нет примера samples/{name}.json")
+                error(path, f"{at}: нет образца samples/{name}.json")
                 return None
             model = json.loads(file.read_text()).get(contract.name, {})
             if "indicators" in model:
@@ -849,7 +849,7 @@ def manifest_owners(registry):
 
 
 def sample_file(registry, owner, name):
-    """Файл примера по ссылке sample: `<имя>` своего компонента или `<Контракт>#<имя>` (раздел 5.1)."""
+    """Файл образца по ссылке sample: `<имя>` своего компонента или `<Контракт>#<имя>` (раздел 5.1)."""
     if not isinstance(name, str):
         return None
     contract, _, name = name.rpartition("#")
@@ -926,7 +926,7 @@ def check_manifests(registry, manifests, elements):
                     error(path, f"{where}: caption — строка")
                 if component:
                     if sample_file(registry, owner, example.get("sample")) is None:
-                        error(path, f"{where}: sample «{example.get('sample')}» — нет примера компонента; min и max не используются (раздел 5.1)")
+                        error(path, f"{where}: sample «{example.get('sample')}» — нет образца компонента; min и max не используются (раздел 5.1)")
                     continue
                 demo = owner.entity / DEMOS / f"{example.get('demo')}.json"
                 if not isinstance(example.get("demo"), str) or demo not in elements:

@@ -84,7 +84,7 @@
     "description": { "type": "string", "minLength": 1 },
     "primitiveType": { "enum": ["string", "boolean", "integer", "float", "color", "payload"] },
     "sample": {
-      "description": "Подсказка генератору примеров: значение по разделу 4.5; допустимость для типа проверяет tools/validate.py (раздел 11.1).",
+      "description": "Подсказка генератору образцов: значение по разделу 4.5; допустимость для типа проверяет tools/validate.py (раздел 11.1).",
       "not": { "type": "null" }
     },
     "ref": {
@@ -114,7 +114,7 @@
       "else": { "allOf": [{ "not": { "required": ["items"] } }, { "not": { "required": ["uniqueVariants"] } }] }
     },
     "arrayItems": {
-      "description": "Тип элементов массива: примитив или ссылка, без вложенных массивов (раздел 5.1).",
+      "description": "Тип элементов массива: примитивный тип или ссылка, без вложенных массивов (раздел 5.1).",
       "type": "object",
       "properties": {
         "type": { "$ref": "#/$defs/primitiveType" },

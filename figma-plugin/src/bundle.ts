@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.12";
+export const SUPPORTED_FORMAT = "0.13";
 
 /** Адрес набора на GitHub Pages по умолчанию (раздел 6). */
 export const DEFAULT_URL = "https://nakulov.github.io/ui-design-system/bundle.json";
@@ -82,7 +82,7 @@ export type ChangelogEntry = {
 
 export type Changelog = { entries: ChangelogEntry[] };
 
-/** Пример секции: демонстрация core или пример компонента по идентификатору и подпись (documentation-manifest.md, раздел 5). */
+/** Пример секции: демонстрация core или образец компонента по идентификатору и подпись (documentation-manifest.md, раздел 5). */
 export type ManifestExample = { id: string; demo?: Id; sample?: Id; caption?: string };
 
 export type ManifestSection = { id: string; type: string; title?: string; examples?: ManifestExample[] };

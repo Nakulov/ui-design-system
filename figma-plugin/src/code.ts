@@ -36,7 +36,7 @@ figma.ui.onmessage = async (message: ToPlugin) => {
   else if (message.type === "buildFoundation") await run("foundation", "Строится foundation…", "Foundation построен", "Foundation не построен", (b) => new FoundationBuilder(b).build());
   else if (message.type === "buildComponents") await run("components", "Строятся компоненты…", "Компоненты построены", "Компоненты не построены", (b) => new ComponentsBuilder(b).build());
   else if (message.type === "buildDocumentation") await run("documentation", "Строится документация…", "Документация построена", "Документация не построена", (b) => new DocumentationBuilder(b).build());
-  else if (message.type === "renderSamples") await run("samples", "Рисуются примеры…", "Примеры отрисованы", "Примеры не отрисованы", (b) => new SamplesBuilder(b).build());
+  else if (message.type === "renderSamples") await run("samples", "Рисуются образцы…", "Образцы отрисованы", "Образцы не отрисованы", (b) => new SamplesBuilder(b).build());
   else if (message.type === "renderScreens") await run("screens", "Рисуются экраны…", "Экраны отрисованы", "Экраны не отрисованы", (b) => new SamplesBuilder(b, SCREENS).build());
   else if (message.type === "toggleCheck") {
     const key = String(message.number);

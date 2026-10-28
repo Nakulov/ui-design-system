@@ -1,4 +1,4 @@
-// Страницы Samples и Screens: отрисовка примеров моделей компонентов для проверки ядра отрисовки (figma-mapping.md,
+// Страницы Samples и Screens: отрисовка образцов компонентов для проверки ядра отрисовки (figma-mapping.md,
 // раздел 10) и демо-экранов для проверки импорта (bundle-format.md, раздел 3.9). Ядро и обновление на месте общие.
 import type { Bundle, Element, Id } from "./bundle";
 import { COLOR, mark, ref } from "./ids";
@@ -8,7 +8,7 @@ import { Report } from "./report";
 /** Страница построителя: роль страницы и корня, имя страницы, вид объектов в отчёте. */
 export type Kind = { role: string; name: string; counted: string };
 
-export const SAMPLES: Kind = { role: "samples", name: "Samples", counted: "примеры" };
+export const SAMPLES: Kind = { role: "samples", name: "Samples", counted: "образцы" };
 export const SCREENS: Kind = { role: "screens", name: "Screens", counted: "экраны" };
 /** Строка экранов: экраны лежат одной строкой, ключ карточки — `screens/<имя>`. */
 const SCREENS_ROW = "screens";
@@ -17,7 +17,7 @@ const CARD_WIDTH = 360;
 const DOCUMENTATION_CARD_WIDTH = 600;
 const CARD_PADDING = 16;
 const LABEL_FONT: FontName = { family: "Inter", style: "Regular" };
-/** Примеры, сгенерированные из контракта (schema-format.md, раздел 11.1): проверяют ветки ядра, а не вид. */
+/** Образцы, сгенерированные из контракта (schema-format.md, раздел 11.1): проверяют ветки ядра, а не вид. */
 const GENERATED = ["min", "max"];
 /** Строка элементов оформления, превью и демонстраций документации (figma-documentation.md, раздел 5). */
 const DOCUMENTATION = "figma/documentation/elements";
@@ -95,7 +95,7 @@ export class SamplesBuilder {
   }
 
   private samples(): Row[] {
-    // Примеры публичных контрактов компонентов; примеры core — фрагменты модели и не рисуются.
+    // Образцы публичных контрактов компонентов; образцы core — фрагменты модели и не рисуются.
     const groups = new Map<Id, Row>();
     for (const [key, model] of Object.entries(this.bundle.samples)) {
       const contract = key.split("#")[0];
@@ -139,7 +139,7 @@ export class SamplesBuilder {
     return root;
   }
 
-  /** Карточки примеров и экранов: подпись (`<Компонент>#<пример>` или имя экрана) и отрисованная модель. */
+  /** Карточки образцов и экранов: подпись (`<Компонент>#<образец>` или имя экрана) и отрисованная модель. */
   private async cards(row: FrameNode, samples: [string, string, unknown][], tokens: Tokens) {
     const cards = new Map(row.children.filter((n): n is FrameNode => n.type === "FRAME").map((n) => [ref(n), n]));
     for (const [key, label, model] of samples) {

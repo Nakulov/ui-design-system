@@ -123,7 +123,7 @@ def collect_documentation():
 
 
 def example_source(registry, owner, example):
-    """demo — идентификатор демонстрации, sample — ключ примера в samples (раздел 3.8, правило 2)."""
+    """demo — идентификатор демонстрации, sample — ключ образца в samples (раздел 3.8, правило 2)."""
     if "demo" in example:
         return {**example, "demo": element_id(owner.entity / DEMOS / f"{example['demo']}.json")}
     contract, _, name = example["sample"].rpartition("#")
@@ -197,7 +197,7 @@ def dangling(bundle):
                 if "demo" in example and example["demo"] not in bundle["documentation"]:
                     yield f"manifests: {key} — демонстрация «{example['demo']}» не найдена"
                 if "sample" in example and example["sample"] not in bundle["samples"]:
-                    yield f"manifests: {key} — пример «{example['sample']}» не найден"
+                    yield f"manifests: {key} — образец «{example['sample']}» не найден"
     for key, data in values.items():
         if key not in contracts:
             yield f"values: {key} — нет контракта"

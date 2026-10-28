@@ -1,6 +1,6 @@
-"""Примеры моделей: генерация min и max, формат файлов, блоки в README (schema-format.md, разделы 11.1, 11.2).
+"""Образцы: генерация min и max, формат файлов, блоки в README (schema-format.md, разделы 11.1, 11.2).
 
-Пример вставляется в README блоком ```json сразу после пометки <!-- sample: samples/<файл>.json -->.
+Образец вставляется в README блоком ```json сразу после пометки <!-- sample: samples/<файл>.json -->.
 """
 
 import json
@@ -8,7 +8,7 @@ import re
 
 from contracts import COMPONENT
 
-# Величины-заглушки примитивов без подсказки sample; name — имя ближайшего свойства или варианта (раздел 11.1, правило 8).
+# Величины-заглушки примитивных типов без подсказки sample; name — имя ближайшего свойства или варианта (раздел 11.1, правило 8).
 PLACEHOLDERS = {
     "string": lambda name: name,
     "boolean": lambda name: True,
@@ -20,19 +20,19 @@ PLACEHOLDERS = {
 
 
 def dumps(value):
-    """Канонический формат файла примера."""
+    """Канонический формат файла образца."""
     return json.dumps(value, indent=2, ensure_ascii=False) + "\n"
 
 
 def required_samples(contract):
-    """Примеры, которые генерируются для публичного контракта: min и max у object, кроме Component."""
+    """Образцы, которые генерируются для публичного контракта: min и max у object, кроме Component."""
     if contract.kind == "public" and contract.type == "object" and contract.id != COMPONENT:
         return ("min", "max")
     return ()
 
 
 def generate(registry, contract, mode):
-    """Пример min или max публичного контракта; компонент — объектом с ключом-именем.
+    """Образец min или max публичного контракта; компонент — объектом с ключом-именем.
 
     Подсказка sample свойства, варианта или типа подставляется как есть вместо выбора значения.
     """
@@ -82,7 +82,7 @@ GENERATED = ("min", "max")
 
 
 def render(readme):
-    """Текст README с блоками, заполненными из файлов примеров, и список ошибок разметки."""
+    """Текст README с блоками, заполненными из файлов образцов, и список ошибок разметки."""
     lines = readme.read_text().split("\n")
     result, problems, i = [], [], 0
     while i < len(lines):
@@ -115,5 +115,5 @@ def render(readme):
     for number, line in enumerate(lines, 1):
         for target in LINK.findall(line):
             if not (readme.parent / target).is_file():
-                problems.append(f"строка {number}: ссылка на несуществующий пример {target}")
+                problems.append(f"строка {number}: ссылка на несуществующий образец {target}")
     return "\n".join(result), problems

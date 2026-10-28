@@ -29,7 +29,7 @@
 | `figma.json`                         | Figma-компонент: образцы вариантов `source`.                              |
 | `docs.json`                          | Манифест документации Figma: секции страницы и примеры.                   |
 | `changelog.json`                     | Журнал изменений API.                                                     |
-| `samples/`                           | Примеры: `min`, `max`, `icon`, `productPhoto`, `avatarOnline`, `appIcon`. |
+| `samples/`                           | Образцы: `min`, `max`, `icon`, `productPhoto`, `avatarOnline`, `appIcon`. |
 
 ## Варианты
 
@@ -99,7 +99,7 @@ sealed interface ImageOrigin {
 }
 ```
 
-Сгенерированные примеры: [минимальная модель](samples/min.json) — только обязательные свойства,
+Сгенерированные образцы: [минимальная модель](samples/min.json) — только обязательные свойства,
 [полная модель](samples/max.json) — все свойства.
 
 Символ:

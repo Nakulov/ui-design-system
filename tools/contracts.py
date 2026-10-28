@@ -13,7 +13,7 @@ CONTRACTS = ROOT / "contracts"
 THEMES = ROOT / "themes"
 ELEMENTS = ROOT / "figma" / "documentation" / "elements"  # элементы оформления документации (figma-documentation.md, раздел 5)
 CHECKLIST = ROOT / "figma" / "releaseChecklist.json"  # пункты чеклиста готовности к релизу (figma-mapping.md, раздел 8.5)
-SCREENS = ROOT / "screens"  # демо-экраны: screens/<имя>.json в формате примеров (bundle-format.md, раздел 3.9)
+SCREENS = ROOT / "screens"  # демо-экраны: screens/<имя>.json в формате образцов (bundle-format.md, раздел 3.9)
 DEFINITIONS = "definitions"  # вспомогательные определения сущности (раздел 11.1)
 PREVIEW = "preview.json"  # превью величин foundation (figma-documentation.md, раздел 5)
 DEMOS = "demos"  # демонстрации core: demos/<имя>.json (figma-documentation.md, раздел 5)
@@ -151,7 +151,7 @@ class Contract:
 
 @dataclass(eq=False)
 class Variant:
-    """Вариант после разворачивания (раздел 7). target — Contract или примитив; None у варианта без данных."""
+    """Вариант после разворачивания (раздел 7). target — Contract или примитивный тип; None у варианта без данных."""
     name: str
     element: dict
     target: object
@@ -207,7 +207,7 @@ class Registry:
         return {c.name: c for c in self if "extends" in c.data}
 
     def value_errors(self, value, kind, at):
-        """Ошибки записи значения типа kind — примитива или контракта (раздел 4.5)."""
+        """Ошибки записи значения типа kind — примитивного типа или контракта (раздел 4.5)."""
         if value is None:
             yield f"{at}: null не используется"
             return

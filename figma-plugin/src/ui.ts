@@ -1,4 +1,4 @@
-// Окно плагина: загрузка набора с GitHub или из файла, метки сборок в файле, сводка, построение foundation и компонентов, отрисовка примеров и экранов, ручные отметки Release Checklist, отчёт.
+// Окно плагина: загрузка набора с GitHub или из файла, метки сборок в файле, сводка, построение foundation и компонентов, отрисовка образцов и экранов, ручные отметки Release Checklist, отчёт.
 import { compare, DEFAULT_URL, type Source, type Summary } from "./bundle";
 import type { Build, ChecklistView, Imports, ToPlugin, ToUi } from "./messages";
 import type { ReportData } from "./report";
@@ -7,7 +7,7 @@ const COUNTS: Record<keyof Summary["counts"], string> = {
   contracts: "Контракты",
   values: "Файлы значений",
   figma: "Отображение в Figma",
-  samples: "Примеры",
+  samples: "Образцы",
   screens: "Экраны",
   icons: "Символы",
   texts: "README",
@@ -21,7 +21,7 @@ const BUILDS: Record<Build, string> = {
   foundation: "Foundation",
   components: "Компоненты",
   documentation: "Документация",
-  samples: "Примеры",
+  samples: "Образцы",
   screens: "Экраны",
 };
 

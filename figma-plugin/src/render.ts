@@ -1,4 +1,4 @@
-// Отрисовка модели слоями Figma в режиме тела (specifications/figma-mapping.md, раздел 10).
+// Отрисовка модели телом — слоями Figma (specifications/figma-mapping.md, раздел 10).
 import type { Bundle, Id } from "./bundle";
 import {
   BORDER_WIDTH, COLOR, CORNER_RADIUS, ELEVATION, ICON, SIZE, SPACING, TYPOGRAPHY, mark, prefix, ref, rgba,
@@ -283,7 +283,7 @@ export class Renderer {
   }
 
   /**
-   * Экземпляр Figma-компонента библиотеки (раздел 10.1, правило 1): вариант по значениям модели, значения — свойствами
+   * Экземпляр Figma-компонента библиотеки (раздел 10.1, правило 1): variant по значениям модели, значения — свойствами
    * и переопределениями слоёв, поля базовой модели — свойствами корня. Если компонента нет или модель требует того,
    * чего в нём нет, возвращает `undefined`, и рисуется тело.
    */
@@ -302,7 +302,7 @@ export class Renderer {
     const main = library.type === "COMPONENT" ? library : library.children.find((c) =>
       c.type === "COMPONENT" && Object.entries(values).every(([k, v]) => c.variantProperties?.[k] === v)) as ComponentNode | undefined;
     const plain = this.plain(model);
-    const reason = !main ? `нет варианта ${Object.entries(values).map(([k, v]) => `${k}=${v}`).join(", ")}`
+    const reason = !main ? `нет variant ${Object.entries(values).map(([k, v]) => `${k}=${v}`).join(", ")}`
       : plain.overlay && !main.children.some((n) => ref(n, "slot") === "overlay") ? "наложение — нет слоя в компоненте"
       : name === "Badge" && model.content !== undefined && variant(model.content)[0] === "image" && variant(variant(model.content)[1])[0] === "remote" ? "картинка по адресу в бейдже"
       : undefined;
@@ -590,7 +590,7 @@ export class Renderer {
 
   /**
    * Носитель и индикаторы во фрейме-обёртке с Auto Layout: обёртка повторяет размер носителя и занимает его место у
-   * родителя, якоря индикаторов и маска выреза лежат в ней с абсолютной позицией. Носитель — во фрейме `carrier` без
+   * родителя, фреймы-якоря индикаторов и маска выреза лежат в ней с абсолютной позицией. Носитель — во фрейме `carrier` без
    * обрезки: маска Figma не режет фрейм с `clipsContent` (раздел 10.2, правило 4).
    */
   private async indicated(name: string, model: Base, parent: FrameNode, old: SceneNode | undefined, path: string, at: string, key: string): Promise<FrameNode | undefined> {
@@ -646,8 +646,8 @@ export class Renderer {
   }
 
   /**
-   * Якорь индикатора — Auto Layout 0×0 с выравниванием по центру: держит центр индикатора на точке угла, когда
-   * содержимое индикатора меняется. Индикатор обёртки, нарисованной без якорей, переносится в якорь (раздел 10.2,
+   * Фрейм-якорь индикатора — Auto Layout 0×0 с выравниванием по центру: держит центр индикатора на точке угла, когда
+   * содержимое индикатора меняется. Индикатор обёртки, нарисованной без фреймов-якорей, переносится во фрейм-якорь (раздел 10.2,
    * правило 4).
    */
   private async anchor(wrapper: FrameNode, kept: Kept, key: string): Promise<{ frame: FrameNode; kept: Kept }> {
@@ -681,7 +681,7 @@ export class Renderer {
   }
 
   /**
-   * Центры якорей индикаторов — в точках углов носителя, маска — прямоугольник с запасом минус формы индикаторов, расширенные
+   * Центры фреймов-якорей индикаторов — в точках углов носителя, маска — прямоугольник с запасом минус формы индикаторов, расширенные
    * на `gap`. Маска режет слои над собой: индикаторы с вырезом лежат под ней и видны сквозь вырез, без выреза — над
    * носителем.
    */
@@ -958,7 +958,7 @@ export class Renderer {
       node.textAutoResize = "HEIGHT";
       node.layoutSizingHorizontal = "FILL";
     }
-    // Обрезка — после режима размера: смена textAutoResize сбрасывает её.
+    // Обрезка — после textAutoResize: его смена сбрасывает её.
     if (model.maxLines !== undefined) {
       node.textTruncation = "ENDING";
       node.maxLines = model.maxLines as number;
@@ -1014,7 +1014,7 @@ export class Renderer {
       size = await image.getSizeAsync();
     } catch (e) {
       if ((frame as SceneNode).type === "INSTANCE") {
-        // В экземпляре варианта remote нет слоя символа: остаётся заглушка компонента.
+        // В экземпляре variant remote нет слоя символа: остаётся заглушка компонента.
         kept.delete("image");
         if (!unreachable) this.warn(at, `картинка ${remote.origin.url} не загрузилась, показана заглушка: ${(e as Error).message}`);
         return;

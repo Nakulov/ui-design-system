@@ -42,7 +42,7 @@ tools/board.sh sub <эпик> <N>
 
 ```sh
 python3 -m pip install -r tools/requirements.txt   # один раз
-python3 tools/sync.py                              # после правки контрактов и примеров: min/max, README, IDE
+python3 tools/sync.py                              # после правки контрактов и образцов: min/max, README, IDE
 python3 tools/validate.py --base origin/dev        # проверка, как в PR
 python3 tools/validate_model.py <файл>             # проверить одну модель по контракту
 python3 tools/bundle.py                            # набор для плагина из ветки задачи: build/bundle.json
@@ -55,7 +55,7 @@ cd figma-plugin && npm ci && npm run build         # плагин: dist/
    `figma-plugin/manifest.json`).
 2. Загрузить набор: «Загрузить с GitHub» — набор из `dev` (публикуется CI после merge; Pages кэширует до 10 минут,
    какой коммит загружен — в строке «Источник»); «Открыть файл…» → `build/bundle.json` — ветка задачи до merge.
-   Затем «Построить foundation» → «Отрисовать примеры»; для проверки импорта и обновления
+   Затем «Построить foundation» → «Отрисовать образцы»; для проверки импорта и обновления
    макетов — «Построить компоненты» → «Отрисовать экраны».
 3. Сказать Claude «отрисовал»; после его проверки — посмотреть самим и подтвердить.
 
@@ -65,7 +65,8 @@ cd figma-plugin && npm ci && npm run build         # плагин: dist/
 |------------------------|---------------------------------------------|
 | Направление и этапы    | `ROADMAP.md`                                |
 | Спецификации           | `specifications/`                           |
-| Контракты, примеры     | `contracts/` (`samples/` в каталогах сущностей) |
+| Термины                | `specifications/glossary.md`                |
+| Контракты, образцы     | `contracts/` (`samples/` в каталогах сущностей) |
 | Демо-экраны            | `screens/`                                  |
 | Темы                   | `themes/`                                   |
 | Плагин                 | `figma-plugin/`                             |
