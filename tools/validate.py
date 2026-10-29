@@ -22,9 +22,9 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, CHECKLIST, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PREVIEW, ROOT, SCREENS,
-                       SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, id_path, is_contract, is_element,
-                       is_sample, is_screen, is_skipped, pascal, ref_id)
+from contracts import (APPEARANCE, CHECKLIST, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PRESETS, PREVIEW, ROOT,
+                       SCREENS, SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, id_path, is_contract,
+                       is_element, is_preset, is_sample, is_screen, is_skipped, pascal, ref_id)
 import idea
 from samples import dumps, generate, render, required_samples
 
@@ -32,6 +32,7 @@ from samples import dumps, generate, render, required_samples
 CONTRACT_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/contract.schema.json").read_text()))
 VALUES_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/values.schema.json").read_text()))
 CHANGELOG_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/changelog.schema.json").read_text()))
+PRESET_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/preset.schema.json").read_text()))
 
 # Спецификации с версией в spec-versions.json (schema-format.md, раздел 11.3).
 SPECS = {
@@ -358,6 +359,181 @@ def check_screens(registry):
                      "формат экрана не канонический: отступ 2, каждое поле на своей строке")
         for problem in registry.value_errors(value, registry.by_id[COMPONENT], "модель"):
             error(path, problem)
+
+
+# Пресеты (figma-mapping.md, раздел 11).
+
+PRESET_FIELDS = {"ref", "axes", "id", "layout"}  # узел вложенного пресета (раздел 11.2, правило 2)
+
+
+def preset_id(path):
+    return path.relative_to(ROOT).with_suffix("").as_posix()
+
+
+def model_nodes(node, components, at):
+    """Узлы модели варианта: (имя компонента или «preset», данные, путь); внутрь вложенного пресета не спускается."""
+    if isinstance(node, list):
+        for i, item in enumerate(node):
+            yield from model_nodes(item, components, f"{at}[{i}]")
+    elif isinstance(node, dict):
+        if len(node) == 1 and next(iter(node)) in components | {"preset"}:
+            name, data = next(iter(node.items()))
+            yield name, data, f"{at}.{name}"
+            if name == "preset":
+                return
+        for key, value in node.items():
+            yield from model_nodes(value, components, f"{at}.{key}")
+
+
+def numbers(node, at):
+    """Числа в модели — величины вместо имён (раздел 11.1, правило 5)."""
+    if isinstance(node, bool):
+        return
+    if isinstance(node, (int, float)):
+        yield at
+    elif isinstance(node, list):
+        for i, item in enumerate(node):
+            yield from numbers(item, f"{at}[{i}]")
+    elif isinstance(node, dict):
+        for key, value in node.items():
+            yield from numbers(value, f"{at}.{key}")
+
+
+def stand_in(registry, node, presets):
+    """Модель с узлами вложенных пресетов, заменёнными на min-образец их корня с id и layout узла: модель вложенного
+    пресета проверяется в его файле."""
+    if isinstance(node, list):
+        return [stand_in(registry, item, presets) for item in node]
+    if not isinstance(node, dict):
+        return node
+    if list(node) == ["preset"] and isinstance(node["preset"], dict):
+        data = node["preset"]
+        target = presets.get(data.get("ref"))
+        root = registry.by_id.get(target["root"]) if target else None
+        if root is None:
+            return {"Container": generate(registry, registry.by_id["components/container/Container"], "min")["Container"]}
+        model = generate(registry, root, "min")
+        body = model[root.name]
+        body.pop("id", None)
+        body.update({key: data[key] for key in ("id", "layout") if key in data})
+        return model
+    return {key: stand_in(registry, value, presets) for key, value in node.items()}
+
+
+def check_presets(registry, presets):
+    """Описания пресетов: имена, ссылки, оси, модели вариантов, места со swap, циклы (figma-mapping.md, раздел 9,
+    правило 10)."""
+    components = registry.components()
+    ids = {c.id: c for c in components.values()}
+    for path in sorted(PRESETS.rglob("*")) if PRESETS.is_dir() else []:
+        if visible(path) and (path.parent != PRESETS or path.is_dir() or path.suffix != ".json"):
+            error(path, "в figma/presets/ только файлы <Имя>.json, без вложенных каталогов (раздел 11.2)")
+    graph = {}
+    for path, data in presets.items():
+        key = preset_id(path)
+        graph[key] = set()
+        if data["name"] != path.stem:
+            error(path, f"name «{data['name']}» не совпадает с именем файла")
+        text = path.read_text()
+        if text != dumps(data):
+            mismatch(path, text, dumps(data), "формат описания не канонический: отступ 2, каждое поле на своей строке")
+        root = ids.get(data["root"])
+        if root is None:
+            error(path, f"root «{data['root']}»: нет такого компонента")
+        axes = data["axes"]
+        layout = data.get("layout", {})
+        used = list(layout.values())
+        for axis in sorted(set(used) - set(axes)):
+            error(path, f"layout: нет оси «{axis}»")
+        for axis in sorted({a for a in used if used.count(a) > 1}):
+            error(path, f"layout: ось «{axis}» указана больше одного раза")
+        seen = set()
+        places = {}  # id места → [(имя узла, ссылка, путь)]
+        for i, variant in enumerate(data["variants"]):
+            at = f"variants[{i}]"
+            values = variant["axes"]
+            for axis in sorted(set(values) - set(axes)):
+                error(path, f"{at}.axes: нет оси «{axis}»")
+            for axis in [a for a in axes if a not in values]:
+                error(path, f"{at}.axes: не задана ось «{axis}»")
+            for axis, value in values.items():
+                if axis in axes and value not in axes[axis]:
+                    error(path, f"{at}.axes.{axis}: «{value}» нет среди значений оси")
+            combination = tuple(values.get(a) for a in axes)
+            if combination in seen:
+                error(path, f"{at}.axes: сочетание уже есть в другом варианте")
+            seen.add(combination)
+            model = variant["model"]
+            if root is not None and list(model) != [root.name]:
+                error(path, f"{at}.model: корень — компонент root «{root.name}»")
+            for number in numbers(model, f"{at}.model"):
+                error(path, f"{number}: число — величина вместо имени (раздел 11.1, правило 5)")
+            node_ids = []
+            for name, node, node_at in model_nodes(model, set(components), f"{at}.model"):
+                if not isinstance(node, dict):
+                    continue
+                if name == "preset":
+                    for extra in sorted(set(node) - PRESET_FIELDS):
+                        error(path, f"{node_at}: поле «{extra}» не допускается")
+                    ref = node.get("ref")
+                    if not isinstance(ref, str) or ref not in presets_by_id(presets):
+                        error(path, f"{node_at}.ref «{ref}»: нет такого пресета")
+                        ref = None
+                    else:
+                        graph[key].add(ref)
+                        target = presets_by_id(presets)[ref]
+                        chosen = node.get("axes")
+                        if not any(v["axes"] == chosen for v in target["variants"]):
+                            error(path, f"{node_at}.axes: нет такого варианта в {ref}")
+                else:
+                    ref = components[name].id
+                if isinstance(node.get("id"), str):
+                    node_ids.append(node["id"])
+                    places.setdefault(node["id"], []).append((name, ref, node_at))
+            for duplicate in sorted({n for n in node_ids if node_ids.count(n) > 1}):
+                error(path, f"{at}.model: id «{duplicate}» встречается больше одного раза")
+            for problem in registry.value_errors(stand_in(registry, model, presets_by_id(presets)),
+                                                 registry.by_id[COMPONENT], f"{at}.model"):
+                error(path, problem)
+        for place, allowed in data.get("swaps", {}).items():
+            graph[key].update(r for r in allowed if r.startswith("figma/presets/"))
+            for ref in allowed:
+                if ref.startswith("figma/presets/"):
+                    if ref not in presets_by_id(presets):
+                        error(path, f"swaps.{place}: «{ref}» — нет такого пресета")
+                elif ref not in ids or ref == "components/container/Container":
+                    error(path, f"swaps.{place}: «{ref}» — не компонент с Figma-компонентом")
+            if place not in places:
+                error(path, f"swaps.{place}: нет места с таким id ни в одном варианте")
+            for name, ref, node_at in places.get(place, []):
+                if name == "Container":
+                    error(path, f"{node_at}: место со swap — экземпляр, а не Container")
+                elif ref is not None and ref not in allowed:
+                    error(path, f"{node_at}: {ref} нет в swaps.{place}")
+    for cycle in cycles(graph):
+        error(PRESETS, f"цикл ссылок между пресетами: {' → '.join(cycle)}")
+
+
+def presets_by_id(presets):
+    return {preset_id(path): data for path, data in presets.items()}
+
+
+def cycles(graph):
+    """Циклы ссылок, каждый — один раз, начиная с меньшего идентификатора."""
+    found = set()
+
+    def visit(node, stack):
+        if node in stack:
+            cycle = stack[stack.index(node):]
+            start = cycle.index(min(cycle))
+            found.add(tuple(cycle[start:] + cycle[:start]))
+            return
+        for target in sorted(graph.get(node, ())):
+            visit(target, stack + [node])
+
+    for node in sorted(graph):
+        visit(node, [])
+    return [list(c) + [c[0]] for c in sorted(found)]
 
 
 def check_idea(registry):
@@ -1098,7 +1274,7 @@ def main():
     parser.add_argument("--base", help="git ref, с которым сравниваются спецификации и контракты")
     args = parser.parse_args()
 
-    contracts, values, figma, elements, manifests, changelogs, referenced = [], {}, {}, {}, {}, {}, set()
+    contracts, values, figma, elements, manifests, changelogs, presets, referenced = [], {}, {}, {}, {}, {}, {}, set()
     for path in json_files():
         try:
             data = json.loads(path.read_text())
@@ -1109,6 +1285,10 @@ def main():
             continue
         if is_element(path):
             elements[path] = data
+            continue
+        if is_preset(path):
+            if check_structure(path, data, PRESET_SCHEMA):
+                presets[path] = data
             continue
         check_refs(path, data)
         referenced.update(refs(path, data))
@@ -1147,6 +1327,7 @@ def main():
     check_checklist()
     check_samples(registry)
     check_screens(registry)
+    check_presets(registry, presets)
     check_idea(registry)
     check_changelogs(registry, changelogs)
 
