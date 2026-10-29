@@ -441,12 +441,15 @@ def check_presets(registry, presets):
         if root is None:
             error(path, f"root «{data['root']}»: нет такого компонента")
         axes = data["axes"]
-        layout = data.get("layout", {})
-        used = list(layout.values())
+        layout = data.get("layout")
+        used = [a for v in (layout or {}).values() for a in ([v] if isinstance(v, str) else v)]
         for axis in sorted(set(used) - set(axes)):
             error(path, f"layout: нет оси «{axis}»")
         for axis in sorted({a for a in used if used.count(a) > 1}):
             error(path, f"layout: ось «{axis}» указана больше одного раза")
+        if layout is not None:
+            for axis in [a for a in axes if a not in used]:
+                error(path, f"layout: нет места для оси «{axis}» — в заданном layout все оси (раздел 11.3, правило 5)")
         seen = set()
         places = {}  # id места → [(имя узла, ссылка, путь)]
         for i, variant in enumerate(data["variants"]):

@@ -9,6 +9,7 @@ const COUNTS: Record<keyof Summary["counts"], string> = {
   figma: "Отображение в Figma",
   samples: "Образцы",
   screens: "Экраны",
+  presets: "Пресеты",
   icons: "Символы",
   texts: "README",
   documentation: "Элементы документации",
