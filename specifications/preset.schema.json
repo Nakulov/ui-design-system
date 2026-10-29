@@ -32,12 +32,12 @@
       }
     },
     "layout": {
-      "description": "Раскладка витрины: какие оси идут в строки, столбцы и блоки (раздел 11.1, правило 8).",
+      "description": "Раскладка витрины: какие оси идут в строки, столбцы и блоки; в списке первая ось — внешняя (раздел 11.3, правило 5).",
       "type": "object",
       "properties": {
-        "rows": { "type": "string" },
-        "columns": { "type": "string" },
-        "blocks": { "type": "string" }
+        "rows": { "$ref": "#/$defs/layoutAxes" },
+        "columns": { "$ref": "#/$defs/layoutAxes" },
+        "blocks": { "$ref": "#/$defs/layoutAxes" }
       },
       "additionalProperties": false
     },
@@ -82,6 +82,13 @@
       "description": "Идентификатор контракта: <слой>/<сущность>/<Имя> (schema-format.md, раздел 6).",
       "type": "string",
       "pattern": "^[a-z][A-Za-z0-9]*/[a-z][A-Za-z0-9]*/[A-Z][A-Za-z0-9]*$"
+    },
+    "layoutAxes": {
+      "description": "Ось или список осей.",
+      "anyOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      ]
     },
     "presetId": {
       "description": "Идентификатор пресета: figma/presets/<Имя>.",

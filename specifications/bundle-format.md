@@ -1,7 +1,7 @@
 # Формат набора данных плагина
 
 **Статус:** Черновик для согласования  
-**Версия спецификации:** 0.13
+**Версия спецификации:** 0.14
 
 ## 1. Назначение
 
@@ -44,6 +44,7 @@
   "figma": { "foundation/spacing/Spacing": { "scopes": ["GAP"] } },
   "samples": { "components/badge/Badge#count": { "Badge": { "…": "…" } } },
   "screens": { "androidMessages": { "Container": { "…": "…" } } },
+  "presets": { "figma/presets/ImageIndicator": { "name": "ImageIndicator", "root": "components/image/Image", "…": "…" } },
   "icons": { "foundation/icon/Icon#close": { "svg": "<svg …>", "mirrored": false } },
   "texts": { "components/badge/Badge": { "Назначение": "…", "Рекомендации по использованию": "…" } },
   "documentation": { "figma/documentation/elements/heading": { "holes": { "…": "…" }, "model": { "Text": { "…": "…" } } } },
@@ -63,6 +64,7 @@
 | `figma`         | Файлы `figma.json` по идентификатору контракта (раздел 3.6).                     |
 | `samples`       | Образцы из каталогов `samples/` (раздел 3.3).                                    |
 | `screens`       | Демо-экраны из каталога `screens/` (раздел 3.9).                                 |
+| `presets`       | Описания пресетов из `figma/presets/` (раздел 3.13).                             |
 | `icons`         | Рисунки символов (раздел 3.4).                                                   |
 | `texts`         | Разделы README сущностей (раздел 3.5).                                           |
 | `documentation` | Элементы оформления документации, превью величин и демонстрации (раздел 3.7).    |
@@ -168,6 +170,15 @@
 Содержимое `figma/releaseChecklist.json` как есть: `items` — пункты чеклиста готовности к релизу в Figma
 (`figma-mapping.md`, раздел 8.5). Плагин рисует их во фрейме Release Checklist (`figma-documentation.md`,
 раздел 3.5) и не держит их текст у себя.
+
+### 3.13. Пресеты
+
+1. Ключ — идентификатор пресета: путь от корня репозитория без `.json`, например `figma/presets/ImageIndicator`
+   (`figma-mapping.md`, раздел 11.2).
+2. Значение — описание пресета как есть. Ссылки в нём (`root`, `swaps`, узлы `preset`) — уже идентификаторы, без
+   переписывания.
+3. Плагин строит из описаний Component Set пресетов на странице `Presets` (`figma-mapping.md`, раздел 11.3). Нет
+   пресетов — пустой объект.
 
 ## 4. Совместимость
 

@@ -1,7 +1,7 @@
 // Набор данных плагина: типы и проверка совместимости (specifications/bundle-format.md).
 
 /** Версия bundleFormat, которую поддерживает плагин (раздел 4). */
-export const SUPPORTED_FORMAT = "0.13";
+export const SUPPORTED_FORMAT = "0.14";
 
 /** Адрес набора на GitHub Pages по умолчанию (раздел 6). */
 export const DEFAULT_URL = "https://nakulov.github.io/ui-design-system/bundle.json";
@@ -50,6 +50,8 @@ export type Bundle = {
   samples: Record<Id, unknown>;
   /** Демо-экраны по имени файла (раздел 3.9). */
   screens: Record<string, unknown>;
+  /** Описания пресетов по идентификатору figma/presets/<Имя> (раздел 3.13). */
+  presets: Record<Id, Preset>;
   icons: Record<Id, Icon>;
   /** Разделы README: заголовок → исходный Markdown. */
   texts: Record<Id, Record<string, string>>;
@@ -61,6 +63,23 @@ export type Bundle = {
   changelogs: Record<Id, Changelog>;
   /** Пункты чеклиста готовности к релизу в Figma (раздел 3.12). */
   checklist: Checklist;
+};
+
+/** Вариант пресета: значения осей и модель варианта (figma-mapping.md, раздел 11.2). */
+export type PresetVariant = { axes: Record<string, string>; model: unknown };
+
+/** Раскладка витрины: ось или список осей, первая — внешняя (figma-mapping.md, раздел 11.3, правило 5). */
+export type PresetLayout = { rows?: string | string[]; columns?: string | string[]; blocks?: string | string[] };
+
+/** Описание пресета (figma-mapping.md, раздел 11.2). */
+export type Preset = {
+  name: string;
+  root: Id;
+  description: string;
+  axes: Record<string, string[]>;
+  layout?: PresetLayout;
+  swaps?: Record<string, Id[]>;
+  variants: PresetVariant[];
 };
 
 /** К чему применим пункт чеклиста (figma-mapping.md, раздел 8.5). */
@@ -101,7 +120,7 @@ export type Summary = {
   counts: Record<(typeof SECTIONS)[number], number>;
 };
 
-const SECTIONS = ["contracts", "values", "figma", "samples", "screens", "icons", "texts", "documentation", "manifests", "changelogs", "checklist"] as const;
+const SECTIONS = ["contracts", "values", "figma", "samples", "screens", "presets", "icons", "texts", "documentation", "manifests", "changelogs", "checklist"] as const;
 
 /** Сравнение сборки в файле с открытым набором (figma-mapping.md, раздел 7, правило 11). */
 export function compare(built: Source, bundle: Source): string {
