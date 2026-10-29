@@ -13,6 +13,7 @@ CONTRACTS = ROOT / "contracts"
 THEMES = ROOT / "themes"
 ELEMENTS = ROOT / "figma" / "documentation" / "elements"  # элементы оформления документации (figma-documentation.md, раздел 5)
 CHECKLIST = ROOT / "figma" / "releaseChecklist.json"  # пункты чеклиста готовности к релизу (figma-mapping.md, раздел 8.5)
+PRESETS = ROOT / "figma" / "presets"  # описания пресетов: figma/presets/<Имя>.json (figma-mapping.md, раздел 11.2)
 SCREENS = ROOT / "screens"  # демо-экраны: screens/<имя>.json в формате образцов (bundle-format.md, раздел 3.9)
 DEFINITIONS = "definitions"  # вспомогательные определения сущности (раздел 11.1)
 PREVIEW = "preview.json"  # превью величин foundation (figma-documentation.md, раздел 5)
@@ -34,9 +35,11 @@ PRIMITIVES = {
 
 
 def is_contract(path):
-    """Контракт — <Имя>.json вне samples/, demos/ и screens/, не служебный файл сущности (раздел 11.1, правила 5, 8)."""
+    """Контракт — <Имя>.json вне samples/, demos/, screens/ и figma/presets/, не служебный файл сущности
+    (раздел 11.1, правила 5, 8, 9)."""
     return (len(path.suffixes) == 1 and path not in (ROOT / "spec-versions.json", CHECKLIST) and not is_sample(path)
-            and not is_screen(path) and not is_element(path) and not (path.is_relative_to(CONTRACTS) and path.name in SERVICE_FILES))
+            and not is_screen(path) and not is_preset(path) and not is_element(path)
+            and not (path.is_relative_to(CONTRACTS) and path.name in SERVICE_FILES))
 
 
 def is_sample(path):
@@ -45,6 +48,10 @@ def is_sample(path):
 
 def is_screen(path):
     return path.parent == SCREENS
+
+
+def is_preset(path):
+    return path.is_relative_to(PRESETS)
 
 
 def is_element(path):

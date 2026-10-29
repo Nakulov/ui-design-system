@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Описание пресета",
+  "description": "Структура файла figma/presets/<Имя>.json: figma-mapping.md, раздел 11.2. Ссылки, оси вариантов, модели и циклы проверяет tools/validate.py.",
+  "type": "object",
+  "required": ["name", "root", "description", "axes", "variants"],
+  "properties": {
+    "name": {
+      "description": "Имя пресета, совпадает с именем файла.",
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$"
+    },
+    "root": {
+      "description": "Идентификатор контракта компонента — корня модели каждого варианта (раздел 11.1, правило 9).",
+      "$ref": "#/$defs/contractId"
+    },
+    "description": {
+      "description": "Назначение пресета для дизайнера.",
+      "type": "string",
+      "minLength": 1
+    },
+    "axes": {
+      "description": "Оси вариантов: имя оси → значения в порядке витрины.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": { "type": "string", "minLength": 1 }
+      }
+    },
+    "layout": {
+      "description": "Раскладка витрины: какие оси идут в строки, столбцы и блоки (раздел 11.1, правило 8).",
+      "type": "object",
+      "properties": {
+        "rows": { "type": "string" },
+        "columns": { "type": "string" },
+        "blocks": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "swaps": {
+      "description": "Места с instance swap: id места → предпочтительные значения (раздел 11.2, правило 3).",
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": { "anyOf": [{ "$ref": "#/$defs/contractId" }, { "$ref": "#/$defs/presetId" }] }
+      }
+    },
+    "variants": {
+      "description": "Явный список вариантов (раздел 11.1, правило 1).",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["axes", "model"],
+        "properties": {
+          "axes": {
+            "description": "Значение каждой оси.",
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "model": {
+            "description": "Модель варианта: объект с одним ключом — именем компонента root (раздел 11.2, правило 1).",
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "contractId": {
+      "description": "Идентификатор контракта: <слой>/<сущность>/<Имя> (schema-format.md, раздел 6).",
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]*/[a-z][A-Za-z0-9]*/[A-Z][A-Za-z0-9]*$"
+    },
+    "presetId": {
+      "description": "Идентификатор пресета: figma/presets/<Имя>.",
+      "type": "string",
+      "pattern": "^figma/presets/[A-Z][A-Za-z0-9]*$"
+    }
+  }
+}
