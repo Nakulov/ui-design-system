@@ -28,7 +28,7 @@ status_id() {
 # Добавление через GraphQL (addProjectV2ItemById) ненадёжно: элемент может остаться невидимым в списке доски (#10).
 # Поэтому задача добавляется через REST; если она уже на доске (422), элемент берётся из projectItems задачи.
 # Видимость проверяется в REST- и GraphQL-списке; если задачи нет — элемент удаляется и добавляется заново.
-# Списки читаются по первым 100 элементам.
+# Списки читаются постранично: на доске больше 100 элементов.
 status() {
   local opt rid node attempt check
   opt=$(status_id "$2") || return 1
@@ -40,8 +40,8 @@ status() {
     [ -n "$node" ] || { echo "#$1: элемент доски не найден" >&2; return 1; }
     gh project item-edit --id "$node" --project-id $project --field-id $field --single-select-option-id "$opt" >/dev/null || return 1
     for check in 1 2 3 4 5; do
-      gh api "$items?per_page=100" --jq '.[].node_id' | grep -qx "$node" &&
-        gh api graphql -f query='{user(login:"Nakulov"){projectV2(number:8){items(first:100){nodes{id}}}}}' \
+      gh api --paginate "$items?per_page=100" --jq '.[].node_id' | grep -qx "$node" &&
+        gh api graphql --paginate -f query='query($endCursor:String){user(login:"Nakulov"){projectV2(number:8){items(first:100,after:$endCursor){nodes{id} pageInfo{hasNextPage endCursor}}}}}' \
           --jq '.data.user.projectV2.items.nodes[].id' | grep -qx "$node" && return 0
     done
     [ $attempt = 1 ] && gh api graphql -f query='mutation($p:ID!,$i:ID!){deleteProjectV2Item(input:{projectId:$p,itemId:$i}){deletedItemId}}' \
