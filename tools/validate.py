@@ -22,9 +22,9 @@ try:
 except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
-from contracts import (APPEARANCE, CHECKLIST, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PRESETS, PREVIEW, ROOT,
-                       SCREENS, SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, id_path, is_contract,
-                       is_element, is_preset, is_sample, is_screen, is_skipped, pascal, ref_id)
+from contracts import (APPEARANCE, CHECKLIST, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PRESETS, PRESSABLE,
+                       PREVIEW, ROOT, SCREENS, SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, id_path,
+                       is_contract, is_element, is_preset, is_sample, is_screen, is_skipped, pascal, ref_id)
 import idea
 import presets as preset_generator
 from samples import dumps, generate, render, required_samples
@@ -37,6 +37,7 @@ PRESET_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/preset.s
 
 # Компоненты, которые в Figma рисуются фреймом: без Figma-компонента и figma.json (figma-mapping.md, разделы 3.4, 8.3).
 FRAMES = {"components/container/Container", "components/pressable/Pressable"}
+CONTROL_STATES = ["default", "pressed", "disabled"]  # контекст control (figma-mapping.md, раздел 3.5)
 
 # Спецификации с версией в spec-versions.json (schema-format.md, раздел 11.3).
 SPECS = {
@@ -460,6 +461,17 @@ def check_presets(registry, presets):
         if layout is not None:
             for axis in [a for a in axes if a not in used]:
                 error(path, f"layout: нет места для оси «{axis}» — в заданном layout все оси (раздел 11.3, правило 5)")
+        state = axes.get("state")
+        if state is not None:
+            if data["root"] != PRESSABLE:
+                error(path, "axes.state: ось state — только у пресета с корнем Pressable (раздел 11.2, правило 8)")
+            for value in [v for v in state if v not in CONTROL_STATES]:
+                error(path, f"axes.state: «{value}» — не состояние контекста control (раздел 3.5)")
+            if "default" not in state:
+                error(path, "axes.state: нет значения default (раздел 11.2, правило 8)")
+            known = [v for v in state if v in CONTROL_STATES]
+            if known != sorted(known, key=CONTROL_STATES.index):
+                error(path, f"axes.state: порядок значений — {', '.join(CONTROL_STATES)} (раздел 3.5)")
         seen = set()
         places = {}  # id места → [(имя узла, ссылка, путь)]
         for i, variant in enumerate(data["variants"]):
@@ -479,6 +491,9 @@ def check_presets(registry, presets):
             model = variant["model"]
             if root is not None and list(model) != [root.name]:
                 error(path, f"{at}.model: корень — компонент root «{root.name}»")
+            if state is not None and isinstance(model.get("Pressable"), dict) and "enabled" in model["Pressable"]:
+                error(path, f"{at}.model.Pressable.enabled: состояние задаёт ось state, enabled не задаётся "
+                            "(раздел 11.2, правило 8)")
             for number in numbers(model, f"{at}.model"):
                 error(path, f"{number}: число — величина вместо имени (раздел 11.1, правило 5)")
             for name, node, node_at in model_nodes(model, set(components), f"{at}.model"):
