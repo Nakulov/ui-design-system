@@ -137,7 +137,84 @@ def image_indicator():
     }
 
 
-GENERATORS = {"ImageIndicator": image_indicator}
+# Button: уровень → оформление рамки default, наложение pressed, оформление disabled, цвет подписи default.
+STROKE = {"width": "s", "color": "outline"}
+LEVELS = {
+    "primary": ({"background": {"solid": "primary"}}, "overlayPressed", {"background": {"solid": "surface2"}}, "onPrimary"),
+    "secondary": ({"background": {"solid": "secondaryContainer"}}, "overlayPressed", {"background": {"solid": "surface2"}},
+                  "onSecondaryContainer"),
+    "outline": ({"stroke": STROKE}, "overlayPressed", {"stroke": STROKE}, "primary"),
+    "text": ({}, "overlayPressed", {}, "primary"),
+}
+# Размер → высота рамки (Size), боковой отступ (Spacing), роль подписи.
+BUTTON_SIZES = {"s": ("m", "m", "labelMedium"), "m": ("l", "l", "labelLarge"), "l": ("xl", "xl", "labelLarge")}
+ICONS = {"none": [], "leading": [{"icon": {"name": "check"}}], "trailing": [{"icon": {"name": "chevronDown"}}]}
+BUTTON_STATES = ["default", "pressed", "disabled"]
+# Примеры для фрейма Presets документации: level, size, icon; все в состоянии default.
+BUTTON_EXAMPLES = [
+    ("primary", "m", "none"),
+    ("secondary", "m", "none"),
+    ("outline", "m", "none"),
+    ("text", "m", "none"),
+    ("primary", "m", "leading"),
+    ("primary", "m", "trailing"),
+    ("primary", "s", "none"),
+    ("primary", "l", "none"),
+]
+
+
+def label(icon, typography, color):
+    """Подпись кнопки: ширина hug — в одну строку, кнопка растёт по ширине; maxLines не нужен (число в пресете запрещено)."""
+    # Отступ между символом и текстом — пробел в тексте, как у символа в строке на платформах.
+    if icon == "trailing":
+        spans = [{"text": {"value": "Кнопка "}}] + ICONS[icon]
+    else:
+        spans = ICONS[icon] + [{"text": {"value": " Кнопка"}}]
+    return {"Text": {
+        "id": "label",
+        "layout": {"width": {"sizing": "hug"}, "height": {"sizing": "hug"}, "position": "flow"},
+        "padding": {"all": "zero"},
+        "appearance": {"plain": {}},
+        "content": {"rich": {"spans": spans}} if icon != "none" else {"plain": "Кнопка"},
+        "typography": typography,
+        "color": {"solid": color},
+        "alignment": "center",
+    }}
+
+
+def button():
+    variants = []
+    for level, (default, overlay, disabled, color) in LEVELS.items():
+        for size, (height, side, typography) in BUTTON_SIZES.items():
+            for icon in ICONS:
+                model = {"Pressable": {
+                    "id": "button",
+                    "layout": {"width": {"sizing": "hug"}, "height": {"sizing": {"fixed": height}}, "position": "flow"},
+                    "padding": {"symmetric": {"horizontal": side, "vertical": "zero"}},
+                    "appearance": {"control": {
+                        "default": {**default, "cornerRadius": "full"},
+                        "pressed": {**default, "cornerRadius": "full", "overlay": {"solid": overlay}},
+                        "disabled": {**disabled, "cornerRadius": "full"},
+                    }},
+                    "states": {
+                        "default": label(icon, typography, color),
+                        "disabled": label(icon, typography, "onSurfaceMuted"),
+                    },
+                }}
+                for state in BUTTON_STATES:
+                    variants.append({"axes": {"level": level, "size": size, "icon": icon, "state": state}, "model": model})
+    return {
+        "name": "Button",
+        "root": "components/pressable/Pressable",
+        "description": "Кнопка: подпись, при необходимости символ до или после неё; четыре уровня, три размера",
+        "axes": {"level": list(LEVELS), "size": list(BUTTON_SIZES), "icon": list(ICONS), "state": BUTTON_STATES},
+        "layout": {"rows": ["level", "icon"], "columns": "state", "blocks": "size"},
+        "examples": [dict(zip(["level", "size", "icon", "state"], e + ("default",))) for e in BUTTON_EXAMPLES],
+        "variants": variants,
+    }
+
+
+GENERATORS = {"Button": button, "ImageIndicator": image_indicator}
 
 
 def generate():

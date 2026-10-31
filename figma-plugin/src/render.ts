@@ -187,6 +187,8 @@ export class Renderer {
   private readonly layouts: (() => void)[] = [];
   private readonly placements: (() => void)[] = [];
   private readonly fonts = new Set<string>();
+  /** Состояние корня варианта пресета с осью `state` (раздел 11.2, правило 8): модель корня и значение оси. */
+  private root?: { model: Base; state: string };
 
   /**
    * `library` — тело Figma-компонента библиотеки: картинки по адресу не загружаются (раздел 4.1, правило 12); у пресета
@@ -201,9 +203,11 @@ export class Renderer {
 
   /**
    * Рисует модель последним ребёнком `parent`. Корень из `reuse` с местом `slot` (или `id` модели) обновляется на
-   * месте; у образца библиотеки это сам Figma-компонент.
+   * месте; у образца библиотеки это сам Figma-компонент. `state` — значение оси `state` варианта пресета: корневой
+   * `Pressable` рисуется в этом состоянии (раздел 10.6, правило 1).
    */
-  async draw(entry: unknown, parent: BaseNode & ChildrenMixin, reuse: Kept, slot = "root"): Promise<FrameNode | undefined> {
+  async draw(entry: unknown, parent: BaseNode & ChildrenMixin, reuse: Kept, slot = "root", state?: string): Promise<FrameNode | undefined> {
+    if (state) this.root = { model: Object.values(entry as Entry)[0], state };
     const node = await this.component(entry as Entry, parent as FrameNode, reuse, "", slot);
     // Размеры вложенных контейнеров overlay нужны родителям, а размеры родителей — растянутым детям.
     for (const layout of [...this.layouts].reverse()) layout();
@@ -606,13 +610,19 @@ export class Renderer {
 
   /**
    * Оформление показанного состояния: `default`, для `selectable` — по `selected`, у `Pressable` с `enabled = false` —
-   * `disabled` (раздел 10.1, правило 2).
+   * `disabled` (раздел 10.1, правило 2), у корня варианта пресета — по оси `state` (раздел 10.6, правило 1).
    */
   private plain(model: Base): Plain {
     const [kind, value] = variant<Record<string, Record<string, Plain>>>(model.appearance);
     if (kind === "plain") return value as unknown as Plain;
     if (kind === "selectable") return (model.selected ? value.selected : value.unselected).default;
-    return (model.enabled === false ? value.disabled : value.default) as unknown as Plain;
+    return value[this.active(model)] as unknown as Plain;
+  }
+
+  /** Активное состояние `Pressable`: значение оси `state` у корня варианта пресета, иначе по `enabled`. */
+  private active(model: Base): string {
+    if (this.root?.model === model) return this.root.state;
+    return model.enabled === false ? "disabled" : "default";
   }
 
   private async appearance(frame: FrameNode, plain: Plain, at: string) {
@@ -889,13 +899,14 @@ export class Renderer {
   }
 
   /**
-   * Дерево активного состояния `Pressable`: `disabled` при `enabled = false` (или `default`, если его нет), иначе
-   * `default`; `pressed` в статичной модели не рисуется (раздел 10.3). Место дерева — `state` при любом состоянии: слой
+   * Дерево активного состояния `Pressable` или, если его нет, `default`; `pressed` в статичной модели не рисуется, только
+   * у корня варианта пресета с осью `state` (раздел 10.6, правило 1). Место дерева — `state` при любом состоянии: слой
    * переиспользуется при смене состояния, узлы с одинаковым `id` сохраняют имя слоя.
    */
   private async state(frame: FrameNode, model: Base, kept: Kept, at: string) {
     const states = model.states as States;
-    const name = model.enabled === false && states.disabled ? "disabled" : "default";
+    const active = this.active(model) as keyof States;
+    const name = states[active] ? active : "default";
     await this.component(states[name]!, frame, kept, `${at}.states.${name}`, "state");
   }
 
