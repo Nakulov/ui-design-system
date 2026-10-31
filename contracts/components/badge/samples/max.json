@@ -52,18 +52,27 @@
           "Badge": {
             "layout": {
               "width": {
-                "sizing": "hug"
+                "sizing": {
+                  "fixed": "xs2"
+                }
               },
               "height": {
-                "sizing": "hug"
+                "sizing": {
+                  "fixed": "xs2"
+                }
               },
               "position": "flow"
             },
             "padding": {
-              "all": "m"
+              "all": "zero"
             },
             "appearance": {
-              "plain": {}
+              "plain": {
+                "background": {
+                  "solid": "error"
+                },
+                "cornerRadius": "full"
+              }
             }
           }
         },

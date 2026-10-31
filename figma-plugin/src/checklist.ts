@@ -6,8 +6,8 @@ import { ICON, ref } from "./ids";
 import { variantName } from "./presets";
 import type { Build, ChecklistView, Imports } from "./messages";
 
-/** `Container` всегда рисуется телом: у него сокращённый чеклист (figma-mapping.md, раздел 8.3). */
-const CONTAINER = "components/container/Container";
+/** `Container` и `Pressable` всегда рисуются телом: у них сокращённый чеклист (figma-mapping.md, раздел 8.3). */
+const FRAMES = ["components/container/Container", "components/pressable/Pressable"];
 
 /** Обязательные секции манифеста (documentation-manifest.md, раздел 4.2). */
 const REQUIRED: Record<Exclude<ChecklistScope, "foundation">, string[]> = {
@@ -32,7 +32,7 @@ export type Auto = Record<string, boolean>;
 
 /** Вид чеклиста сущности; без чеклиста — undefined. */
 export function scope(id: Id): ChecklistScope | undefined {
-  if (id.startsWith("components/")) return id === CONTAINER ? "container" : "component";
+  if (id.startsWith("components/")) return FRAMES.includes(id) ? "container" : "component";
   if (id.startsWith("foundation/")) return "foundation";
   if (id.startsWith("core/")) return "core";
   return undefined;

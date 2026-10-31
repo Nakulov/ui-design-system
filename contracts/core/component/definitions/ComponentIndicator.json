@@ -14,6 +14,7 @@
       "name": "content",
       "$ref": "Component",
       "required": true,
+      "sample": { "Badge": { "layout": { "width": { "sizing": { "fixed": "xs2" } }, "height": { "sizing": { "fixed": "xs2" } }, "position": "flow" }, "padding": { "all": "zero" }, "appearance": { "plain": { "background": { "solid": "error" }, "cornerRadius": "full" } } } },
       "description": "Индикатор: любой компонент с размером hug или fixed"
     },
     {

@@ -81,53 +81,29 @@
       {
         "anchor": "topEnd",
         "content": {
-          "Pressable": {
+          "Badge": {
             "layout": {
               "width": {
-                "sizing": "hug"
+                "sizing": {
+                  "fixed": "xs2"
+                }
               },
               "height": {
-                "sizing": "hug"
+                "sizing": {
+                  "fixed": "xs2"
+                }
               },
               "position": "flow"
             },
             "padding": {
-              "all": "m"
+              "all": "zero"
             },
             "appearance": {
-              "control": {
-                "default": {},
-                "pressed": {},
-                "disabled": {}
-              }
-            },
-            "states": {
-              "default": {
-                "Text": {
-                  "layout": {
-                    "width": {
-                      "sizing": "hug"
-                    },
-                    "height": {
-                      "sizing": "hug"
-                    },
-                    "position": "flow"
-                  },
-                  "padding": {
-                    "all": "zero"
-                  },
-                  "appearance": {
-                    "plain": {}
-                  },
-                  "content": {
-                    "plain": "Оплатить"
-                  },
-                  "typography": "labelLarge",
-                  "color": {
-                    "solid": "onSurface"
-                  },
-                  "alignment": "center"
-                }
+              "plain": {
+                "background": {
+                  "solid": "error"
+                },
+                "cornerRadius": "full"
               }
             }
           }
