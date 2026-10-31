@@ -36,7 +36,7 @@ def generate(registry, contract, mode):
 
     Подсказка sample свойства, варианта или типа подставляется как есть вместо выбора значения.
     """
-    def value(kind, name, hint=None):
+    def value(kind, name, hint=None, allowed=None):
         if hint is not None:
             return hint
         if kind is None:
@@ -60,9 +60,11 @@ def generate(registry, contract, mode):
                     result[prop["name"]] = [value(item, prop["name"])]
                 else:
                     target = registry.resolve(owner, prop["$ref"]) if "$ref" in prop else prop["type"]
-                    result[prop["name"]] = value(target, prop["name"])
+                    # Оформление компонента — только из его appearanceContext (раздел 5.2, правило 5).
+                    context = kind.data.get("appearanceContext") if prop["name"] == "appearance" else None
+                    result[prop["name"]] = value(target, prop["name"], allowed=context)
             return result
-        variants = registry.variants(kind)
+        variants = [v for v in registry.variants(kind) if allowed is None or v.name in allowed]
         plain = [v for v in variants if not v.has_data]
         objects = [v for v in variants if v.has_data and not isinstance(v.target, str) and v.target.type == "object"]
         if mode == "min":

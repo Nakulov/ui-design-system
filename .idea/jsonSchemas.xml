@@ -123,6 +123,14 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="contracts/components/pressable/Pressable.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/pressable/definitions/PressableStates.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="contracts/components/text/Text.json" />
                     <option name="mappingKind" value="File" />
                   </Item>

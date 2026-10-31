@@ -1,0 +1,28 @@
+{
+  "name": "Pressable",
+  "type": "object",
+  "extends": "core/component/Component",
+  "appearanceContext": [
+    "control"
+  ],
+  "description": "Нажимаемый элемент: обёртка над деревьями содержимого по состояниям — обычному, нажатому и недоступному. Рамка оформляется по состоянию (control), содержимое — деревом активного состояния. Действие — события Pressable: обрабатываются, только когда он доступен. В Figma соответствует фрейму, как Container",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "properties": [
+    {
+      "name": "enabled",
+      "type": "boolean",
+      "required": false,
+      "description": "Доступность: false — состояние disabled, нажатие не обрабатывается и уходит к внешнему нажимаемому элементу. Отсутствие означает «доступен»"
+    },
+    {
+      "name": "states",
+      "$ref": "PressableStates",
+      "required": true,
+      "description": "Деревья содержимого по состояниям; активное дерево рисуется внутри рамки"
+    }
+  ]
+}

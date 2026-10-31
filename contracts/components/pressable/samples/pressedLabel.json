@@ -1,0 +1,115 @@
+{
+  "Pressable": {
+    "id": "cancel",
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": "l",
+        "vertical": "s"
+      }
+    },
+    "appearance": {
+      "control": {
+        "default": {
+          "cornerRadius": "full",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        },
+        "pressed": {
+          "background": {
+            "solid": "primary"
+          },
+          "cornerRadius": "full",
+          "stroke": {
+            "width": "s",
+            "color": "primary"
+          }
+        },
+        "disabled": {
+          "cornerRadius": "full",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        }
+      }
+    },
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "cancel"
+          }
+        }
+      }
+    ],
+    "states": {
+      "default": {
+        "Text": {
+          "id": "label",
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Отмена"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "primary"
+          },
+          "alignment": "center"
+        }
+      },
+      "pressed": {
+        "Text": {
+          "id": "label",
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Отмена"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onPrimary"
+          },
+          "alignment": "center"
+        }
+      }
+    }
+  }
+}

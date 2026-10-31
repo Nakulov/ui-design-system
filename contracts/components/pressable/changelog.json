@@ -1,0 +1,11 @@
+{
+  "$ref": "Pressable",
+  "entries": [
+    {
+      "date": "2026-10-31",
+      "issue": 172,
+      "kind": "added",
+      "description": "Компонент добавлен"
+    }
+  ]
+}

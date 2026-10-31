@@ -1,0 +1,289 @@
+{
+  "Pressable": {
+    "id": "product",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "m"
+    },
+    "appearance": {
+      "control": {
+        "default": {
+          "background": {
+            "solid": "surface"
+          },
+          "cornerRadius": "l",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "clip": true
+        },
+        "pressed": {
+          "background": {
+            "solid": "surface"
+          },
+          "cornerRadius": "l",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "overlay": {
+            "solid": "overlayPressed"
+          },
+          "clip": true
+        },
+        "disabled": {
+          "background": {
+            "solid": "surface"
+          },
+          "cornerRadius": "l",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "clip": true
+        }
+      }
+    },
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "openProduct"
+          }
+        }
+      }
+    ],
+    "states": {
+      "default": {
+        "Container": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "arrangement": {
+            "vertical": {
+              "alignment": "start",
+              "distribution": {
+                "packed": {
+                  "gap": "s",
+                  "position": "top"
+                }
+              }
+            }
+          },
+          "children": [
+            {
+              "Image": {
+                "layout": {
+                  "width": {
+                    "sizing": "fill"
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xl3"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {
+                    "background": {
+                      "solid": "surface2"
+                    },
+                    "cornerRadius": "m",
+                    "clip": true
+                  }
+                },
+                "source": {
+                  "remote": {
+                    "origin": {
+                      "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                    },
+                    "scale": "crop",
+                    "alignment": "center",
+                    "placeholder": {
+                      "icon": {
+                        "name": "image",
+                        "color": "onSurfaceMuted"
+                      }
+                    },
+                    "error": {
+                      "icon": {
+                        "name": "brokenImage",
+                        "color": "onSurfaceMuted"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Text": {
+                "id": "title",
+                "layout": {
+                  "width": {
+                    "sizing": "fill"
+                  },
+                  "height": {
+                    "sizing": "hug"
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "content": {
+                  "plain": "Кофемолка"
+                },
+                "typography": "titleMedium",
+                "color": {
+                  "solid": "onSurface"
+                },
+                "alignment": "start"
+              }
+            },
+            {
+              "Pressable": {
+                "id": "addToCart",
+                "layout": {
+                  "width": {
+                    "sizing": "hug"
+                  },
+                  "height": {
+                    "sizing": "hug"
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "l",
+                    "vertical": "s"
+                  }
+                },
+                "appearance": {
+                  "control": {
+                    "default": {
+                      "background": {
+                        "solid": "primary"
+                      },
+                      "cornerRadius": "full"
+                    },
+                    "pressed": {
+                      "background": {
+                        "solid": "primary"
+                      },
+                      "cornerRadius": "full",
+                      "overlay": {
+                        "solid": "overlayPressed"
+                      }
+                    },
+                    "disabled": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "full"
+                    }
+                  }
+                },
+                "events": [
+                  {
+                    "click": {
+                      "payload": {
+                        "action": "addToCart"
+                      }
+                    }
+                  }
+                ],
+                "enabled": false,
+                "states": {
+                  "default": {
+                    "Text": {
+                      "id": "label",
+                      "layout": {
+                        "width": {
+                          "sizing": "hug"
+                        },
+                        "height": {
+                          "sizing": "hug"
+                        },
+                        "position": "flow"
+                      },
+                      "padding": {
+                        "all": "zero"
+                      },
+                      "appearance": {
+                        "plain": {}
+                      },
+                      "content": {
+                        "plain": "В корзину"
+                      },
+                      "typography": "labelLarge",
+                      "color": {
+                        "solid": "onPrimary"
+                      },
+                      "alignment": "center"
+                    }
+                  },
+                  "disabled": {
+                    "Text": {
+                      "id": "label",
+                      "layout": {
+                        "width": {
+                          "sizing": "hug"
+                        },
+                        "height": {
+                          "sizing": "hug"
+                        },
+                        "position": "flow"
+                      },
+                      "padding": {
+                        "all": "zero"
+                      },
+                      "appearance": {
+                        "plain": {}
+                      },
+                      "content": {
+                        "plain": "Нет в наличии"
+                      },
+                      "typography": "labelLarge",
+                      "color": {
+                        "solid": "onSurfaceMuted"
+                      },
+                      "alignment": "center"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
