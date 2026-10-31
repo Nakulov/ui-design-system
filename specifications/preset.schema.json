@@ -52,6 +52,15 @@
         "items": { "anyOf": [{ "$ref": "#/$defs/contractId" }, { "$ref": "#/$defs/presetId" }] }
       }
     },
+    "examples": {
+      "description": "Примеры для фрейма Presets документации корня: значения осей существующих вариантов (раздел 11.2, правило 7).",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": { "type": "string" }
+      }
+    },
     "variants": {
       "description": "Явный список вариантов (раздел 11.1, правило 1).",
       "type": "array",

@@ -26,6 +26,7 @@ from contracts import (APPEARANCE, CHECKLIST, COMPONENT, CONTRACTS, DEFINITIONS,
                        SCREENS, SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, id_path, is_contract,
                        is_element, is_preset, is_sample, is_screen, is_skipped, pascal, ref_id)
 import idea
+import presets as preset_generator
 from samples import dumps, generate, render, required_samples
 
 # Мета-схемы структуры файлов (schema-format.md, раздел 12).
@@ -428,6 +429,12 @@ def check_presets(registry, presets):
     for path in sorted(PRESETS.rglob("*")) if PRESETS.is_dir() else []:
         if visible(path) and (path.parent != PRESETS or path.is_dir() or path.suffix != ".json"):
             error(path, "в figma/presets/ только файлы <Имя>.json, без вложенных каталогов (раздел 11.2)")
+    for path, expected in preset_generator.generate().items():
+        if not path.exists():
+            error(path, "нет описания с генератором: запусти python3 tools/presets.py")
+        elif path.read_text() != expected:
+            mismatch(path, path.read_text(), expected,
+                     "описание не совпадает с выводом tools/presets.py: правь генератор и запусти его (раздел 11.2, правило 6)")
     graph = {}
     for path, data in presets.items():
         key = preset_id(path)
@@ -498,6 +505,12 @@ def check_presets(registry, presets):
             for problem in registry.value_errors(stand_in(registry, model, presets_by_id(presets)),
                                                  registry.by_id[COMPONENT], f"{at}.model"):
                 error(path, problem)
+        examples = [tuple(sorted(e.items())) for e in data.get("examples", [])]
+        for i, example in enumerate(examples):
+            if example in examples[:i]:
+                error(path, f"examples[{i}]: пример уже есть")
+            elif not any(tuple(sorted(v["axes"].items())) == example for v in data["variants"]):
+                error(path, f"examples[{i}]: нет такого варианта пресета (раздел 11.2, правило 7)")
         for place, allowed in data.get("swaps", {}).items():
             graph[key].update(r for r in allowed if r.startswith("figma/presets/"))
             for ref in allowed:

@@ -79,6 +79,8 @@ export type Preset = {
   axes: Record<string, string[]>;
   layout?: PresetLayout;
   swaps?: Record<string, Id[]>;
+  /** Примеры для фрейма Presets документации: значения осей (figma-mapping.md, раздел 11.2, правило 7). */
+  examples?: Record<string, string>[];
   variants: PresetVariant[];
 };
 

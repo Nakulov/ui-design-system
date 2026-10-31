@@ -7,8 +7,8 @@
       "examples": [
         {
           "id": "main",
-          "sample": "avatarOnline",
-          "caption": "Аватар с точкой «в сети»"
+          "sample": "productPhoto",
+          "caption": "remote"
         }
       ]
     },
@@ -25,22 +25,12 @@
         {
           "id": "icon",
           "sample": "icon",
-          "caption": "Символ"
-        },
-        {
-          "id": "appIcon",
-          "sample": "appIcon",
-          "caption": "Иконка приложения со счётчиком"
-        },
-        {
-          "id": "avatarOnline",
-          "sample": "avatarOnline",
-          "caption": "Аватар с точкой «в сети»"
+          "caption": "resource"
         },
         {
           "id": "productPhoto",
           "sample": "productPhoto",
-          "caption": "Фото товара по адресу"
+          "caption": "remote"
         }
       ]
     },

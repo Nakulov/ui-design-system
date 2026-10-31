@@ -34,6 +34,8 @@ type Base = {
 /** Модель компонента: объект с одним ключом — именем компонента (schema-format.md, раздел 4.5). */
 type Entry = Record<string, Base>;
 type Indicator = { anchor: string; content: Entry; gap?: Token };
+/** Узел вложенного пресета (figma-mapping.md, раздел 11.2, правило 2). */
+type PresetNode = { ref: Id; axes: Record<string, string>; id?: string; layout?: Layout };
 type Resource = { icon: { name: string; color: string } };
 type Remote = { origin: { url: string }; scale: "fit" | "crop"; alignment: string; placeholder?: Resource; error?: Resource };
 type Span = { text: { value: string; typography?: string; color?: string; decoration?: string } } | { icon: { name: string; typography?: string; color?: string } };
@@ -72,6 +74,18 @@ function isUnreachable(url: string): boolean {
   return host !== undefined && (host === "invalid" || host.endsWith(".invalid"));
 }
 
+/** Загруженные картинки по адресу за сборку: пресет рисует одну картинку в сотнях вариантов. */
+const images = new Map<string, Promise<{ image: Image; size: { width: number; height: number } }>>();
+
+function loadImage(url: string) {
+  let loaded = images.get(url);
+  if (!loaded) {
+    loaded = figma.createImageAsync(url).then(async (image) => ({ image, size: await image.getSizeAsync() }));
+    images.set(url, loaded);
+  }
+  return loaded;
+}
+
 /** Вариант значения `oneOf` или `enum`: имя и значение (`schema-format.md`, раздел 4.5). */
 function variant<T = unknown>(value: unknown): [string, T] {
   if (typeof value === "string") return [value, undefined as T];
@@ -103,13 +117,14 @@ export class Tokens {
     }
     await figma.loadAllPagesAsync();
     const iconPage = figma.root.children.find((page) => ref(page) === ICON);
-    const componentsPage = figma.root.children.find((page) => ref(page, "role") === "components");
+    // Пресеты — тоже Figma-компоненты библиотеки: вложенные пресеты и значения swap (раздел 11.3, правило 1).
+    const pages = figma.root.children.filter((page) => ["components", "presets"].includes(ref(page, "role")));
     return new Tokens(
       bundle, variables,
       byRef(await figma.getLocalTextStylesAsync()),
       byRef(await figma.getLocalEffectStylesAsync()),
       byRef(iconPage?.findAllWithCriteria({ types: ["COMPONENT"] }) ?? []),
-      byRef((componentsPage?.children ?? []).filter((n): n is ComponentNode | ComponentSetNode => n.type === "COMPONENT" || n.type === "COMPONENT_SET")),
+      byRef(pages.flatMap((page) => page.children).filter((n): n is ComponentNode | ComponentSetNode => n.type === "COMPONENT" || n.type === "COMPONENT_SET")),
     );
   }
 
@@ -133,6 +148,11 @@ export class Tokens {
   library(id: Id): ComponentNode | ComponentSetNode | undefined {
     const node = this.components.get(id);
     return node && !node.removed ? node : undefined;
+  }
+
+  /** Figma-компонент, построенный в этом прогоне: пресет становится доступен следующим пресетам. */
+  register(id: Id, node: ComponentNode | ComponentSetNode) {
+    this.components.set(id, node);
   }
 
   /** Число величины: вариант шкалы — из первого режима темы, `custom` — его значение. */
@@ -163,10 +183,15 @@ export class Renderer {
   private readonly placements: (() => void)[] = [];
   private readonly fonts = new Set<string>();
 
-  /** `library` — тело образца библиотеки: картинки по адресу не загружаются (раздел 4.1, правило 12). */
+  /**
+   * `library` — тело Figma-компонента библиотеки: картинки по адресу не загружаются (раздел 4.1, правило 12); у пресета
+   *   загружаются (раздел 11.1, правило 11).
+   * `instances` — вложенные компоненты рисуются экземплярами; у образца библиотеки — нет, у пресета — да (раздел 11.1,
+   * правило 6). Корень, который рисуется в сам Figma-компонент, всегда тело.
+   */
   constructor(
     private readonly tokens: Tokens, private readonly report: Report, private readonly label: string,
-    private readonly library = false,
+    private readonly library = false, private readonly instances = !library,
   ) {}
 
   /**
@@ -234,6 +259,7 @@ export class Renderer {
   private async component(entry: Entry, parent: FrameNode, reuse: Kept, path: string, slot: string): Promise<FrameNode | undefined> {
     const [name, model] = Object.entries(entry)[0];
     const at = path ? `${path}/${name}` : name;
+    if (name === "preset") return this.preset(model as unknown as PresetNode, parent, reuse, slot, at);
     const contract = this.tokens.component(name);
     if (!contract || !["Container", "Text", "Image", "Badge"].includes(name)) {
       this.warn(at, "компонент не поддерживается и не отрисован");
@@ -243,7 +269,7 @@ export class Renderer {
     const old = reuse.get(key);
     reuse.delete(key);
     if (model.indicators?.length) return this.indicated(name, model, parent, old, path, at, key);
-    if (!this.library && name !== "Container") {
+    if (this.instances && name !== "Container" && old?.type !== "COMPONENT") {
       const node = await this.instance(name, model, contract, parent, old, key, at);
       if (node) return node;
     }
@@ -255,7 +281,7 @@ export class Renderer {
       frame = figma.createFrame();
     }
     const kept = await this.reset(frame);
-    parent.appendChild(frame);
+    this.place(parent, frame);
     if (frame.type === "FRAME") frame.name = layerName(name, model.id);
     mark(frame, contract);
     mark(frame, model.id ?? "", "id");
@@ -344,6 +370,35 @@ export class Renderer {
     }
   }
 
+  /** Экземпляр вложенного пресета: variant по `axes`, размеры в родителе — по `layout` узла (раздел 11.2, правило 2). */
+  private async preset(data: PresetNode, parent: FrameNode, reuse: Kept, slot: string, at: string): Promise<FrameNode | undefined> {
+    const key = data.id ?? slot;
+    const old = reuse.get(key);
+    reuse.delete(key);
+    const name = data.ref.split("/").pop()!;
+    const library = this.tokens.library(data.ref);
+    const main = library?.type === "COMPONENT_SET"
+      ? library.children.find((c) => Object.entries(data.axes).every(([k, v]) => (c as ComponentNode).variantProperties?.[k] === v)) as ComponentNode | undefined
+      : library;
+    if (!main) {
+      this.warn(at, library ? `нет варианта ${Object.entries(data.axes).map(([k, v]) => `${k}=${v}`).join(", ")} пресета ${name}` : `нет пресета ${name} на странице Presets, не отрисован`);
+      return undefined;
+    }
+    let node: InstanceNode;
+    if (old?.type === "INSTANCE") {
+      node = old;
+      if ((await node.getMainComponentAsync())?.id !== main.id) node.swapComponent(main);
+    } else node = main.createInstance();
+    parent.appendChild(node);
+    node.name = layerName(name, data.id);
+    mark(node, data.ref);
+    mark(node, data.id ?? "", "id");
+    mark(node, key, "slot");
+    if (data.layout) this.layout(node as unknown as FrameNode, data.layout, isAuto(parent), at);
+    if (old && old !== node && !old.removed) old.remove();
+    return node as unknown as FrameNode;
+  }
+
   /**
    * Instance swap- и boolean-свойства задаются экземпляру явно: значение слоя, совпавшее со значением компонента, иначе
    * не закрепляется и после правки образца следует за компонентом. Text-свойство не задаётся: оно сбрасывает стили
@@ -410,6 +465,15 @@ export class Renderer {
     frame.cornerRadius = 0;
     frame.clipsContent = false;
     if (frame.layoutMode !== "NONE") frame.minWidth = frame.maxWidth = frame.minHeight = frame.maxHeight = null;
+  }
+
+  /**
+   * Кладёт корень последним ребёнком родителя. Figma-компонент, уже лежащий в родителе, не перекладывается: порядок
+   * variant в Component Set не важен, а каждое перекладывание пересчитывает свойства всего набора.
+   */
+  private place(parent: BaseNode & ChildrenMixin, node: SceneNode) {
+    if (node.type === "COMPONENT" && node.parent === parent) return;
+    parent.appendChild(node);
   }
 
   /** Добавляет слой в корень; у экземпляра слои уже на месте, а менять их порядок Figma не даёт. */
@@ -595,7 +659,8 @@ export class Renderer {
    */
   private async indicated(name: string, model: Base, parent: FrameNode, old: SceneNode | undefined, path: string, at: string, key: string): Promise<FrameNode | undefined> {
     let wrapper: FrameNode;
-    if (old?.type === "FRAME" && ref(old, "role") === "indicators") wrapper = old;
+    // Корень варианта пресета с индикаторами — сам Figma-компонент: он и есть обёртка.
+    if (old?.type === "COMPONENT" || (old?.type === "FRAME" && ref(old, "role") === "indicators")) wrapper = old as FrameNode;
     else {
       // Носитель, нарисованный раньше без индикаторов, переиспользуется внутри обёртки.
       wrapper = figma.createFrame();
@@ -607,8 +672,9 @@ export class Renderer {
       }
     }
     const kept = await this.reset(wrapper);
-    parent.appendChild(wrapper);
-    wrapper.name = `${name} indicators`;
+    this.place(parent, wrapper);
+    // Имя варианта пресета задаёт сборка пресетов: вариант с именем не по осям ломает Component Set.
+    if ((wrapper as SceneNode).type !== "COMPONENT") wrapper.name = `${name} indicators`;
     mark(wrapper, "indicators", "role");
     mark(wrapper, model.id ?? "", "id");
     mark(wrapper, key, "slot");
@@ -1010,8 +1076,7 @@ export class Renderer {
     const unreachable = isUnreachable(remote.origin.url);
     try {
       if (unreachable) throw new Error("хост в домене .invalid");
-      image = await figma.createImageAsync(remote.origin.url);
-      size = await image.getSizeAsync();
+      ({ image, size } = await loadImage(remote.origin.url));
     } catch (e) {
       if ((frame as SceneNode).type === "INSTANCE") {
         // В экземпляре variant remote нет слоя символа: остаётся заглушка компонента.
@@ -1042,6 +1107,15 @@ export class Renderer {
     this.attach(frame, instance);
     if (fitTo && (fitTo.width.sizing !== "hug" || fitTo.height.sizing !== "hug")) {
       this.placements.push(() => {
+        // Квадратная область — символ растягивается по ней: отступ, изменённый в Figma, сжимает символ, а не корень.
+        // В экземпляре это единственный способ: размер вложенного экземпляра Figma не сохраняет.
+        const width = frame.width - frame.paddingLeft - frame.paddingRight;
+        const height = frame.height - frame.paddingTop - frame.paddingBottom;
+        if (fitTo.width.sizing !== "hug" && fitTo.height.sizing !== "hug" && Math.abs(width - height) < 0.5) {
+          instance.layoutSizingHorizontal = "FILL";
+          instance.layoutSizingVertical = "FILL";
+          return;
+        }
         const scales = [
           fitTo.width.sizing !== "hug" ? (frame.width - frame.paddingLeft - frame.paddingRight) / instance.width : Infinity,
           fitTo.height.sizing !== "hug" ? (frame.height - frame.paddingTop - frame.paddingBottom) / instance.height : Infinity,

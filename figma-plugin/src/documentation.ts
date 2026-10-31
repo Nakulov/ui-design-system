@@ -104,6 +104,7 @@ export class DocumentationBuilder {
         const page = await this.page((p) => ref(p) === id, contract.name, (p) => mark(p, id));
         const warnings = this.report.data().warnings.length;
         await this.draw(page, id, build(id));
+        await this.presets(page, id);
         if (scope(id)) await this.checklist(page, id, this.report.data().warnings.length - warnings);
         result.push(page);
       }
@@ -354,6 +355,36 @@ export class DocumentationBuilder {
     return "—";
   }
 
+  /**
+   * Фрейм Presets на странице корня композиции: для каждого пресета — имя, описание, таблица осей и сетка экземпляров
+   * примеров с подписями значений осей; у компонента без пресетов фрейма нет (раздел 3.4).
+   */
+  private async presets(page: PageNode, id: Id) {
+    const presets = Object.entries(this.bundle.presets).filter(([, preset]) => preset.root === id)
+      .sort(([, a], [, b]) => a.name.localeCompare(b.name));
+    if (!presets.length) {
+      page.children.find((n) => ref(n, "role") === "presets")?.remove();
+      return;
+    }
+    const sections = presets.map(([key, preset]) => this.section(preset.name, [
+      this.element(`${ELEMENTS}description`, { text: preset.description }),
+      this.element(`${ELEMENTS}table`, { rows: [
+        ...Object.entries(preset.axes).map(([axis, values]) => this.element(`${ELEMENTS}axisRow`, { axis, values: values.join(", ") })),
+        this.element(`${ELEMENTS}axisRow`, { axis: "вариантов", values: String(preset.variants.length) }),
+      ] }),
+      this.element(`${ELEMENTS}grid`, {
+        // Подпись — значения осей в порядке описания (figma-mapping.md, раздел 11.2, правило 7).
+        items: (preset.examples ?? preset.variants.map((variant) => variant.axes)).map((axes) => this.element(`${ELEMENTS}example`, {
+          preview: { preset: { ref: key, axes } }, caption: Object.keys(preset.axes).map((axis) => axes[axis]).join(" · "),
+        })),
+      }),
+    ]));
+    await this.area(page, id, "presets", "Presets", this.element(`${ELEMENTS}page`, {
+      sections: [this.element(`${ELEMENTS}heading`, { text: "Presets" }), ...sections],
+    }));
+    this.place(page);
+  }
+
   /** Generated Documentation пересобирается целиком (раздел 3). */
   private async draw(page: PageNode, id: Id, model: Model) {
     await this.area(page, id, "generated", "Generated Documentation", model);
@@ -388,12 +419,14 @@ export class DocumentationBuilder {
 
   /**
    * Generated Documentation — в начале координат или слева от других узлов страницы (на `Icon` — от компонентов
-   * символов), Release Checklist — слева от неё; прежние фреймы Custom Documentation не учитываются (раздел 3.2).
+   * символов), Release Checklist — слева от неё, Presets — под ней; прежние фреймы Custom Documentation не учитываются
+   * (раздел 3.2).
    */
   private place(page: PageNode) {
-    const own = ["generated", "checklist", "custom"];
+    const own = ["generated", "checklist", "presets", "custom"];
     const generated = page.children.find((n) => ref(n, "role") === "generated");
     const checklist = page.children.find((n) => ref(n, "role") === "checklist");
+    const presets = page.children.find((n) => ref(n, "role") === "presets");
     const others = page.children.filter((n) => !own.includes(ref(n, "role")));
     if (generated) {
       generated.x = others.length ? Math.min(...others.map((n) => n.x)) - generated.width - GAP : 0;
@@ -402,6 +435,10 @@ export class DocumentationBuilder {
     if (checklist) {
       checklist.x = (generated?.x ?? 0) - checklist.width - GAP;
       checklist.y = 0;
+    }
+    if (presets) {
+      presets.x = generated?.x ?? 0;
+      presets.y = generated ? generated.y + generated.height + GAP : 0;
     }
   }
 
@@ -468,7 +505,7 @@ export class DocumentationBuilder {
       page.name = name;
       return page;
     };
-    const library = ["components", "samples", "screens"].map((role) => figma.root.children.find((p) => ref(p, "role") === role)).filter((p): p is PageNode => !!p);
+    const library = ["components", "presets", "samples", "screens"].map((role) => figma.root.children.find((p) => ref(p, "role") === role)).filter((p): p is PageNode => !!p);
     const ordered = [overview, separator("separator:foundation", "——— Foundation ———"), ...foundation,
       ...(core.length ? [separator("separator:core", "——— Core ———"), ...core] : []),
       ...(components.length ? [separator("separator:components", "——— Components ———"), ...components] : []),
