@@ -36,9 +36,14 @@ type Entry = Record<string, Base>;
 type Indicator = { anchor: string; content: Entry; gap?: Token };
 /** Узел вложенного пресета (figma-mapping.md, раздел 11.2, правило 2). */
 type PresetNode = { ref: Id; axes: Record<string, string>; id?: string; layout?: Layout };
+/** Деревья состояний `Pressable` (component-model.md, раздел 14). */
+type States = { default: Entry; pressed?: Entry; disabled?: Entry };
 type Resource = { icon: { name: string; color: string } };
 type Remote = { origin: { url: string }; scale: "fit" | "crop"; alignment: string; placeholder?: Resource; error?: Resource };
 type Span = { text: { value: string; typography?: string; color?: string; decoration?: string } } | { icon: { name: string; typography?: string; color?: string } };
+
+/** Компоненты, которые всегда рисуются телом — фреймом без Figma-компонента (раздел 3.4). */
+const FRAMES = ["Container", "Pressable"];
 
 const DEFAULT_FONT: FontName = { family: "Inter", style: "Regular" };
 
@@ -261,7 +266,7 @@ export class Renderer {
     const at = path ? `${path}/${name}` : name;
     if (name === "preset") return this.preset(model as unknown as PresetNode, parent, reuse, slot, at);
     const contract = this.tokens.component(name);
-    if (!contract || !["Container", "Text", "Image", "Badge"].includes(name)) {
+    if (!contract || !["Container", "Pressable", "Text", "Image", "Badge"].includes(name)) {
       this.warn(at, "компонент не поддерживается и не отрисован");
       return undefined;
     }
@@ -269,7 +274,8 @@ export class Renderer {
     const old = reuse.get(key);
     reuse.delete(key);
     if (model.indicators?.length) return this.indicated(name, model, parent, old, path, at, key);
-    if (this.instances && name !== "Container" && old?.type !== "COMPONENT") {
+    // `Container` и `Pressable` — всегда тело: Figma-компонента у них нет (раздел 3.4).
+    if (this.instances && !FRAMES.includes(name) && old?.type !== "COMPONENT") {
       const node = await this.instance(name, model, contract, parent, old, key, at);
       if (node) return node;
     }
@@ -299,6 +305,7 @@ export class Renderer {
     await this.appearance(frame, plain, at);
 
     if (name === "Container") await this.children(frame, model, kept, at);
+    else if (name === "Pressable") await this.state(frame, model, kept, at);
     else if (name === "Text") await this.text(frame, model, kept, at);
     else if (name === "Image") await this.source(frame, model.source, model.layout, true, kept, at);
     else if (name === "Badge") await this.badge(frame, model, kept, at);
@@ -597,12 +604,15 @@ export class Renderer {
     this.assign(frame, "paddingBottom", SPACING, sides.bottom, at);
   }
 
-  /** Оформление показанного состояния: `default`, для `selectable` — по `selected` (раздел 10.1, правило 2). */
+  /**
+   * Оформление показанного состояния: `default`, для `selectable` — по `selected`, у `Pressable` с `enabled = false` —
+   * `disabled` (раздел 10.1, правило 2).
+   */
   private plain(model: Base): Plain {
     const [kind, value] = variant<Record<string, Record<string, Plain>>>(model.appearance);
     if (kind === "plain") return value as unknown as Plain;
     if (kind === "selectable") return (model.selected ? value.selected : value.unselected).default;
-    return value.default as unknown as Plain;
+    return (model.enabled === false ? value.disabled : value.default) as unknown as Plain;
   }
 
   private async appearance(frame: FrameNode, plain: Plain, at: string) {
@@ -876,6 +886,17 @@ export class Renderer {
         frame.counterAxisAlignContent = "SPACE_BETWEEN";
       }
     }
+  }
+
+  /**
+   * Дерево активного состояния `Pressable`: `disabled` при `enabled = false` (или `default`, если его нет), иначе
+   * `default`; `pressed` в статичной модели не рисуется (раздел 10.3). Место дерева — `state` при любом состоянии: слой
+   * переиспользуется при смене состояния, узлы с одинаковым `id` сохраняют имя слоя.
+   */
+  private async state(frame: FrameNode, model: Base, kept: Kept, at: string) {
+    const states = model.states as States;
+    const name = model.enabled === false && states.disabled ? "disabled" : "default";
+    await this.component(states[name]!, frame, kept, `${at}.states.${name}`, "state");
   }
 
   private async children(frame: FrameNode, model: Base, kept: Kept, at: string) {
