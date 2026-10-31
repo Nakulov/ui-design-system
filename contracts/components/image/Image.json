@@ -3,8 +3,7 @@
   "type": "object",
   "extends": "core/component/Component",
   "appearanceContext": [
-    "plain",
-    "control"
+    "plain"
   ],
   "description": "Изображение: символ из словаря темы или картинка, загружаемая по адресу",
   "releaseVersions": {

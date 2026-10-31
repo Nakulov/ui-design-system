@@ -15,42 +15,14 @@
       "all": "zero"
     },
     "appearance": {
-      "control": {
-        "default": {
-          "background": {
-            "solid": "surface2"
-          },
-          "cornerRadius": "l",
-          "clip": true
+      "plain": {
+        "background": {
+          "solid": "surface2"
         },
-        "pressed": {
-          "background": {
-            "solid": "surface2"
-          },
-          "cornerRadius": "l",
-          "overlay": {
-            "solid": "overlayPressed"
-          },
-          "clip": true
-        },
-        "disabled": {
-          "background": {
-            "solid": "surface2"
-          },
-          "cornerRadius": "l",
-          "clip": true
-        }
+        "cornerRadius": "l",
+        "clip": true
       }
     },
-    "events": [
-      {
-        "click": {
-          "payload": {
-            "action": "openPromo"
-          }
-        }
-      }
-    ],
     "arrangement": {
       "overlay": {
         "horizontal": "start",
