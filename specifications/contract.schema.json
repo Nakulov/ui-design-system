@@ -104,10 +104,14 @@
         "required": { "type": "boolean" },
         "items": { "$ref": "#/$defs/arrayItems" },
         "uniqueVariants": { "type": "boolean" },
+        "defaultsTo": { "$ref": "#/$defs/lowerCamelCaseName" },
         "sample": { "$ref": "#/$defs/sample" },
         "releaseVersions": { "$ref": "#/$defs/releaseVersions" }
       },
       "additionalProperties": false,
+      "dependentSchemas": {
+        "defaultsTo": { "properties": { "required": { "const": false } } }
+      },
       "oneOf": [{ "required": ["type"] }, { "required": ["$ref"] }],
       "if": { "properties": { "type": { "const": "array" } }, "required": ["type"] },
       "then": { "required": ["items"] },

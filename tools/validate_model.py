@@ -30,7 +30,7 @@ def main():
     except (OSError, json.JSONDecodeError) as e:
         sys.exit(f"{args.file}: {e}")
 
-    problems = list(registry.value_errors(value, contract, "модель"))
+    problems = list(registry.model_errors(value, contract, "модель"))
     for problem in problems:
         print(problem)
     print(f"Ошибок: {len(problems)}" if problems else "Ошибок нет")

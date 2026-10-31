@@ -1,0 +1,232 @@
+{
+  "Pressable": {
+    "id": "id",
+    "layout": {
+      "width": {
+        "sizing": "hug",
+        "min": "xs",
+        "max": {
+          "custom": {
+            "value": 240
+          }
+        }
+      },
+      "height": {
+        "sizing": "hug",
+        "min": "xs",
+        "max": {
+          "custom": {
+            "value": 240
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": "m",
+        "vertical": "m"
+      }
+    },
+    "appearance": {
+      "control": {
+        "default": {
+          "background": {
+            "solid": "surface2"
+          },
+          "shadow": "s",
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "overlay": {
+            "solid": "overlayPressed"
+          },
+          "clip": true
+        },
+        "pressed": {
+          "background": {
+            "solid": "surface2"
+          },
+          "shadow": "s",
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "overlay": {
+            "solid": "overlayPressed"
+          },
+          "clip": true
+        },
+        "disabled": {
+          "background": {
+            "solid": "surface2"
+          },
+          "shadow": "s",
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "overlay": {
+            "solid": "overlayPressed"
+          },
+          "clip": true
+        }
+      }
+    },
+    "indicators": [
+      {
+        "anchor": "topEnd",
+        "content": {
+          "Pressable": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "m"
+            },
+            "appearance": {
+              "control": {
+                "default": {},
+                "pressed": {},
+                "disabled": {}
+              }
+            },
+            "states": {
+              "default": {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "hug"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "Оплатить"
+                  },
+                  "typography": "labelLarge",
+                  "color": {
+                    "solid": "onSurface"
+                  },
+                  "alignment": "center"
+                }
+              }
+            }
+          }
+        },
+        "gap": "xs2"
+      }
+    ],
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "payload"
+          }
+        }
+      }
+    ],
+    "enabled": true,
+    "states": {
+      "default": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Оплатить"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "center"
+        }
+      },
+      "pressed": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Оплатить"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onSurfaceVariant"
+          },
+          "alignment": "center"
+        }
+      },
+      "disabled": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Недостаточно средств"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onSurfaceMuted"
+          },
+          "alignment": "center"
+        }
+      }
+    }
+  }
+}

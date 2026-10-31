@@ -1,0 +1,84 @@
+{
+  "Pressable": {
+    "id": "details",
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": "l",
+        "vertical": "s"
+      }
+    },
+    "appearance": {
+      "control": {
+        "default": {
+          "background": {
+            "solid": "secondaryContainer"
+          },
+          "cornerRadius": "full"
+        },
+        "pressed": {
+          "background": {
+            "solid": "secondaryContainer"
+          },
+          "cornerRadius": "full",
+          "overlay": {
+            "solid": "overlayPressed"
+          }
+        },
+        "disabled": {
+          "background": {
+            "solid": "surface2"
+          },
+          "cornerRadius": "full"
+        }
+      }
+    },
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "openDetails"
+          }
+        }
+      }
+    ],
+    "states": {
+      "default": {
+        "Text": {
+          "id": "label",
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Подробнее"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onSecondaryContainer"
+          },
+          "alignment": "center"
+        }
+      }
+    }
+  }
+}

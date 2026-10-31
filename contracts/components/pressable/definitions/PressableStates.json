@@ -1,0 +1,108 @@
+{
+  "name": "PressableStates",
+  "type": "object",
+  "description": "Деревья содержимого Pressable по состояниям. Деревья — один и тот же компонент, корень оформлен plain; узлы с одинаковым id в разных деревьях — один элемент",
+  "properties": [
+    {
+      "name": "default",
+      "$ref": "core/component/Component",
+      "required": true,
+      "description": "Обычное состояние",
+      "sample": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Оплатить"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "center"
+        }
+      }
+    },
+    {
+      "name": "pressed",
+      "$ref": "core/component/Component",
+      "required": false,
+      "defaultsTo": "default",
+      "description": "Состояние во время нажатия. Если не задано — дерево default целиком, с его событиями",
+      "sample": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Оплатить"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onSurfaceVariant"
+          },
+          "alignment": "center"
+        }
+      }
+    },
+    {
+      "name": "disabled",
+      "$ref": "core/component/Component",
+      "required": false,
+      "defaultsTo": "default",
+      "description": "Недоступное состояние (enabled = false). Если не задано — дерево default целиком, с его событиями",
+      "sample": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Недостаточно средств"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onSurfaceMuted"
+          },
+          "alignment": "center"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "Pressable": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "m"
+    },
+    "appearance": {
+      "control": {
+        "default": {},
+        "pressed": {},
+        "disabled": {}
+      }
+    },
+    "states": {
+      "default": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Оплатить"
+          },
+          "typography": "labelLarge",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "center"
+        }
+      }
+    }
+  }
+}

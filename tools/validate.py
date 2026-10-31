@@ -35,6 +35,9 @@ VALUES_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/values.s
 CHANGELOG_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/changelog.schema.json").read_text()))
 PRESET_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/preset.schema.json").read_text()))
 
+# Компоненты, которые в Figma рисуются фреймом: без Figma-компонента и figma.json (figma-mapping.md, разделы 3.4, 8.3).
+FRAMES = {"components/container/Container", "components/pressable/Pressable"}
+
 # Спецификации с версией в spec-versions.json (schema-format.md, раздел 11.3).
 SPECS = {
     "schemaFormat": "specifications/schema-format.md",
@@ -241,9 +244,9 @@ def checklist_spec():
         else:
             items[int(match.group(2))] = {"kind": kind, "text": " ".join(line.strip() for line in match.group(3).split("\n")),
                                           "appliesTo": ["component"]}
-    for entity, numbers in re.findall(r"^- (foundation|core|`Container`): пункты ([\d, ]+)", short, re.M):
+    for entity, numbers in re.findall(r"^- (foundation|core|`Container` и `Pressable`): пункты ([\d, ]+)", short, re.M):
         for number in numbers.replace(" ", "").strip(",").split(","):
-            items[int(number)]["appliesTo"].append(entity.strip("`").lower())
+            items[int(number)]["appliesTo"].append("container" if entity.startswith("`") else entity)
     return items
 
 
@@ -311,7 +314,7 @@ def check_samples(registry):
             if path.read_text() != dumps(value):
                 mismatch(path, path.read_text(), dumps(value),
                          "формат образца не канонический: отступ 2, каждое поле на своей строке")
-            for problem in registry.value_errors(value, kind, "модель"):
+            for problem in registry.model_errors(value, kind, "модель"):
                 error(path, problem)
             for owner, node, at in registry.objects(value, kind, "модель"):
                 names = [p["name"] for p in registry.properties(owner)]
@@ -358,7 +361,7 @@ def check_screens(registry):
         if path.read_text() != dumps(value):
             mismatch(path, path.read_text(), dumps(value),
                      "формат экрана не канонический: отступ 2, каждое поле на своей строке")
-        for problem in registry.value_errors(value, registry.by_id[COMPONENT], "модель"):
+        for problem in registry.model_errors(value, registry.by_id[COMPONENT], "модель"):
             error(path, problem)
 
 
@@ -478,7 +481,6 @@ def check_presets(registry, presets):
                 error(path, f"{at}.model: корень — компонент root «{root.name}»")
             for number in numbers(model, f"{at}.model"):
                 error(path, f"{number}: число — величина вместо имени (раздел 11.1, правило 5)")
-            node_ids = []
             for name, node, node_at in model_nodes(model, set(components), f"{at}.model"):
                 if not isinstance(node, dict):
                     continue
@@ -498,11 +500,8 @@ def check_presets(registry, presets):
                 else:
                     ref = components[name].id
                 if isinstance(node.get("id"), str):
-                    node_ids.append(node["id"])
                     places.setdefault(node["id"], []).append((name, ref, node_at))
-            for duplicate in sorted({n for n in node_ids if node_ids.count(n) > 1}):
-                error(path, f"{at}.model: id «{duplicate}» встречается больше одного раза")
-            for problem in registry.value_errors(stand_in(registry, model, presets_by_id(presets)),
+            for problem in registry.model_errors(stand_in(registry, model, presets_by_id(presets)),
                                                  registry.by_id[COMPONENT], f"{at}.model"):
                 error(path, problem)
         examples = [tuple(sorted(e.items())) for e in data.get("examples", [])]
@@ -517,13 +516,13 @@ def check_presets(registry, presets):
                 if ref.startswith("figma/presets/"):
                     if ref not in presets_by_id(presets):
                         error(path, f"swaps.{place}: «{ref}» — нет такого пресета")
-                elif ref not in ids or ref == "components/container/Container":
+                elif ref not in ids or ref in FRAMES:
                     error(path, f"swaps.{place}: «{ref}» — не компонент с Figma-компонентом")
             if place not in places:
                 error(path, f"swaps.{place}: нет места с таким id ни в одном варианте")
             for name, ref, node_at in places.get(place, []):
-                if name == "Container":
-                    error(path, f"{node_at}: место со swap — экземпляр, а не Container")
+                if ref in FRAMES:
+                    error(path, f"{node_at}: место со swap — экземпляр, а не {name}")
                 elif ref is not None and ref not in allowed:
                     error(path, f"{node_at}: {ref} нет в swaps.{place}")
     for cycle in cycles(graph):
@@ -664,6 +663,15 @@ def check_types(registry, contract):
             target = registry.resolve(contract, prop["items"].get("$ref"))
             if target is None or target.type != "oneOf":
                 error(contract.path, f"«{prop['name']}»: uniqueVariants только у массива элементов oneOf (раздел 5.1)")
+        if "defaultsTo" in prop:
+            other = next((p for p in contract.data["properties"] if p["name"] == prop["defaultsTo"]), None)
+            if other is None or other is prop:
+                error(contract.path, f"«{prop['name']}»: defaultsTo — соседнее свойство этого объекта (раздел 5)")
+            elif not other["required"]:
+                error(contract.path, f"«{prop['name']}»: defaultsTo ссылается на обязательное свойство (раздел 5)")
+            elif ({k: prop.get(k) for k in ("type", "items")} != {k: other.get(k) for k in ("type", "items")}
+                  or registry.resolve(contract, prop.get("$ref")) is not registry.resolve(contract, other.get("$ref"))):
+                error(contract.path, f"«{prop['name']}»: тип не совпадает с типом «{other['name']}» (defaultsTo, раздел 5)")
     for element in contract.data.get("oneOf", []):
         target = registry.resolve(contract, element.get("$ref"))
         if element.get("inline") and target and target.type != "enum":
@@ -896,7 +904,7 @@ def figma_mapping(registry, owner, prop):
 def check_figma_components(registry, figma):
     """figma.json компонентов: образцы и переопределения свойств (figma-mapping.md, разделы 4, 6, 9)."""
     for contract in registry:
-        if contract.kind != "public" or "extends" not in contract.data or contract.name == "Container":
+        if contract.kind != "public" or "extends" not in contract.data or contract.id in FRAMES:
             continue
         if contract.data.get("releaseVersions", {}).get("figma") == "willNotBeReleased":
             continue
@@ -1005,7 +1013,7 @@ def check_elements(registry, elements):
             error(path, f"дырка «{name}» не используется в model")
         if used - samples.keys():
             continue
-        for problem in registry.value_errors(fill(data["model"], samples), kind, "модель"):
+        for problem in registry.model_errors(fill(data["model"], samples), kind, "модель"):
             error(path, f"с подставленными sample: {problem}")
 
 

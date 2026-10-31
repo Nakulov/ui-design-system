@@ -5,6 +5,7 @@ schema-format.md, разделы 4.5, 6, 7, 11.
 
 import json
 import re
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -22,6 +23,7 @@ SERVICE_FILES = {"README.md", "figma.json", "docs.json", "changelog.json", PREVI
 SERVICE_DIRS = {DEFINITIONS, "samples", DEMOS}
 COMPONENT = "core/component/Component"
 APPEARANCE = "core/appearance/Appearance"
+PRESSABLE = "components/pressable/Pressable"
 SKIPPED = {"build", "figma-plugin"}  # верхние каталоги без контрактов
 
 PRIMITIVES = {
@@ -241,6 +243,13 @@ class Registry:
                     yield from self.property_value_errors(owner, prop, value[prop["name"]], f"{at}.{prop['name']}")
                 elif prop["required"]:
                     yield f"{at}: нет обязательного поля «{prop['name']}»"
+            for owner, prop in properties:
+                other = prop.get("defaultsTo")
+                if prop["name"] in value and other in value and self.resolve(owner, prop.get("$ref")) is self.by_id.get(COMPONENT):
+                    mine, theirs = (next(iter(v)) if isinstance(v, dict) and len(v) == 1 else None
+                                    for v in (value[prop["name"]], value[other]))
+                    if mine and theirs and mine != theirs:
+                        yield f"{at}.{prop['name']}: {mine}, а у «{other}» — {theirs}: компонент тот же (defaultsTo)"
             appearance = value.get("appearance")
             context = kind.data.get("appearanceContext")
             if context and isinstance(appearance, dict) and len(appearance) == 1:
@@ -280,6 +289,70 @@ class Registry:
             names = [next(iter(item)) if isinstance(item, dict) else item for item in value]
             for name in {n for n in names if names.count(n) > 1}:
                 yield f"{at}: вариант «{name}» встречается больше одного раза"
+
+    def model_errors(self, value, kind, at):
+        """Ошибки модели: запись значений (раздел 4.5) и правила дерева (component-model.md, разделы 5, 14)."""
+        yield from self.value_errors(value, kind, at)
+        yield from self.tree_errors(value, kind, at)
+
+    def tree_errors(self, value, kind, at):
+        """Правила дерева модели, которых нет в контрактах: `id` уникален в дереве, где каждый `Pressable` учитывается
+        одним состоянием; корень дерева состояния `Pressable` — только `plain` (component-model.md, разделы 5, 14)."""
+        components, problems = self.components(), []
+
+        def ids(name, data, at):
+            """Число повторов каждого id в поддереве компонента: деревья состояний Pressable — по максимуму."""
+            contract = components[name]
+            counts = Counter([data["id"]] if isinstance(data.get("id"), str) else [])
+            rest = data
+            if contract.id == PRESSABLE and isinstance(data.get("states"), dict):
+                rest = {key: item for key, item in data.items() if key != "states"}
+                states = Counter()
+                for key, tree in data["states"].items():
+                    for child, child_data, child_at in self.nested(tree, self.by_id[COMPONENT], f"{at}.states.{key}"):
+                        appearance = child_data.get("appearance")
+                        if isinstance(appearance, dict) and list(appearance) != ["plain"]:
+                            problems.append(f"{child_at}.appearance: корень дерева состояния — только plain")
+                        states |= ids(child, child_data, child_at)
+                counts += states
+            for child, child_data, child_at in self.nested(rest, contract, at):
+                counts += ids(child, child_data, child_at)
+            return counts
+
+        total = Counter()
+        for name, data, node_at in self.nested(value, kind, at):
+            total += ids(name, data, node_at)
+        yield from problems
+        for duplicate in sorted(n for n, count in total.items() if count > 1):
+            yield f"{at}: id «{duplicate}» встречается больше одного раза (component-model.md, раздел 5)"
+
+    def nested(self, value, kind, at):
+        """Компоненты, вложенные в значение типа kind, без захода внутрь них: (имя, данные, путь)."""
+        if isinstance(kind, str) or kind is None or value is None:
+            return
+        if kind.id == COMPONENT:
+            if isinstance(value, dict) and len(value) == 1 and next(iter(value)) in self.components():
+                name, data = next(iter(value.items()))
+                if isinstance(data, dict):
+                    yield name, data, f"{at}.{name}"
+        elif kind.type == "object":
+            if not isinstance(value, dict):
+                return
+            for owner, prop in self.declared_properties(kind):
+                if prop["name"] not in value:
+                    continue
+                child, child_at = value[prop["name"]], f"{at}.{prop['name']}"
+                target = self.resolve(owner, prop.get("$ref") or prop.get("items", {}).get("$ref"))
+                if prop.get("type") == "array" and isinstance(child, list):
+                    for i, item in enumerate(child):
+                        yield from self.nested(item, target, f"{child_at}[{i}]")
+                else:
+                    yield from self.nested(child, target, child_at)
+        elif isinstance(value, dict) and len(value) == 1:
+            name, data = next(iter(value.items()))
+            variant = next((v for v in self.variants(kind) if v.name == name), None)
+            if variant and variant.has_data:
+                yield from self.nested(data, variant.target, f"{at}.{name}")
 
     def objects(self, value, kind, at, inside_component=False):
         """Объекты значения вместе с контрактами для правил min и max: вложенные компоненты и значения, совпадающие

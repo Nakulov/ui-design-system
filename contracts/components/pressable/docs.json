@@ -1,0 +1,63 @@
+{
+  "$ref": "Pressable",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview",
+      "examples": [
+        {
+          "id": "main",
+          "sample": "insufficientFunds",
+          "caption": "Кнопка оплаты: в недоступном состоянии другая подпись и подсказка по нажатию"
+        }
+      ]
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "variants",
+      "type": "variants",
+      "title": "Variants",
+      "examples": [
+        {
+          "id": "defaultOnly",
+          "sample": "defaultOnly",
+          "caption": "Одно дерево: нажатие показывает наложение рамки"
+        },
+        {
+          "id": "pressedLabel",
+          "sample": "pressedLabel",
+          "caption": "Другой цвет подписи при нажатии"
+        },
+        {
+          "id": "insufficientFunds",
+          "sample": "insufficientFunds",
+          "caption": "Другой текст и своё событие в недоступном состоянии"
+        },
+        {
+          "id": "productCard",
+          "sample": "productCard",
+          "caption": "Нажимаемая карточка с вложенной недоступной кнопкой"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    },
+    {
+      "id": "platformSupport",
+      "type": "platformSupport",
+      "title": "Platform Support"
+    },
+    {
+      "id": "history",
+      "type": "history",
+      "title": "History"
+    }
+  ]
+}
