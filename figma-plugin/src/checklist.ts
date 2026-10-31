@@ -3,6 +3,7 @@ import { type Bundle, type ChecklistScope, compare, type Id, type Source } from 
 import { ComponentsBuilder } from "./components";
 import { FoundationBuilder } from "./foundation";
 import { ICON, ref } from "./ids";
+import { variantName } from "./presets";
 import type { Build, ChecklistView, Imports } from "./messages";
 
 /** `Container` всегда рисуется телом: у него сокращённый чеклист (figma-mapping.md, раздел 8.3). */
@@ -110,7 +111,30 @@ export class AutoChecks {
       }
     }
     if (!problems.length && !this.targets.some((t) => t.id === id)) problems.push("нет figma.json или образцов");
+    problems.push(...this.presets(id));
     return problems.length ? problems.join("; ") : null;
+  }
+
+  /** Component Set пресетов с этим корнем на странице Presets: оси и варианты как в описании (figma-documentation.md, раздел 3.5). */
+  private presets(id: Id): string[] {
+    const page = figma.root.children.find((p) => ref(p, "role") === "presets");
+    const problems: string[] = [];
+    for (const [key, preset] of Object.entries(this.bundle.presets).filter(([, p]) => p.root === id)) {
+      const node = page?.children.find((n) => ref(n) === key && n.type === "COMPONENT_SET") as ComponentSetNode | undefined;
+      if (!node) {
+        problems.push(`нет пресета ${preset.name} на странице Presets`);
+        continue;
+      }
+      const axes = Object.entries(node.componentPropertyDefinitions).filter(([, d]) => d.type === "VARIANT").map(([axis]) => axis).sort();
+      if (axes.join(",") !== Object.keys(preset.axes).sort().join(",")) problems.push(`${preset.name}: оси ${axes.join(", ")} вместо ${Object.keys(preset.axes).join(", ")}`);
+      const expected = new Set(preset.variants.map((v) => variantName(preset, v.axes)));
+      const actual = new Set(node.children.map((n) => n.name));
+      const missing = [...expected].filter((name) => !actual.has(name)).length;
+      const extra = [...actual].filter((name) => !expected.has(name)).length;
+      if (missing) problems.push(`${preset.name}: нет вариантов: ${missing}`);
+      if (extra) problems.push(`${preset.name}: лишних вариантов: ${extra}`);
+    }
+    return problems;
   }
 
   /** Коллекция foundation-сущности: режимы и переменные вариантов; у Icon — компоненты символов. */

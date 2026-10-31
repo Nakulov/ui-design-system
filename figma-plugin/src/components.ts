@@ -1,6 +1,7 @@
 // Страница Components: Figma-компоненты библиотеки из тел образцов (figma-mapping.md, разделы 3.2, 3.5, 5, 6, 7).
 import type { Bundle, Id } from "./bundle";
 import { mark, ref } from "./ids";
+import { PresetsBuilder } from "./presets";
 import { Renderer, Tokens } from "./render";
 import { Report } from "./report";
 
@@ -23,6 +24,22 @@ export type Variant = { values: [string, string][]; sample: string; model: Model
 type Rename = [string, string, string];
 /** Figma-компонент: идентификатор (раздел 7.1), имя, контракт, variant и переименования от старых к новым. */
 export type Target = { id: Id; name: string; contract: string; variants: Variant[]; renames: Rename[] };
+
+/** Удаляет variant и перечисляет его экземпляры в текущем файле (раздел 7, правило 6). */
+export async function removeVariant(node: ComponentNode, owner: string, report: Report) {
+  // Экземпляры по страницам: имя экземпляра — имя компонента, а страницы документации названы по сущностям.
+  const pages = new Map<string, number>();
+  for (const instance of await node.getInstancesAsync()) {
+    let page: BaseNode | null = instance;
+    while (page && page.type !== "PAGE") page = page.parent;
+    pages.set(page?.name ?? "?", (pages.get(page?.name ?? "?") ?? 0) + 1);
+  }
+  const where = [...pages].sort((a, b) => b[1] - a[1]).map(([page, count]) => `${page} ×${count}`);
+  const used = where.length ? `; экземпляры в этом файле: ${where.join(", ")}` : "";
+  report.warn(`${owner}: variant ${node.name} удалён${used}. В других файлах экземпляры останутся на удалённом компоненте без обновлений`);
+  node.remove();
+  report.deleted("variant");
+}
 
 export class ComponentsBuilder {
   private readonly report = new Report();
@@ -48,7 +65,7 @@ export class ComponentsBuilder {
         this.report.deleted("компоненты");
       }
     }
-    await figma.setCurrentPageAsync(page);
+    await new PresetsBuilder(this.bundle, this.report).build();
     return this.report;
   }
 
@@ -132,7 +149,7 @@ export class ComponentsBuilder {
         const variants = existing.children as ComponentNode[];
         node = variants.find((n) => ref(n, "sample") === target.variants[0].sample) ?? variants[0];
         page.appendChild(node);
-        for (const other of [...existing.children] as ComponentNode[]) await this.removeVariant(other, target);
+        for (const other of [...existing.children] as ComponentNode[]) await removeVariant(other, target.name, this.report);
         if (!existing.removed) existing.remove();
       }
       node ??= figma.createComponent();
@@ -166,7 +183,7 @@ export class ComponentsBuilder {
       mark(node, variant.sample, "sample");
       nodes.push(node);
     }
-    for (const node of old.values()) await this.removeVariant(node, target);
+    for (const node of old.values()) await removeVariant(node, target.name, this.report);
     const result = set ?? figma.combineAsVariants(nodes, page);
     result.name = target.name;
     mark(result, target.id);
@@ -194,22 +211,6 @@ export class ComponentsBuilder {
         this.report.warn(`${target.name}: variant ${name} переименован в ${renamed}`);
       }
     }
-  }
-
-  /** Удаляет variant и перечисляет его экземпляры в текущем файле (раздел 7, правило 6). */
-  private async removeVariant(node: ComponentNode, target: Target) {
-    // Экземпляры по страницам: имя экземпляра — имя компонента, а страницы документации названы по сущностям.
-    const pages = new Map<string, number>();
-    for (const instance of await node.getInstancesAsync()) {
-      let page: BaseNode | null = instance;
-      while (page && page.type !== "PAGE") page = page.parent;
-      pages.set(page?.name ?? "?", (pages.get(page?.name ?? "?") ?? 0) + 1);
-    }
-    const where = [...pages].sort((a, b) => b[1] - a[1]).map(([page, count]) => `${page} ×${count}`);
-    const used = where.length ? `; экземпляры в этом файле: ${where.join(", ")}` : "";
-    this.report.warn(`${target.name}: variant ${node.name} удалён${used}. В других файлах экземпляры останутся на удалённом компоненте без обновлений`);
-    node.remove();
-    this.report.deleted("variant");
   }
 
   /** Тело образца в Figma-компонент; слои обновляются на месте (раздел 7, правило 8). */
