@@ -172,7 +172,7 @@ export class PresetsBuilder {
         const model = variant.model as Model;
         const slot = Object.values(model)[0].id ?? "root";
         const label = `${preset.name} (${Object.values(variant.axes).join(", ")})`;
-        const drawn = await new Renderer(tokens, this.report, label, false, true).draw(model, holder, new Map([[slot, node]]), slot);
+        const drawn = await new Renderer(tokens, this.report, label, false, true).draw(model, holder, new Map([[slot, node]]), slot, variant.axes.state);
         if ((drawn as SceneNode | undefined) !== node) this.report.warn(`${label}: вариант не отрисован в Figma-компонент`);
         // В набор вариант возвращается уже с именем по осям: вариант с другим именем ломает набор.
         node.name = name;
