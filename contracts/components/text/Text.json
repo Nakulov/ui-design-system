@@ -3,8 +3,7 @@
   "type": "object",
   "extends": "core/component/Component",
   "appearanceContext": [
-    "plain",
-    "control"
+    "plain"
   ],
   "description": "Текст: простой или из фрагментов с разным стилем и ссылками",
   "releaseVersions": {

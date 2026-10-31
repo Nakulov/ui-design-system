@@ -2,6 +2,12 @@
   "$ref": "Image",
   "entries": [
     {
+      "date": "2026-10-31",
+      "issue": 194,
+      "kind": "changed",
+      "description": "Контекст оформления `control` удалён: вид нажатия задаёт `Pressable` над компонентом"
+    },
+    {
       "date": "2026-10-23",
       "kind": "added",
       "description": "Компонент добавлен"

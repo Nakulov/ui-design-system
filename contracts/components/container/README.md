@@ -6,7 +6,7 @@
 контейнеров, как макет в Figma — из вложенных фреймов с Auto Layout.
 
 Контейнер наследует базовую модель `Component`: размеры и положение в родителе (`layout`), внутренние отступы
-(`padding`), оформление (`appearance`, контексты `plain` и `control`) и события (`events`). Собственные поля
+(`padding`), оформление (`appearance`, контекст `plain`) и события (`events`). Собственные поля
 контейнера — способ расположения детей (`arrangement`) и сами дети (`children`).
 
 ## Состав
@@ -86,7 +86,8 @@ lineDistribution: oneOf               — строки (колонки) при �
 
 **Картинка на фоне.** Баннер или карточка с обложкой — контейнер с раскладкой `overlay`: первый ребёнок — `Image` с
 `fill` по обеим осям и `crop`, поверх — содержимое. Скругление и `clip` задаёт контейнер. Картинка закрывает фон
-контейнера, поэтому нажатие показывает наложение `overlay` в `appearance.control.pressed`.
+контейнера. Кликабельный баннер — `Pressable` над контейнером: нажатие показывает наложение `overlayPressed` в
+`appearance.control.pressed` рамки (README [`Pressable`](../pressable/README.md)).
 
 Сгенерированные образцы: [минимальная модель](samples/min.json) — только обязательные свойства,
 [полная модель](samples/max.json) — все свойства.
@@ -112,42 +113,14 @@ lineDistribution: oneOf               — строки (колонки) при �
       "all": "zero"
     },
     "appearance": {
-      "control": {
-        "default": {
-          "background": {
-            "solid": "surface2"
-          },
-          "cornerRadius": "l",
-          "clip": true
+      "plain": {
+        "background": {
+          "solid": "surface2"
         },
-        "pressed": {
-          "background": {
-            "solid": "surface2"
-          },
-          "cornerRadius": "l",
-          "overlay": {
-            "solid": "overlayPressed"
-          },
-          "clip": true
-        },
-        "disabled": {
-          "background": {
-            "solid": "surface2"
-          },
-          "cornerRadius": "l",
-          "clip": true
-        }
+        "cornerRadius": "l",
+        "clip": true
       }
     },
-    "events": [
-      {
-        "click": {
-          "payload": {
-            "action": "openPromo"
-          }
-        }
-      }
-    ],
     "arrangement": {
       "overlay": {
         "horizontal": "start",
