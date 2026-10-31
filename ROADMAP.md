@@ -131,11 +131,11 @@
   - чтение макета в модель (Figma → модель): проверка ручной сборки, экземпляр пресета → дерево примитивов (#132);
   - плагин Dev Mode: модель выделенного узла (#162);
   - шаблон «новый компонент»: определение готовности от контракта до проверки импортом в плагине (#102);
-  - примитивы: Button (#172), TextField (#173), переключатели Checkbox, Radio, Switch (#150), List (#174),
+  - примитивы: Pressable (#172), TextField (#173), переключатели Checkbox, Radio, Switch (#150), List (#174),
     ProgressBar (#175), LoadingIndicator (#176);
-  - пресеты: IconButton (#177), Toolbar (#178), TabBar (#179), Chips (#180), EmptyState (#181), ErrorState (#182),
-    DialogContent (#183), SheetContent (#184), SearchField (#185), ListRow (#186), Divider (#187), Spacer (#188),
-    Avatar (#189);
+  - пресеты: Button (#193), IconButton (#177), Toolbar (#178), TabBar (#179), Chips (#180), EmptyState (#181),
+    ErrorState (#182), DialogContent (#183), SheetContent (#184), SearchField (#185), ListRow (#186), Divider (#187),
+    Spacer (#188), Avatar (#189);
   - эталонные экраны: обезличенные экраны из набора, недостающее — новые задачи (#190).
 - **Критерий завершения:** эталонные экраны собраны в Figma из библиотеки без ручных правок и отрисованы из
   JSON-моделей.
