@@ -1,0 +1,4292 @@
+{
+  "name": "IconButton",
+  "root": "components/pressable/Pressable",
+  "description": "Кнопка из одного символа без подписи; четыре уровня, три размера",
+  "axes": {
+    "level": [
+      "primary",
+      "secondary",
+      "outline",
+      "text"
+    ],
+    "size": [
+      "s",
+      "m",
+      "l"
+    ],
+    "state": [
+      "default",
+      "pressed",
+      "disabled"
+    ]
+  },
+  "layout": {
+    "rows": "level",
+    "columns": "state",
+    "blocks": "size"
+  },
+  "examples": [
+    {
+      "level": "primary",
+      "size": "m",
+      "state": "default"
+    },
+    {
+      "level": "secondary",
+      "size": "m",
+      "state": "default"
+    },
+    {
+      "level": "outline",
+      "size": "m",
+      "state": "default"
+    },
+    {
+      "level": "text",
+      "size": "m",
+      "state": "default"
+    },
+    {
+      "level": "primary",
+      "size": "s",
+      "state": "default"
+    },
+    {
+      "level": "primary",
+      "size": "l",
+      "state": "default"
+    }
+  ],
+  "variants": [
+    {
+      "axes": {
+        "level": "primary",
+        "size": "s",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "primary",
+        "size": "s",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "primary",
+        "size": "s",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "primary",
+        "size": "m",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "primary",
+        "size": "m",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "primary",
+        "size": "m",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "primary",
+        "size": "l",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "primary",
+        "size": "l",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "primary",
+        "size": "l",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "primary"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onPrimary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "s",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "s",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "s",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "m",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "m",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "m",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "l",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "l",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "secondary",
+        "size": "l",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "background": {
+                  "solid": "secondaryContainer"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "background": {
+                  "solid": "surface2"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSecondaryContainer"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "s",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "s",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "s",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "m",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "m",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "m",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "l",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "l",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "outline",
+        "size": "l",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "stroke": {
+                  "width": "s",
+                  "color": "outline"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "s",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "s",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "s",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "m"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "xs"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "m",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "m",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "m",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "l"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "l",
+        "state": "default"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "l",
+        "state": "pressed"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "axes": {
+        "level": "text",
+        "size": "l",
+        "state": "disabled"
+      },
+      "model": {
+        "Pressable": {
+          "id": "iconButton",
+          "layout": {
+            "width": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "height": {
+              "sizing": {
+                "fixed": "xl"
+              }
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "control": {
+              "default": {
+                "cornerRadius": "full"
+              },
+              "pressed": {
+                "cornerRadius": "full",
+                "overlay": {
+                  "solid": "overlayPressed"
+                }
+              },
+              "disabled": {
+                "cornerRadius": "full"
+              }
+            }
+          },
+          "states": {
+            "default": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "primary"
+                    }
+                  }
+                }
+              }
+            },
+            "disabled": {
+              "Image": {
+                "id": "icon",
+                "layout": {
+                  "width": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "height": {
+                    "sizing": {
+                      "fixed": "s"
+                    }
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "all": "zero"
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "source": {
+                  "resource": {
+                    "icon": {
+                      "name": "close",
+                      "color": "onSurfaceMuted"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

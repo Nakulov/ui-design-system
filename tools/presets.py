@@ -214,7 +214,62 @@ def button():
     }
 
 
-GENERATORS = {"Button": button, "ImageIndicator": image_indicator}
+# IconButton: размер → символ (Size); сторона рамки — высота Button того же размера.
+ICON_BUTTON_SYMBOLS = {"s": "xs", "m": "s", "l": "s"}
+# Примеры для фрейма Presets документации: level, size; все в состоянии default.
+ICON_BUTTON_EXAMPLES = [
+    ("primary", "m"),
+    ("secondary", "m"),
+    ("outline", "m"),
+    ("text", "m"),
+    ("primary", "s"),
+    ("primary", "l"),
+]
+
+
+def symbol(size, color):
+    """Символ кнопки: свой фиксированный размер по центру рамки (раздел 10.6, правило 2)."""
+    return {"Image": {
+        "id": "icon",
+        "layout": fixed(size),
+        "padding": {"all": "zero"},
+        "appearance": {"plain": {}},
+        "source": {"resource": {"icon": {"name": "close", "color": color}}},
+    }}
+
+
+def icon_button():
+    variants = []
+    for level, (default, overlay, disabled, color) in LEVELS.items():
+        for size, symbol_size in ICON_BUTTON_SYMBOLS.items():
+            model = {"Pressable": {
+                "id": "iconButton",
+                "layout": fixed(BUTTON_SIZES[size][0]),
+                "padding": {"all": "zero"},
+                "appearance": {"control": {
+                    "default": {**default, "cornerRadius": "full"},
+                    "pressed": {**default, "cornerRadius": "full", "overlay": {"solid": overlay}},
+                    "disabled": {**disabled, "cornerRadius": "full"},
+                }},
+                "states": {
+                    "default": symbol(symbol_size, color),
+                    "disabled": symbol(symbol_size, "onSurfaceMuted"),
+                },
+            }}
+            for state in BUTTON_STATES:
+                variants.append({"axes": {"level": level, "size": size, "state": state}, "model": model})
+    return {
+        "name": "IconButton",
+        "root": "components/pressable/Pressable",
+        "description": "Кнопка из одного символа без подписи; четыре уровня, три размера",
+        "axes": {"level": list(LEVELS), "size": list(ICON_BUTTON_SYMBOLS), "state": BUTTON_STATES},
+        "layout": {"rows": "level", "columns": "state", "blocks": "size"},
+        "examples": [dict(zip(["level", "size", "state"], e + ("default",))) for e in ICON_BUTTON_EXAMPLES],
+        "variants": variants,
+    }
+
+
+GENERATORS = {"Button": button, "IconButton": icon_button, "ImageIndicator": image_indicator}
 
 
 def generate():
