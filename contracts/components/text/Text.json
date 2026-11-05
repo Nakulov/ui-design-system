@@ -53,8 +53,9 @@
     {
       "name": "truncation",
       "$ref": "TextTruncation",
-      "required": false,
-      "description": "Место многоточия: в начале и середине — только при maxLines = 1, при большем значении многоточие в конце. Если не задано, многоточие в конце",
+      "required": true,
+      "default": "end",
+      "description": "Место многоточия: в начале и середине — только при maxLines = 1, при большем значении многоточие в конце",
       "releaseVersions": {
         "figma": "willNotBeReleased"
       }

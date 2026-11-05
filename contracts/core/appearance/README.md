@@ -48,8 +48,8 @@
 | `overlay`      | `solid(ColorRole)`                       | верхний слой  | `drawWithContent`    | `.overlay`      |
 | `clip`         | `boolean`                                | Clip content  | `clip`               | `.clipped()`    |
 
-Все поля `plain` необязательны: отсутствие означает прозрачный фон, отсутствие тени, обводки и наложения, прямые углы
-и содержимое без обрезки. Обводка только внутренняя: она не меняет размер компонента.
+Поля `plain`, кроме `clip`, необязательны: отсутствие означает прозрачный фон, отсутствие тени, обводки и наложения,
+прямые углы. `clip` по умолчанию `false` — содержимое не обрезается. Обводка только внутренняя: она не меняет размер компонента.
 
 Слои корня снизу вверх: тень, фон (`background`), содержимое, наложение (`overlay`), обводка (`stroke`).
 
@@ -72,7 +72,7 @@ sealed interface Appearance {
         val cornerRadius: CornerRadius? = null,
         val stroke: Stroke? = null,
         val overlay: Fill? = null,
-        val clip: Boolean? = null,
+        val clip: Boolean = false,
     ) : Appearance
 
     data class Control(val default: Plain, val pressed: Plain, val disabled: Plain) : Appearance

@@ -18,8 +18,9 @@
     {
       "name": "relativeTo",
       "$ref": "LayoutPinReference",
-      "required": false,
-      "description": "От чего отсчитываются смещения; при отсутствии — edge"
+      "required": true,
+      "default": "edge",
+      "description": "От чего отсчитываются смещения"
     }
   ]
 }

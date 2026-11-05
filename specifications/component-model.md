@@ -1,7 +1,7 @@
 # Модель компонентов
 
 **Статус:** Черновик, в обсуждении  
-**Версия спецификации:** 0.4
+**Версия спецификации:** 0.5
 
 Документ фиксирует согласованные решения по универсальному контракту компонентов. Он будет дополняться по мере
 обсуждения и затем войдёт в спецификацию формата (`schema-format.md`).
@@ -50,7 +50,7 @@ layout:
     pinned:                                — только в контейнере наложения
       horizontal: start(offset) | end(offset) | center(offset) | stretch(start, end)
       vertical:   top(offset) | bottom(offset) | center(offset) | stretch(top, bottom)
-      relativeTo: edge (по умолчанию) | content
+      relativeTo: edge | content = edge
 ```
 
 ### 4.1. Размеры
@@ -150,7 +150,7 @@ payload: Payload                   — тип задаёт приложение
 
 ```
 appearance:
-  plain:      { background?, shadow?, cornerRadius?, stroke?, overlay?, clip? }
+  plain:      { background?, shadow?, cornerRadius?, stroke?, overlay?, clip = false }
   control:    { default: plain, pressed: plain, disabled: plain }          — Pressable (раздел 14)
   selectable: { unselected: control, selected: control }                   — чип, чекбокс, таб
   focusable:  { default: plain, focused: plain, disabled: plain }          — поле ввода
@@ -167,8 +167,8 @@ stroke:     { width: BorderWidth, color: ColorRole }                       — �
 | `overlay`      | `solid(ColorRole)`          | верхний слой  | `drawWithContent`    | `.overlay`      |
 | `clip`         | `boolean`                   | Clip content  | `clip`               | `.clipped()`    |
 
-1. Поля `plain` необязательны: отсутствие означает прозрачный фон, отсутствие тени, обводки и наложения, прямые углы и
-   содержимое без обрезки.
+1. Поля `plain`, кроме `clip`, необязательны: отсутствие означает прозрачный фон, отсутствие тени, обводки и наложения,
+   прямые углы. `clip` по умолчанию `false` — содержимое не обрезается.
 2. Сочетания состояний выражаются вложением контекстов: нажатый выбранный чип оформлен `selected.pressed`.
 3. `Appearance` описывает только вид состояний. Состояние определяют поля компонента (доступность, выбор) и
    взаимодействие пользователя (нажатие, фокус).
@@ -255,7 +255,7 @@ color:      oneOf solid(ColorRole)
 decoration?: underline | strikethrough
 alignment:  start | center | end
 maxLines?:  integer
-truncation?: start | middle | end          — место многоточия; если не задано, в конце
+truncation: start | middle | end = end      — место многоточия
 TextSpan: oneOf
   text: { value, typography?, color?, decoration?, click? }   — незаданное берётся у Text; color — ColorRole
   icon: { name: Icon, typography?, color? }                   — символ; незаданное берётся у Text
@@ -372,7 +372,7 @@ Pressable : Component
   id?, layout?, padding?, indicators?          — из Component, общие для всех состояний
   events?                                      — из Component; действие Pressable, только при enabled
   appearance?: Appearance.Control              — оформление рамки по состоянию
-  enabled?:    boolean                         — отсутствие = доступен
+  enabled:     boolean = true                  — доступность
   states:      PressableStates<Component>      — содержимое по состояниям
 
 PressableStates<T : Component>                 — components/pressable/definitions/PressableStates
@@ -386,9 +386,8 @@ PressableStates<T : Component>                 — components/pressable/definiti
 **Состояния и вид**
 
 1. Активное состояние: `enabled = false` → `disabled`; иначе `pressed`, пока палец прижат, и `default`. `enabled`
-   необязательно, отсутствие означает «доступен»: значений по умолчанию в формате нет (`schema-format.md`, раздел 13,
-   пункт 3), правило записано в описании свойства.
-2. `pressed` и `disabled` не nullable: если их не передали, значение — дерево `default` целиком, с его событиями
+   по умолчанию `true` — «доступен» (поле свойства `default`, `schema-format.md`, раздел 5).
+2. `pressed` и `disabled` не nullable: по умолчанию — дерево `default` целиком, с его событиями
    (`val pressed: T = default` в Kotlin, `pressed ?? default` в `init` Swift; в JSON поле можно не передавать).
 3. Деревья — один и тот же компонент, значение по умолчанию — `default`: поле свойства `defaultsTo`
    (`schema-format.md`, раздел 5). Генераторы выпускают `PressableStates` обобщённым по `T`, поле `states` — с

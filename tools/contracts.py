@@ -123,6 +123,11 @@ def pascal(name):
     return name[:1].upper() + name[1:]
 
 
+def has_default(prop):
+    """Обязательное свойство со значением по умолчанию: в данных его можно не передавать (schema-format.md, раздел 5)."""
+    return "default" in prop or "defaultsTo" in prop
+
+
 @dataclass(eq=False)
 class Contract:
     path: Path
@@ -241,7 +246,7 @@ class Registry:
             for owner, prop in properties:
                 if prop["name"] in value:
                     yield from self.property_value_errors(owner, prop, value[prop["name"]], f"{at}.{prop['name']}")
-                elif prop["required"]:
+                elif prop["required"] and not has_default(prop):
                     yield f"{at}: нет обязательного поля «{prop['name']}»"
             for owner, prop in properties:
                 other = prop.get("defaultsTo")

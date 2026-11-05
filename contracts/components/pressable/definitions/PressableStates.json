@@ -39,9 +39,9 @@
     {
       "name": "pressed",
       "$ref": "core/component/Component",
-      "required": false,
+      "required": true,
       "defaultsTo": "default",
-      "description": "Состояние во время нажатия. Если не задано — дерево default целиком, с его событиями",
+      "description": "Состояние во время нажатия. По умолчанию — дерево default целиком, с его событиями",
       "sample": {
         "Text": {
           "layout": {
@@ -73,9 +73,9 @@
     {
       "name": "disabled",
       "$ref": "core/component/Component",
-      "required": false,
+      "required": true,
       "defaultsTo": "default",
-      "description": "Недоступное состояние (enabled = false). Если не задано — дерево default целиком, с его событиями",
+      "description": "Недоступное состояние (enabled = false). По умолчанию — дерево default целиком, с его событиями",
       "sample": {
         "Text": {
           "layout": {

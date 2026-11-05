@@ -23,8 +23,8 @@ except ImportError:
     sys.exit("Нет пакета jsonschema: python3 -m pip install -r tools/requirements.txt")
 
 from contracts import (APPEARANCE, CHECKLIST, COMPONENT, CONTRACTS, DEFINITIONS, DEMOS, HOLE_KINDS, PRESETS, PRESSABLE,
-                       PREVIEW, ROOT, SCREENS, SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, id_path,
-                       is_contract, is_element, is_preset, is_sample, is_screen, is_skipped, pascal, ref_id)
+                       PREVIEW, ROOT, SCREENS, SERVICE_DIRS, SERVICE_FILES, THEMES, Contract, Registry, fill, has_default,
+                       id_path, is_contract, is_element, is_preset, is_sample, is_screen, is_skipped, pascal, ref_id)
 import idea
 import presets as preset_generator
 from samples import dumps, generate, render, required_samples
@@ -321,9 +321,10 @@ def check_samples(registry):
                 names = [p["name"] for p in registry.properties(owner)]
                 if name == "min":
                     optional = [p["name"] for p in registry.properties(owner)
-                                if not p["required"] and p["name"] in node]
+                                if (not p["required"] or has_default(p)) and p["name"] in node]
                     if optional:
-                        error(path, f"{at}: в min только обязательные свойства, лишние: {', '.join(optional)}")
+                        error(path, f"{at}: в min только обязательные свойства без default и defaultsTo, "
+                                    f"лишние: {', '.join(optional)}")
                 elif name == "max" and set(names) - set(node):
                     missing = [n for n in names if n not in node]
                     error(path, f"{at}: в max все свойства, нет: {', '.join(missing)}")
@@ -683,10 +684,19 @@ def check_types(registry, contract):
             if other is None or other is prop:
                 error(contract.path, f"«{prop['name']}»: defaultsTo — соседнее свойство этого объекта (раздел 5)")
             elif not other["required"]:
-                error(contract.path, f"«{prop['name']}»: defaultsTo ссылается на обязательное свойство (раздел 5)")
+                error(contract.path, f"«{prop['name']}»: defaultsTo ссылается только на обязательное свойство (раздел 5)")
+            elif "defaultsTo" in other:
+                error(contract.path, f"«{prop['name']}»: defaultsTo ссылается на «{other['name']}» с defaultsTo — цепочек нет (раздел 5)")
             elif ({k: prop.get(k) for k in ("type", "items")} != {k: other.get(k) for k in ("type", "items")}
                   or registry.resolve(contract, prop.get("$ref")) is not registry.resolve(contract, other.get("$ref"))):
                 error(contract.path, f"«{prop['name']}»: тип не совпадает с типом «{other['name']}» (defaultsTo, раздел 5)")
+        if "default" in prop:
+            target = registry.resolve(contract, prop.get("$ref"))
+            if prop.get("type") in ("array", "payload") or (target is not None and target.id == COMPONENT):
+                error(contract.path, f"«{prop['name']}»: default не указывается у array, ссылки на Component и payload (раздел 5)")
+            else:
+                for problem in registry.property_value_errors(contract, prop, prop["default"], f"«{prop['name']}».default"):
+                    error(contract.path, problem)
     for element in contract.data.get("oneOf", []):
         target = registry.resolve(contract, element.get("$ref"))
         if element.get("inline") and target and target.type != "enum":
@@ -976,7 +986,8 @@ def check_figma_components(registry, figma):
                 model = sample(sample_name, f"variants.{name}.{value}")
                 if model is None:
                     continue
-                actual = list(model[name])[0] if isinstance(model.get(name), dict) else model.get(name, "none")
+                actual = model.get(name, prop.get("default", "none"))
+                actual = list(actual)[0] if isinstance(actual, dict) else actual
                 if actual != value:
                     error(path, f"variants.{name}.{value}: у образца {sample_name} значение «{actual}»")
         properties = project.get("properties", {})

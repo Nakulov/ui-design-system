@@ -28,7 +28,7 @@
 Pressable : Component                  — контекст оформления control
   events?                              — действие: только при enabled
   appearance?: Appearance.Control      — оформление рамки по состоянию
-  enabled?:    boolean                 — отсутствие = доступен
+  enabled:     boolean = true          — доступность
   states:      PressableStates<Component>
 
 PressableStates<T : Component>
