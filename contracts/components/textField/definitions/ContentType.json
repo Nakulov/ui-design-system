@@ -1,0 +1,119 @@
+{
+  "name": "ContentType",
+  "type": "enum",
+  "description": "Смысл вводимых данных: подсказки автозаполнения и менеджера паролей",
+  "values": [
+    {
+      "name": "none",
+      "description": "Без подсказки автозаполнения"
+    },
+    {
+      "name": "username",
+      "description": "Имя пользователя для входа"
+    },
+    {
+      "name": "password",
+      "description": "Пароль"
+    },
+    {
+      "name": "newPassword",
+      "description": "Новый пароль"
+    },
+    {
+      "name": "oneTimeCode",
+      "description": "Одноразовый код из SMS"
+    },
+    {
+      "name": "email",
+      "description": "Адрес почты"
+    },
+    {
+      "name": "phone",
+      "description": "Номер телефона"
+    },
+    {
+      "name": "fullName",
+      "description": "Полное имя"
+    },
+    {
+      "name": "givenName",
+      "description": "Имя"
+    },
+    {
+      "name": "middleName",
+      "description": "Отчество"
+    },
+    {
+      "name": "familyName",
+      "description": "Фамилия"
+    },
+    {
+      "name": "namePrefix",
+      "description": "Обращение перед именем"
+    },
+    {
+      "name": "nameSuffix",
+      "description": "Приставка после имени"
+    },
+    {
+      "name": "street",
+      "description": "Улица и дом"
+    },
+    {
+      "name": "streetDetails",
+      "description": "Квартира, офис"
+    },
+    {
+      "name": "city",
+      "description": "Город"
+    },
+    {
+      "name": "region",
+      "description": "Регион"
+    },
+    {
+      "name": "country",
+      "description": "Страна"
+    },
+    {
+      "name": "postalCode",
+      "description": "Почтовый индекс"
+    },
+    {
+      "name": "cardNumber",
+      "description": "Номер карты"
+    },
+    {
+      "name": "cardSecurityCode",
+      "description": "Код безопасности карты"
+    },
+    {
+      "name": "cardExpiration",
+      "description": "Срок действия карты"
+    },
+    {
+      "name": "cardExpirationMonth",
+      "description": "Месяц срока действия карты"
+    },
+    {
+      "name": "cardExpirationYear",
+      "description": "Год срока действия карты"
+    },
+    {
+      "name": "birthDate",
+      "description": "Дата рождения"
+    },
+    {
+      "name": "birthDay",
+      "description": "День рождения"
+    },
+    {
+      "name": "birthMonth",
+      "description": "Месяц рождения"
+    },
+    {
+      "name": "birthYear",
+      "description": "Год рождения"
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "TextField": {
+    "id": "message",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": "m",
+        "vertical": "s"
+      }
+    },
+    "appearance": {
+      "focusable": {
+        "default": {
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        },
+        "focused": {
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "m",
+            "color": "primary"
+          }
+        },
+        "disabled": {
+          "background": {
+            "solid": "surface2"
+          },
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        }
+      }
+    },
+    "events": [
+      {
+        "change": {
+          "payload": {
+            "action": "draftChanged"
+          }
+        }
+      }
+    ],
+    "typography": "bodyLarge",
+    "color": {
+      "default": {
+        "solid": "onSurface"
+      },
+      "disabled": {
+        "solid": "onSurfaceMuted"
+      }
+    },
+    "alignment": "start",
+    "cursorColor": "primary",
+    "placeholder": {
+      "content": {
+        "plain": "Сообщение"
+      },
+      "typography": "bodyLarge",
+      "color": {
+        "default": {
+          "solid": "onSurfaceVariant"
+        },
+        "disabled": {
+          "solid": "onSurfaceMuted"
+        }
+      }
+    },
+    "lines": {
+      "multi": {
+        "min": 1,
+        "max": {
+          "count": 5
+        }
+      }
+    },
+    "trailing": {
+      "content": {
+        "default": {
+          "Pressable": {
+            "id": "send",
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "xs"
+            },
+            "appearance": {
+              "control": {
+                "default": {
+                  "background": {
+                    "solid": "primary"
+                  },
+                  "cornerRadius": "full"
+                },
+                "pressed": {
+                  "background": {
+                    "solid": "primary"
+                  },
+                  "cornerRadius": "full",
+                  "overlay": {
+                    "solid": "overlayPressed"
+                  }
+                },
+                "disabled": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "cornerRadius": "full"
+                }
+              }
+            },
+            "events": [
+              {
+                "click": {
+                  "payload": {
+                    "action": "sendMessage"
+                  }
+                }
+              }
+            ],
+            "states": {
+              "default": {
+                "Image": {
+                  "layout": {
+                    "width": {
+                      "sizing": "hug"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "source": {
+                    "resource": {
+                      "icon": {
+                        "name": "send",
+                        "color": "onPrimary"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "disabled": {
+          "Image": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "source": {
+              "resource": {
+                "icon": {
+                  "name": "send",
+                  "color": "onSurfaceMuted"
+                }
+              }
+            }
+          }
+        }
+      },
+      "gap": "s",
+      "verticalAlignment": "bottom"
+    }
+  }
+}

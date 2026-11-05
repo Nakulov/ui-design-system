@@ -1,0 +1,29 @@
+{
+  "name": "Placeholder",
+  "type": "object",
+  "description": "Подсказка поля: текст, который виден, пока поле пустое",
+  "properties": [
+    {
+      "name": "content",
+      "$ref": "components/text/TextContent",
+      "required": true,
+      "sample": {
+        "plain": "E-mail"
+      },
+      "description": "Текст подсказки; фрагменты без событий click"
+    },
+    {
+      "name": "typography",
+      "$ref": "foundation/typographyRole/TypographyRole",
+      "required": true,
+      "sample": "bodyLarge",
+      "description": "Роль типографики подсказки"
+    },
+    {
+      "name": "color",
+      "$ref": "PlaceholderColor",
+      "required": true,
+      "description": "Цвет подсказки по состояниям поля"
+    }
+  ]
+}

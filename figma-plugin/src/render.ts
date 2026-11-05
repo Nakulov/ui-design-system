@@ -44,6 +44,8 @@ type Span = { text: { value: string; typography?: string; color?: string; decora
 
 /** Компоненты, которые всегда рисуются телом — фреймом без Figma-компонента (раздел 3.4). */
 const FRAMES = ["Container", "Pressable"];
+/** Компоненты, которые плагин умеет рисовать; остальные пропускаются с предупреждением — и в модели, и на странице Components. */
+export const RENDERED = [...FRAMES, "Text", "Image", "Badge"];
 
 const DEFAULT_FONT: FontName = { family: "Inter", style: "Regular" };
 
@@ -270,7 +272,7 @@ export class Renderer {
     const at = path ? `${path}/${name}` : name;
     if (name === "preset") return this.preset(model as unknown as PresetNode, parent, reuse, slot, at);
     const contract = this.tokens.component(name);
-    if (!contract || !["Container", "Pressable", "Text", "Image", "Badge"].includes(name)) {
+    if (!contract || !RENDERED.includes(name)) {
       this.warn(at, "компонент не поддерживается и не отрисован");
       return undefined;
     }

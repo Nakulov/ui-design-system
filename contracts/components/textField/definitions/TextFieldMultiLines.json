@@ -1,0 +1,24 @@
+{
+  "name": "TextFieldMultiLines",
+  "type": "object",
+  "description": "Многострочное поле: перенос строк и рост по высоте",
+  "properties": [
+    {
+      "name": "min",
+      "type": "integer",
+      "required": true,
+      "sample": 1,
+      "description": "Наименьшее число видимых строк, не меньше 1"
+    },
+    {
+      "name": "max",
+      "$ref": "components/text/MaxLines",
+      "required": true,
+      "default": "unlimited",
+      "sample": {
+        "count": 5
+      },
+      "description": "Наибольшее число видимых строк, не меньше min; дальше — вертикальная прокрутка"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "ReturnKey",
+  "type": "enum",
+  "description": "Подпись и действие клавиши Return",
+  "values": [
+    {
+      "name": "default",
+      "description": "Платформенная: в многострочном поле — перенос строки"
+    },
+    {
+      "name": "done",
+      "description": "Готово"
+    },
+    {
+      "name": "go",
+      "description": "Перейти"
+    },
+    {
+      "name": "next",
+      "description": "Далее: фокус к следующему доступному полю"
+    },
+    {
+      "name": "search",
+      "description": "Найти"
+    },
+    {
+      "name": "send",
+      "description": "Отправить"
+    }
+  ]
+}

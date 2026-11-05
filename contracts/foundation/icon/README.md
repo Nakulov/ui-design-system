@@ -42,6 +42,9 @@
 | `check`       | отмечено, выполнено                    | нет                     |
 | `chevronDown` | раскрыть список                        | нет                     |
 | `arrowBack`   | вернуться на предыдущий экран          | да                      |
+| `eye`         | показать скрытый ввод, например пароль | нет                     |
+| `search`      | поиск                                  | нет                     |
+| `send`        | отправить сообщение                    | да                      |
 
 Ожидаемая модель на Kotlin:
 
@@ -53,6 +56,9 @@ sealed interface Icon {
     data object Check : Icon
     data object ChevronDown : Icon
     data object ArrowBack : Icon
+    data object Eye : Icon
+    data object Search : Icon
+    data object Send : Icon
 }
 ```
 

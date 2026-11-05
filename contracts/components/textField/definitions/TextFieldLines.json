@@ -1,0 +1,15 @@
+{
+  "name": "TextFieldLines",
+  "type": "oneOf",
+  "description": "Строки поля: одна или несколько",
+  "oneOf": [
+    {
+      "$ref": "TextFieldLinesMode",
+      "inline": true
+    },
+    {
+      "$ref": "TextFieldMultiLines",
+      "name": "multi"
+    }
+  ]
+}

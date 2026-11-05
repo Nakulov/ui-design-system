@@ -1,0 +1,31 @@
+{
+  "name": "KeyboardType",
+  "type": "enum",
+  "description": "Раскладка клавиатуры",
+  "values": [
+    {
+      "name": "text",
+      "description": "Обычный текст"
+    },
+    {
+      "name": "number",
+      "description": "Цифры"
+    },
+    {
+      "name": "decimal",
+      "description": "Цифры с десятичным разделителем"
+    },
+    {
+      "name": "phone",
+      "description": "Номер телефона"
+    },
+    {
+      "name": "email",
+      "description": "Адрес почты"
+    },
+    {
+      "name": "url",
+      "description": "Адрес сайта"
+    }
+  ]
+}

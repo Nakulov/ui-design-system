@@ -1,0 +1,12 @@
+{
+  "name": "TextFieldValue",
+  "type": "oneOf",
+  "description": "Текст, который показывает поле. Поле сбрасывает к нему ввод пользователя, когда значение в модели меняется",
+  "oneOf": [
+    {
+      "name": "plain",
+      "type": "string",
+      "sample": "anna@example.com"
+    }
+  ]
+}

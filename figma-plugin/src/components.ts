@@ -2,7 +2,7 @@
 import type { Bundle, Id } from "./bundle";
 import { mark, ref } from "./ids";
 import { PresetsBuilder } from "./presets";
-import { Renderer, Tokens } from "./render";
+import { RENDERED, Renderer, Tokens } from "./render";
 import { Report } from "./report";
 
 const ROLE = "components";
@@ -86,6 +86,10 @@ export class ComponentsBuilder {
     for (const [id, data] of Object.entries(this.bundle.figma)) {
       const contract = this.bundle.contracts[id];
       if (!contract?.extends) continue;
+      if (!RENDERED.includes(contract.name)) {
+        this.report.warn(`${contract.name}: компонент не поддерживается, Figma-компонент не построен`);
+        continue;
+      }
       const project = data as Project;
       const samples: [[string, string][], string][] = project.sample !== undefined
         ? [[[], project.sample]]

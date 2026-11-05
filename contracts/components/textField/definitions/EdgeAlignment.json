@@ -1,0 +1,20 @@
+{
+  "name": "EdgeAlignment",
+  "type": "enum",
+  "description": "Положение края по вертикали в выросшем поле",
+  "sample": "center",
+  "values": [
+    {
+      "name": "top",
+      "description": "У верхнего края"
+    },
+    {
+      "name": "center",
+      "description": "По центру"
+    },
+    {
+      "name": "bottom",
+      "description": "У нижнего края"
+    }
+  ]
+}

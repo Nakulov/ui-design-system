@@ -1,0 +1,150 @@
+{
+  "TextField": {
+    "id": "email",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": "m",
+        "vertical": "s"
+      }
+    },
+    "appearance": {
+      "focusable": {
+        "default": {
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        },
+        "focused": {
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "m",
+            "color": "primary"
+          }
+        },
+        "disabled": {
+          "background": {
+            "solid": "surface2"
+          },
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        }
+      }
+    },
+    "events": [
+      {
+        "change": {
+          "payload": {
+            "action": "emailChanged"
+          }
+        }
+      }
+    ],
+    "typography": "bodyLarge",
+    "color": {
+      "default": {
+        "solid": "onSurface"
+      },
+      "disabled": {
+        "solid": "onSurfaceMuted"
+      }
+    },
+    "alignment": "start",
+    "cursorColor": "primary",
+    "placeholder": {
+      "content": {
+        "plain": "E-mail"
+      },
+      "typography": "bodyLarge",
+      "color": {
+        "default": {
+          "solid": "onSurfaceVariant"
+        },
+        "disabled": {
+          "solid": "onSurfaceMuted"
+        }
+      }
+    },
+    "keyboard": {
+      "type": "email",
+      "returnKey": "next",
+      "contentType": "email"
+    },
+    "clearButton": {
+      "visibility": "whileNotEmpty",
+      "gap": "s",
+      "button": {
+        "layout": {
+          "width": {
+            "sizing": "hug"
+          },
+          "height": {
+            "sizing": "hug"
+          },
+          "position": "flow"
+        },
+        "padding": {
+          "all": "zero"
+        },
+        "appearance": {
+          "control": {
+            "default": {
+              "cornerRadius": "full"
+            },
+            "pressed": {
+              "cornerRadius": "full",
+              "overlay": {
+                "solid": "overlayPressed"
+              }
+            },
+            "disabled": {
+              "cornerRadius": "full"
+            }
+          }
+        },
+        "states": {
+          "default": {
+            "Image": {
+              "layout": {
+                "width": {
+                  "sizing": "hug"
+                },
+                "height": {
+                  "sizing": "hug"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {}
+              },
+              "source": {
+                "resource": {
+                  "icon": {
+                    "name": "close",
+                    "color": "onSurfaceVariant"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "TextFieldEdge",
+  "type": "object",
+  "description": "Край поля: содержимое внутри рамки слева или справа от текста",
+  "properties": [
+    {
+      "name": "content",
+      "$ref": "TextFieldStates",
+      "required": true,
+      "description": "Содержимое края по состояниям поля"
+    },
+    {
+      "name": "gap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "sample": "s",
+      "description": "Отступ между краем и текстом"
+    },
+    {
+      "name": "verticalAlignment",
+      "$ref": "EdgeAlignment",
+      "required": true,
+      "description": "Положение края по вертикали в выросшем поле"
+    }
+  ]
+}

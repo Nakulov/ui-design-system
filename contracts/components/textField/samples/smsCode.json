@@ -1,0 +1,87 @@
+{
+  "TextField": {
+    "id": "smsCode",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": "m",
+        "vertical": "s"
+      }
+    },
+    "appearance": {
+      "focusable": {
+        "default": {
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        },
+        "focused": {
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "m",
+            "color": "primary"
+          }
+        },
+        "disabled": {
+          "background": {
+            "solid": "surface2"
+          },
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          }
+        }
+      }
+    },
+    "events": [
+      {
+        "change": {
+          "payload": {
+            "action": "codeChanged"
+          }
+        }
+      }
+    ],
+    "typography": "headlineMedium",
+    "color": {
+      "default": {
+        "solid": "onSurface"
+      },
+      "disabled": {
+        "solid": "onSurfaceMuted"
+      }
+    },
+    "alignment": "center",
+    "cursorColor": "primary",
+    "placeholder": {
+      "content": {
+        "plain": "Код из SMS"
+      },
+      "typography": "bodyLarge",
+      "color": {
+        "default": {
+          "solid": "onSurfaceVariant"
+        },
+        "disabled": {
+          "solid": "onSurfaceMuted"
+        }
+      }
+    },
+    "autofocus": true,
+    "keyboard": {
+      "type": "number",
+      "contentType": "oneTimeCode"
+    }
+  }
+}

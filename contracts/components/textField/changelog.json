@@ -1,0 +1,11 @@
+{
+  "$ref": "TextField",
+  "entries": [
+    {
+      "date": "2026-11-05",
+      "issue": 173,
+      "kind": "added",
+      "description": "Компонент добавлен"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 ## Назначение
 
 `Event` — событие, которое компонент передаёт приложению при взаимодействии пользователя. Вариант события задаёт
-триггер (нажатие, долгое нажатие), а `payload` — что нужно сделать. Тип `payload` задаёт приложение: дизайн-система его
+триггер (нажатие, долгое нажатие, изменение текста), а `payload` — что нужно сделать. Тип `payload` задаёт приложение: дизайн-система его
 не интерпретирует и передаёт обработчику без изменений.
 
 Компонент получает набор событий в поле `events` базовой модели `Component` и обрабатывает те, которые поддерживает.
@@ -17,14 +17,22 @@
 | `Event.json`                 | Публичный контракт: варианты событий.             |
 | `definitions/EventData.json` | Данные события: `payload`.                        |
 | `changelog.json`             | Журнал изменений API.                             |
-| `samples/`                   | Образцы: `click.json`, `longPress.json`.          |
+| `samples/`                   | Образцы: по одному на вариант.                    |
 
 ## Варианты
 
-| Вариант     | Смысл          | Compose                                   | SwiftUI                    |
-|-------------|----------------|-------------------------------------------|----------------------------|
-| `click`     | нажатие        | `Modifier.clickable` / `onClick`          | `.onTapGesture` / `Button` |
-| `longPress` | долгое нажатие | `Modifier.combinedClickable(onLongClick)` | `.onLongPressGesture`      |
+| Вариант     | Смысл                            | Compose                                   | SwiftUI                    |
+|-------------|----------------------------------|-------------------------------------------|----------------------------|
+| `click`     | нажатие                          | `Modifier.clickable` / `onClick`          | `.onTapGesture` / `Button` |
+| `longPress` | долгое нажатие                   | `Modifier.combinedClickable(onLongClick)` | `.onLongPressGesture`      |
+| `change`    | изменение текста поля ввода      | `TextFieldState`, `snapshotFlow { text }` | `.onChange(of: text)`      |
+| `submit`    | Return в однострочном поле ввода | `KeyboardActions` / `onKeyboardAction`    | `.onSubmit`                |
+| `focus`     | поле ввода получило фокус        | `Modifier.onFocusChanged`                 | `@FocusState`, `.onChange` |
+| `unfocus`   | поле ввода потеряло фокус        | `Modifier.onFocusChanged`                 | `@FocusState`, `.onChange` |
+
+`change`, `submit`, `focus` и `unfocus` поддерживает только `TextField`. Обработчик на платформе получает `payload` без
+изменений и текущее значение поля (`TextFieldValue`): в контракте события значения нет — его нет в модели поля, а
+`core` не ссылается на `components` (`component-model.md`, раздел 7).
 
 Значения `Event` — элементы массива `events` компонента:
 
@@ -51,12 +59,61 @@
 }
 ```
 
+<!-- sample: samples/change.json -->
+```json
+{
+  "change": {
+    "payload": {
+      "action": "searchQueryChanged"
+    }
+  }
+}
+```
+
+<!-- sample: samples/submit.json -->
+```json
+{
+  "submit": {
+    "payload": {
+      "action": "login"
+    }
+  }
+}
+```
+
+<!-- sample: samples/focus.json -->
+```json
+{
+  "focus": {
+    "payload": {
+      "action": "trackFieldFocus",
+      "field": "email"
+    }
+  }
+}
+```
+
+<!-- sample: samples/unfocus.json -->
+```json
+{
+  "unfocus": {
+    "payload": {
+      "action": "validateEmail"
+    }
+  }
+}
+```
+
 Ожидаемая модель на Kotlin:
 
 ```kotlin
 sealed interface Event {
     data class Click(val payload: Payload) : Event
     data class LongPress(val payload: Payload) : Event
+    data class Change(val payload: Payload) : Event
+    data class Submit(val payload: Payload) : Event
+    data class Focus(val payload: Payload) : Event
+    data class Unfocus(val payload: Payload) : Event
 }
 
 // Тип дизайн-системы; приложение реализует его своими моделями
@@ -89,7 +146,8 @@ Text(
 
 ## Ограничения и открытые вопросы
 
-- Набор поддерживаемых событий у каждого компонента в формате пока не выражается. Событие, которое компонент не
-  поддерживает, ловит валидатор деревьев, как уникальность `id`.
+- Набор поддерживаемых событий у каждого компонента в формате пока не выражается. Валидатор деревьев неподдерживаемые
+  события пока не проверяет: `change`, `submit`, `focus`, `unfocus` у компонентов, кроме `TextField`, не
+  отклоняются.
 - В Figma события не реализуются (`willNotBeReleased`): `payload` — тип приложения, дизайнер его не задаёт, а на
   отрисовку события не влияют.

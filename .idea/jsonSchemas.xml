@@ -179,6 +179,82 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="contracts/components/textField/TextField.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/Autocorrect.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/Capitalization.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/ClearButton.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/ClearButtonVisibility.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/ContentType.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/EdgeAlignment.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/Keyboard.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/KeyboardType.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/Placeholder.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/PlaceholderColor.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/ReturnKey.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/TextFieldColor.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/TextFieldEdge.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/TextFieldLines.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/TextFieldLinesMode.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/TextFieldMultiLines.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/TextFieldStates.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/textField/definitions/TextFieldValue.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="contracts/core/appearance/Appearance.json" />
                     <option name="mappingKind" value="File" />
                   </Item>

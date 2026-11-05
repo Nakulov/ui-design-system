@@ -1,0 +1,78 @@
+{
+  "$ref": "TextField",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview",
+      "examples": [
+        {
+          "id": "main",
+          "sample": "email",
+          "caption": "Поле e-mail с подсказкой и кнопкой очистки"
+        }
+      ]
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "variants",
+      "type": "variants",
+      "title": "Variants",
+      "examples": [
+        {
+          "id": "email",
+          "sample": "email",
+          "caption": "E-mail с подсказкой поля и кнопкой очистки"
+        },
+        {
+          "id": "password",
+          "sample": "password",
+          "caption": "Пароль: скрытый ввод и глазок справа"
+        },
+        {
+          "id": "search",
+          "sample": "search",
+          "caption": "Поиск: лупа слева и кнопка очистки"
+        },
+        {
+          "id": "message",
+          "sample": "message",
+          "caption": "Сообщение: до пяти строк, кнопка отправки внизу справа"
+        },
+        {
+          "id": "amount",
+          "sample": "amount",
+          "caption": "Сумма: текст по правому краю и знак валюты"
+        },
+        {
+          "id": "smsCode",
+          "sample": "smsCode",
+          "caption": "Код из SMS: по центру, фокус при появлении"
+        },
+        {
+          "id": "disabledFilled",
+          "sample": "disabledFilled",
+          "caption": "Недоступное заполненное поле"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    },
+    {
+      "id": "platformSupport",
+      "type": "platformSupport",
+      "title": "Platform Support"
+    },
+    {
+      "id": "history",
+      "type": "history",
+      "title": "History"
+    }
+  ]
+}
