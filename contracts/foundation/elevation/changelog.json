@@ -2,6 +2,13 @@
   "$ref": "Elevation",
   "entries": [
     {
+      "date": "2026-11-05",
+      "issue": 210,
+      "kind": "changed",
+      "target": "custom.spread",
+      "description": "Растяжение тени — обязательное со значением по умолчанию 0: в файлах значений можно не указывать"
+    },
+    {
       "date": "2026-10-21",
       "kind": "added",
       "description": "Сущность добавлена"

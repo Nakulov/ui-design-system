@@ -6,7 +6,7 @@
 import json
 import re
 
-from contracts import COMPONENT
+from contracts import COMPONENT, has_default
 
 # Величины-заглушки примитивных типов без подсказки sample; name — имя ближайшего свойства или варианта (раздел 11.1, правило 8).
 PLACEHOLDERS = {
@@ -50,7 +50,7 @@ def generate(registry, contract, mode):
         if kind.type == "object":
             result = {}
             for owner, prop in registry.declared_properties(kind):
-                if mode == "min" and not prop["required"]:
+                if mode == "min" and (not prop["required"] or has_default(prop)):
                     continue
                 if "sample" in prop:
                     result[prop["name"]] = prop["sample"]

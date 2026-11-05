@@ -104,13 +104,18 @@
         "required": { "type": "boolean" },
         "items": { "$ref": "#/$defs/arrayItems" },
         "uniqueVariants": { "type": "boolean" },
+        "default": {
+          "description": "Значение по умолчанию: значение по разделу 4.5; допустимость для типа проверяет tools/validate.py (раздел 5).",
+          "not": { "type": "null" }
+        },
         "defaultsTo": { "$ref": "#/$defs/lowerCamelCaseName" },
         "sample": { "$ref": "#/$defs/sample" },
         "releaseVersions": { "$ref": "#/$defs/releaseVersions" }
       },
       "additionalProperties": false,
       "dependentSchemas": {
-        "defaultsTo": { "properties": { "required": { "const": false } } }
+        "default": { "properties": { "required": { "const": true } }, "not": { "required": ["defaultsTo"] } },
+        "defaultsTo": { "properties": { "required": { "const": true } } }
       },
       "oneOf": [{ "required": ["type"] }, { "required": ["$ref"] }],
       "if": { "properties": { "type": { "const": "array" } }, "required": ["type"] },

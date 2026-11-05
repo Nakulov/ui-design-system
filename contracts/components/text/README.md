@@ -35,7 +35,7 @@
 content: oneOf
   plain: string
   rich:  { spans: [TextSpan] }
-typography, color, decoration?, alignment, maxLines?, truncation?     — для всего текста
+typography, color, decoration?, alignment, maxLines?, truncation = end — для всего текста
 color: oneOf
   solid: ColorRole
 
@@ -206,7 +206,7 @@ data class Text(
     val decoration: TextDecoration? = null,
     val alignment: TextAlignment,
     val maxLines: Int? = null,
-    val truncation: TextTruncation? = null,
+    val truncation: TextTruncation = TextTruncation.End,
 ) : Component
 
 sealed interface TextContent {

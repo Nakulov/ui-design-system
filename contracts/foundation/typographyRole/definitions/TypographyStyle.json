@@ -30,8 +30,9 @@
     {
       "name": "letterSpacing",
       "type": "float",
-      "required": false,
-      "description": "Межбуквенный интервал; при отсутствии — 0"
+      "required": true,
+      "default": 0,
+      "description": "Межбуквенный интервал"
     }
   ]
 }

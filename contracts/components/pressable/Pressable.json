@@ -15,8 +15,9 @@
     {
       "name": "enabled",
       "type": "boolean",
-      "required": false,
-      "description": "Доступность: false — состояние disabled, нажатие не обрабатывается и уходит к внешнему нажимаемому элементу. Отсутствие означает «доступен»"
+      "required": true,
+      "default": true,
+      "description": "Доступность: false — состояние disabled, нажатие не обрабатывается и уходит к внешнему нажимаемому элементу"
     },
     {
       "name": "states",

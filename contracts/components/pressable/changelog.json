@@ -2,6 +2,27 @@
   "$ref": "Pressable",
   "entries": [
     {
+      "date": "2026-11-05",
+      "issue": 210,
+      "kind": "changed",
+      "target": "enabled",
+      "description": "Обязательное со значением по умолчанию true: в данных можно не передавать"
+    },
+    {
+      "date": "2026-11-05",
+      "issue": 210,
+      "kind": "changed",
+      "target": "states.pressed",
+      "description": "Обязательное со значением по умолчанию — дерево default: в данных можно не передавать"
+    },
+    {
+      "date": "2026-11-05",
+      "issue": 210,
+      "kind": "changed",
+      "target": "states.disabled",
+      "description": "Обязательное со значением по умолчанию — дерево default: в данных можно не передавать"
+    },
+    {
       "date": "2026-10-31",
       "issue": 172,
       "kind": "added",

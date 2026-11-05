@@ -78,7 +78,7 @@ sealed interface LayoutPosition {
     data class Pinned(
         val horizontal: LayoutPinHorizontal,
         val vertical: LayoutPinVertical,
-        val relativeTo: LayoutPinReference? = null,
+        val relativeTo: LayoutPinReference = LayoutPinReference.Edge,
     ) : LayoutPosition
 }
 
