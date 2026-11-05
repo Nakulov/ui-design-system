@@ -113,7 +113,9 @@
     },
     "decoration": "underline",
     "alignment": "start",
-    "maxLines": 2,
+    "maxLines": {
+      "count": 2
+    },
     "truncation": "end"
   }
 }

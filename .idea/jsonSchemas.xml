@@ -135,6 +135,14 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="contracts/components/text/definitions/MaxLines.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/text/definitions/MaxLinesMode.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="contracts/components/text/definitions/TextAlignment.json" />
                     <option name="mappingKind" value="File" />
                   </Item>

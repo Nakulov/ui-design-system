@@ -24,6 +24,8 @@
 | `definitions/TextDecoration.json` | Линия: `underline`, `strikethrough`.                                     |
 | `definitions/TextAlignment.json`  | Выравнивание строк: `start`, `center`, `end`.                            |
 | `definitions/TextTruncation.json` | Место многоточия: `start`, `middle`, `end`.                              |
+| `definitions/MaxLines.json`       | Наибольшее число строк: `count` или `unlimited`.                         |
+| `definitions/MaxLinesMode.json`   | Число строк без величины: `unlimited`.                                   |
 | `figma.json`                      | Figma-компоненты `Text` и `text/icon`: образцы, свойства.                |
 | `docs.json`                       | Манифест документации Figma: секции страницы и примеры.                  |
 | `changelog.json`                  | Журнал изменений API.                                                    |
@@ -35,30 +37,33 @@
 content: oneOf
   plain: string
   rich:  { spans: [TextSpan] }
-typography, color, decoration?, alignment, maxLines?, truncation = end — для всего текста
+typography, color, decoration?, alignment, maxLines = unlimited, truncation = end — для всего текста
 color: oneOf
   solid: ColorRole
+maxLines: oneOf
+  count: integer
+  unlimited
 
 TextSpan: oneOf
   text: { value, typography?, color?, decoration?, click? }   — незаданное берётся у Text; color — ColorRole
   icon: { name: Icon, typography?, color? }                   — незаданное берётся у Text; color — ColorRole
 ```
 
-| Поле              | Тип                          | Figma (текстовый слой)                   | Compose                      | SwiftUI                                |
-|-------------------|------------------------------|------------------------------------------|------------------------------|----------------------------------------|
-| `content`         | `plain` или `rich`           | characters; фрагменты — стили диапазонов | `String` / `AnnotatedString` | `String` / `AttributedString`          |
-| `typography`      | `TypographyRole`             | текстовый стиль `typography/…`           | `style`                      | шрифт и интервалы роли                 |
-| `color`           | `solid(ColorRole)`           | fill с переменной цвета                  | `color`                      | `.foregroundStyle`                     |
-| `decoration`      | `underline`, `strikethrough` | `textDecoration`                         | `textDecoration`             | `.underline()`, `.strikethrough()`     |
-| `alignment`       | `start`, `center`, `end`     | `textAlignHorizontal`                    | `textAlign`                  | `.multilineTextAlignment`              |
-| `maxLines`        | `integer`, необязательное    | `maxLines`, `textTruncation = ENDING`    | `maxLines`, `Ellipsis`       | `.lineLimit`, `.truncationMode(.tail)` |
-| `truncation`      | `start`, `middle`, `end`     | только `ENDING`                          | `overflow`                   | `.truncationMode`                      |
-| `click` фрагмента | данные события (`payload`)   | не отображается                          | `LinkAnnotation.Clickable`   | ссылка в `AttributedString`            |
-| `icon` фрагмента  | символ `Icon`                | компонент `text/icon` (правило 10)       | `InlineTextContent`          | `Text("\(Image(…))")`                  |
+| Поле              | Тип                           | Figma (текстовый слой)                   | Compose                      | SwiftUI                                |
+|-------------------|-------------------------------|------------------------------------------|------------------------------|----------------------------------------|
+| `content`         | `plain` или `rich`            | characters; фрагменты — стили диапазонов | `String` / `AnnotatedString` | `String` / `AttributedString`          |
+| `typography`      | `TypographyRole`              | текстовый стиль `typography/…`           | `style`                      | шрифт и интервалы роли                 |
+| `color`           | `solid(ColorRole)`            | fill с переменной цвета                  | `color`                      | `.foregroundStyle`                     |
+| `decoration`      | `underline`, `strikethrough`  | `textDecoration`                         | `textDecoration`             | `.underline()`, `.strikethrough()`     |
+| `alignment`       | `start`, `center`, `end`      | `textAlignHorizontal`                    | `textAlign`                  | `.multilineTextAlignment`              |
+| `maxLines`        | `count(integer)`, `unlimited` | `maxLines`, `textTruncation = ENDING`    | `maxLines`, `Ellipsis`       | `.lineLimit`, `.truncationMode(.tail)` |
+| `truncation`      | `start`, `middle`, `end`      | только `ENDING`                          | `overflow`                   | `.truncationMode`                      |
+| `click` фрагмента | данные события (`payload`)    | не отображается                          | `LinkAnnotation.Clickable`   | ссылка в `AttributedString`            |
+| `icon` фрагмента  | символ `Icon`                 | компонент `text/icon` (правило 10)       | `InlineTextContent`          | `Text("\(Image(…))")`                  |
 
 1. Линия одна: в Figma подчёркивание и зачёркивание взаимоисключающие.
 2. У фрагмента есть только нажатие: долгое нажатие на часть текста платформы не поддерживают.
-3. Многоточие в начале и середине — только при `maxLines = 1`: на нескольких строках платформы его не поддерживают
+3. Многоточие в начале и середине — только при одной строке (`maxLines.count = 1`): на нескольких строках платформы его не поддерживают
    (Compose обрезает текст без многоточия). В Figma многоточие только в конце, поэтому макет показывает его в конце.
 4. `alignment` выравнивает строки внутри компонента. Положение самого компонента в родителе задают `layout` и
    выравнивание контейнера. По вертикали текст прижат к верху компонента: в Figma `textAlignVertical = TOP`. Для
@@ -205,7 +210,7 @@ data class Text(
     val color: TextColor,
     val decoration: TextDecoration? = null,
     val alignment: TextAlignment,
-    val maxLines: Int? = null,
+    val maxLines: MaxLines = MaxLines.Unlimited,
     val truncation: TextTruncation = TextTruncation.End,
 ) : Component
 
@@ -216,6 +221,11 @@ sealed interface TextContent {
 
 sealed interface TextColor {
     data class Solid(val value: ColorRole) : TextColor
+}
+
+sealed interface MaxLines {
+    data class Count(val value: Int) : MaxLines
+    data object Unlimited : MaxLines
 }
 
 sealed interface TextSpan {
@@ -271,5 +281,4 @@ sealed interface TextSpan {
 - В библиотеке Figma `Text` — образец `label`, `text/icon` — образец `iconLabel` (`figma.json`). `content` —
   text-свойство; `typography`, `color`, `decoration`, `alignment` и `maxLines` — переопределения текстового слоя, а не
   variant: дизайнер меняет их в панели текста. `truncation` в Figma не отображается: многоточие только в конце.
-- Значений по умолчанию в формате пока нет, поэтому `typography`, `color` и `alignment` обязательны.
-- Ограничения `maxLines` не меньше 1 и непустого `spans` в формате пока не выражаются.
+- Ограничения `maxLines.count` не меньше 1 и непустого `spans` в формате пока не выражаются.

@@ -1057,9 +1057,11 @@ export class Renderer {
       node.layoutSizingHorizontal = "FILL";
     }
     // Обрезка — после textAutoResize: его смена сбрасывает её.
-    if (model.maxLines !== undefined) {
+    // maxLines: { count: N } или "unlimited"; отсутствие поля — значение по умолчанию "unlimited".
+    const maxLines = model.maxLines as { count: number } | "unlimited" | undefined;
+    if (typeof maxLines === "object") {
       node.textTruncation = "ENDING";
-      node.maxLines = model.maxLines as number;
+      node.maxLines = maxLines.count;
       if (model.truncation !== undefined && model.truncation !== "end") {
         this.warn(at, `обрезка «${model.truncation}» показана многоточием в конце: Figma поддерживает только его`);
       }
