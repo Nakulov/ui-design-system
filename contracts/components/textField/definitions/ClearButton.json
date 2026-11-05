@@ -1,0 +1,88 @@
+{
+  "name": "ClearButton",
+  "type": "object",
+  "description": "Кнопка очистки поля: стирает текст, оставляет фокус, даёт событие change",
+  "properties": [
+    {
+      "name": "visibility",
+      "$ref": "ClearButtonVisibility",
+      "required": true,
+      "description": "Когда кнопка видна; скрытая кнопка не занимает места",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
+    },
+    {
+      "name": "gap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "sample": "s",
+      "description": "Отступ между текстом и кнопкой"
+    },
+    {
+      "name": "button",
+      "$ref": "components/pressable/Pressable",
+      "required": true,
+      "sample": {
+        "layout": {
+          "width": {
+            "sizing": "hug"
+          },
+          "height": {
+            "sizing": "hug"
+          },
+          "position": "flow"
+        },
+        "padding": {
+          "all": "zero"
+        },
+        "appearance": {
+          "control": {
+            "default": {
+              "cornerRadius": "full"
+            },
+            "pressed": {
+              "cornerRadius": "full",
+              "overlay": {
+                "solid": "overlayPressed"
+              }
+            },
+            "disabled": {
+              "cornerRadius": "full"
+            }
+          }
+        },
+        "states": {
+          "default": {
+            "Image": {
+              "layout": {
+                "width": {
+                  "sizing": "hug"
+                },
+                "height": {
+                  "sizing": "hug"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {}
+              },
+              "source": {
+                "resource": {
+                  "icon": {
+                    "name": "close",
+                    "color": "onSurfaceVariant"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "description": "Кнопка без событий и без enabled: доступность выставляет поле (disabled, если поле выключено или пусто)"
+    }
+  ]
+}

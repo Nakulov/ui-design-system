@@ -1,0 +1,27 @@
+{
+  "name": "Capitalization",
+  "type": "enum",
+  "description": "Заглавные буквы при вводе",
+  "values": [
+    {
+      "name": "auto",
+      "description": "Выводит платформа из type и contentType (README)"
+    },
+    {
+      "name": "none",
+      "description": "Без заглавных"
+    },
+    {
+      "name": "sentences",
+      "description": "С заглавной — начало предложения"
+    },
+    {
+      "name": "words",
+      "description": "С заглавной — каждое слово"
+    },
+    {
+      "name": "characters",
+      "description": "Все заглавные"
+    }
+  ]
+}

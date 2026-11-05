@@ -1,0 +1,19 @@
+{
+  "name": "Autocorrect",
+  "type": "enum",
+  "description": "Автоисправление и подсказки слов",
+  "values": [
+    {
+      "name": "auto",
+      "description": "Выводит платформа из type и contentType (README)"
+    },
+    {
+      "name": "enabled",
+      "description": "Включено"
+    },
+    {
+      "name": "disabled",
+      "description": "Выключено"
+    }
+  ]
+}

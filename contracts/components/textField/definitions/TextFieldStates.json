@@ -1,0 +1,107 @@
+{
+  "name": "TextFieldStates",
+  "type": "object",
+  "description": "Деревья содержимого края поля по состояниям поля. default и focused — один и тот же компонент, disabled — любой; узлы с одинаковым id в деревьях — один элемент",
+  "properties": [
+    {
+      "name": "default",
+      "$ref": "core/component/Component",
+      "required": true,
+      "sample": {
+        "Image": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "source": {
+            "resource": {
+              "icon": {
+                "name": "search",
+                "color": "onSurfaceVariant"
+              }
+            }
+          }
+        }
+      },
+      "description": "Обычное состояние"
+    },
+    {
+      "name": "focused",
+      "$ref": "core/component/Component",
+      "required": true,
+      "defaultsTo": "default",
+      "sample": {
+        "Image": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "source": {
+            "resource": {
+              "icon": {
+                "name": "search",
+                "color": "onSurface"
+              }
+            }
+          }
+        }
+      },
+      "description": "Поле в фокусе. По умолчанию — дерево default целиком"
+    },
+    {
+      "name": "disabled",
+      "$ref": "core/component/Component",
+      "required": true,
+      "sample": {
+        "Image": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "zero"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "source": {
+            "resource": {
+              "icon": {
+                "name": "search",
+                "color": "onSurfaceMuted"
+              }
+            }
+          }
+        }
+      },
+      "description": "Недоступное поле (enabled = false): любой компонент, например символ без нажатия"
+    }
+  ]
+}

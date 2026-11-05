@@ -1,7 +1,7 @@
 # Модель компонентов
 
 **Статус:** Черновик, в обсуждении  
-**Версия спецификации:** 0.6
+**Версия спецификации:** 0.7
 
 Документ фиксирует согласованные решения по универсальному контракту компонентов. Он будет дополняться по мере
 обсуждения и затем войдёт в спецификацию формата (`schema-format.md`).
@@ -124,6 +124,10 @@ events: Set<Event>                 — каждый вариант не боле
 Event: oneOf
   click(payload)
   longPress(payload)
+  change(payload)                  — TextField (раздел 15)
+  submit(payload)
+  focus(payload)
+  unfocus(payload)
 payload: Payload                   — тип задаёт приложение
 ```
 
@@ -131,6 +135,10 @@ payload: Payload                   — тип задаёт приложение
 |-------------|----------------|-------------------------------------------|----------------------------|
 | `click`     | нажатие        | `Modifier.clickable` / `onClick`          | `.onTapGesture` / `Button` |
 | `longPress` | долгое нажатие | `Modifier.combinedClickable(onLongClick)` | `.onLongPressGesture`      |
+| `change`    | изменение текста поля ввода      | `TextFieldState`, `snapshotFlow { text }` | `.onChange(of: text)`      |
+| `submit`    | Return в однострочном поле ввода | `KeyboardActions` / `onKeyboardAction`    | `.onSubmit`                |
+| `focus`     | поле ввода получило фокус        | `Modifier.onFocusChanged`                 | `@FocusState`, `.onChange` |
+| `unfocus`   | поле ввода потеряло фокус        | `Modifier.onFocusChanged`                 | `@FocusState`, `.onChange` |
 
 1. `payload` описывает, что нужно сделать. Его тип — `Payload` (`schema-format.md`, раздел 4.1): на Android
    `interface Payload`, на iOS `protocol Payload`; приложение реализует его своими моделями. Дизайн-система не знает
@@ -138,9 +146,13 @@ payload: Payload                   — тип задаёт приложение
    полиморфной десериализацией своих реализаций `Payload`.
 2. Поле — массив с уникальными вариантами (`schema-format.md`, раздел 5.1), поэтому одно событие нельзя задать дважды.
    Новые триггеры добавляются вариантами `Event` по мере необходимости.
-3. Компонент обрабатывает события, которые поддерживает. Неподдерживаемое событие проверяет валидатор деревьев, как
-   уникальность `id`; в формате набор поддерживаемых событий пока не выражается.
-4. В Figma события не реализуются (`willNotBeReleased` у свойства `events` и контракта `Event`): `payload` — тип
+3. Компонент обрабатывает события, которые поддерживает. В формате набор поддерживаемых событий пока не выражается
+   (раздел 16, пункт 2), и валидатор деревьев неподдерживаемые события пока не проверяет: `change`, `submit`, `focus`
+   и `unfocus` поддерживает только `TextField` (раздел 15), у других компонентов они не отклоняются.
+4. Обработчик на платформе получает `payload` без изменений и, у событий поля ввода, текущее значение поля
+   (`TextFieldValue`). Значения в контракте события нет: его нет в модели поля, и `core` не ссылается на
+   `components`.
+5. В Figma события не реализуются (`willNotBeReleased` у свойства `events` и контракта `Event`): `payload` — тип
    приложения, дизайнер его не задаёт, а на отрисовку события не влияют.
 
 ## 8. `appearance`
@@ -153,7 +165,7 @@ appearance:
   plain:      { background?, shadow?, cornerRadius?, stroke?, overlay?, clip = false }
   control:    { default: plain, pressed: plain, disabled: plain }          — Pressable (раздел 14)
   selectable: { unselected: control, selected: control }                   — чип, чекбокс, таб
-  focusable:  { default: plain, focused: plain, disabled: plain }          — поле ввода
+  focusable:  { default: plain, focused: plain, disabled: plain }          — TextField (раздел 15)
 background, overlay: AppearanceFill = solid(ColorRole)
 stroke:     { width: BorderWidth, color: ColorRole }                       — только внутренняя
 ```
@@ -180,6 +192,7 @@ stroke:     { width: BorderWidth, color: ColorRole }                       — �
    `events`; контекст определяет, меняется ли вид корня по состояниям. У компонента с `selectable` есть обязательное
    свойство `selected: boolean`.
    Контекст `control` принадлежит `Pressable`: состояние `disabled` выбирает его поле `enabled` (раздел 14).
+   Контекст `focusable` — у `TextField` (раздел 15), так же с полем `enabled`.
    Остальные компоненты с действием, но без вида состояния — с `plain` и `events`; вид нажатия задаёт `Pressable`
    над ними.
 7. В Figma `plain` соответствует оформлению корня instance (fill, effect style, corner radius, stroke, clip content),
@@ -455,7 +468,141 @@ PressableStates<T : Component>                 — components/pressable/definiti
     поэтому в Component Set пресета override общей подписи переносится между variants `state`, а узлы состояния со
     своим `id` сохраняют своё содержимое.
 
-## 15. Открытые вопросы
+## 15. `TextField`
+
+`TextField` (`components/textField/TextField`) — первый компонент, данные которого меняет пользователь: примитив,
+только область ввода и редактирования текста. Подпись над полем, вспомогательный текст и текст ошибки под ним —
+композиция вокруг; поле формы, поиск и пароль — пресеты. Контекст оформления — только `focusable`.
+
+```
+TextField : Component
+  id?, layout?, padding?, indicators?      — из Component
+  appearance?:  Appearance.Focusable       — только рамка
+  events?:      Set<Event>                 — + change, submit, focus, unfocus
+
+  value:        TextFieldValue = plain("")
+  typography:   TypographyRole
+  color:        TextFieldColor
+  alignment:    TextAlignment               — start | center | end, как у Text
+  cursorColor:  ColorRole
+  placeholder?: Placeholder
+  enabled:      boolean = true
+  secure:       boolean = false
+  autofocus:    boolean = false
+  lines:        TextFieldLines = single
+  keyboard:     Keyboard = Keyboard()
+  clearButton?: ClearButton
+  leading?:     TextFieldEdge
+  trailing?:    TextFieldEdge
+
+TextFieldValue:   oneOf plain: string
+TextFieldColor:   { default, focused = default, highlighted = default, disabled }   — TextColor
+PlaceholderColor: { default, focused = default, disabled }                          — TextColor
+Placeholder:      { content: TextContent, typography: TypographyRole, color: PlaceholderColor }
+TextFieldLines:   oneOf single | multi { min: integer, max: MaxLines = unlimited }
+ClearButton:      { visibility: ClearButtonVisibility, gap: Spacing, button: Pressable }
+ClearButtonVisibility: always | whileEditing | whileNotEmpty
+TextFieldEdge:    { content: TextFieldStates, gap: Spacing, verticalAlignment: EdgeAlignment }
+EdgeAlignment:    top | center | bottom
+TextFieldStates<T : Component>: { default: T, focused: T = default, disabled: Component }
+Keyboard:         { type: KeyboardType = text, returnKey: ReturnKey = default, contentType: ContentType = none,
+                    capitalization: Capitalization = auto, autocorrect: Autocorrect = auto }
+```
+
+Ниже «подсказка поля» — `placeholder`, «край поля» — `leading` или `trailing`, «дерево края» — значение поля
+`content.default`, `content.focused` или `content.disabled` края.
+
+**Состояния и вид**
+
+1. Состояние компонента — то, что меняется от действий пользователя или выбирается полем поведения компонента
+   (`enabled`); то, что меняет только вид (ошибка, успех), — новая модель от приложения.
+2. Активное состояние: `enabled = false` → `disabled`; иначе фокус → `focused`; иначе `default`. Одно состояние
+   выбирает рамку (`appearance.focusable`), цвета текста и подсказки поля, деревья краёв.
+3. `highlighted` — цвет выделенной части введённого текста (выделение бывает только в фокусе); по умолчанию —
+   `default`, а не `focused`: цепочки `defaultsTo` нет (`schema-format.md`, раздел 5, правило 4), а `focused` обычно
+   равен `default`. Подсветка выделения и ручки — `cursorColor` (подсветка с прозрачностью; iOS `tintColor`, Compose
+   `TextSelectionColors`). Курсор виден только в фокусе, состояний у `cursorColor` нет.
+4. Типографика одна на поле; у подсказки поля своя (подсказка — текст интерфейса, ввод — любая письменность). Разная
+   высота строки — скачок высоты с первым символом, решение макета.
+5. `disabled` у цветов и в `TextFieldStates` обязателен: выключенное поле с ярким текстом или нажимаемым глазком
+   выглядит и ведёт себя как активное. В `disabled` цвета фрагментов подсказки поля не действуют.
+6. `TextFieldStates.disabled` — любой `Component` (глазок в `disabled` — `Image`), в отличие от `PressableStates`, где
+   все деревья одного `T`: у `Pressable` `enabled = false` сам отключает его действие, у краёв поля — нет. Узлы с
+   одинаковым `id` в деревьях края — один элемент, как у `Pressable` (раздел 14, правила 12–13); узлы разных типов —
+   замена.
+
+**Текст**
+
+7. Текстом владеет поле (Compose `TextFieldState`, SwiftUI `@State` в обёртке). Поле показывает `value` и сбрасывает
+   ввод пользователя, когда `value` меняется (`remember(value)`). В `value` передаются данные, а не введённый текст.
+8. Приложение узнаёт текст событиями: `change` (каждое изменение), `submit` (Return в однострочном поле, в том числе
+   `next`), `focus`, `unfocus` (раздел 7). Обработчик получает `payload` и текущее значение поля (раздел 7,
+   правило 4). Команд из кода приложения (`valueOf`, `setValue`, `focus(id)`) у поля нет.
+9. Подсказка поля видна, пока весь текущий текст пуст: составляемый текст клавиатуры (IME), пробелы и точки скрытого
+   ввода — текст. Видна и в фокусе. Выравнивание — как у поля.
+10. `value` — только `plain`; форматированный ввод — вариант `rich` позже; форматирование ввода (маски) — отдельно.
+
+**Строки, края, кнопка очистки**
+
+11. `single` — одна строка, длинный текст прокручивается вбок, Return — действие. `multi` — перенос, рост от `min` до
+    `max` строк, дальше вертикальная прокрутка; текст прижат к верху.
+12. Порядок слева направо: `leading` → текст → кнопка очистки → `trailing`. Текст не заезжает под края и кнопку
+    (граница — с отступом `gap`); края не прокручиваются с текстом; край получает свой размер, текст — оставшуюся
+    ширину. `verticalAlignment` — положение края в выросшем поле.
+13. Кнопка очистки — часть поля: видимость по `visibility` (`whileEditing` — в фокусе); `enabled` кнопки выставляет
+    поле (`disabled`, если поле выключено или пусто); нажатие стирает текст, оставляет фокус, даёт `change`. Скрытая
+    кнопка не занимает места. `button` — `Pressable`, записанный без обёртки (`schema-format.md`, раздел 4.5).
+
+**Клавиатура и фокус**
+
+14. `autofocus` — фокус при первом появлении поля; новая модель фокус не трогает.
+15. `returnKey = next` переводит фокус к следующему доступному `TextField` в порядке дерева, иначе скрывает
+    клавиатуру.
+16. Значения клавиатуры — пересечение платформ; платформа переводит в своё. Android: `Password` и `NumberPassword` —
+    по `contentType` `password` и `newPassword` (с `type` `text` и `number`), а не по `secure` (после глазка
+    клавиатура не должна запоминать пароль). iOS: у `numberPad`, `decimalPad`, `phonePad` нет Return. Значение,
+    недоступное на версии iOS (карта, дата рождения — iOS 17+), не передаётся; минимальная версия — выбор платформы.
+17. `auto` у `capitalization` и `autocorrect` выводит платформа (вычисляемых значений по умолчанию нет,
+    `schema-format.md`, раздел 5, правило 6):
+
+    - `type` `number`, `decimal`, `phone`, `email`, `url` — `none`, исправление выключено;
+    - `contentType` `username`, `password`, `newPassword`, `oneTimeCode`, `email`, `phone`, `postalCode`, данные карты
+      (`card…`) и даты рождения (`birth…`) — `none`, выключено;
+    - `contentType` имени и адреса (`fullName`, `givenName`, `middleName`, `familyName`, `namePrefix`, `nameSuffix`,
+      `street`, `streetDetails`, `city`, `region`, `country`) — `words`, выключено;
+    - остальное — `sentences`, включено.
+
+    Условия проверяются по порядку; явное значение `capitalization` или `autocorrect` действует вместо `auto`.
+18. `secure` — системная маска, символ платформенный; кнопка «показать пароль» — `Pressable` в `trailing`, приложение
+    присылает модель с `secure = false`.
+
+**Валидатор деревьев**
+
+19. События `change`, `submit`, `focus`, `unfocus` у других компонентов не проверяются (раздел 7, правило 3).
+20. Проверяются: одно `autofocus = true` в дереве; `min ≥ 1`, `count ≥ 1`, `min ≤ count`; при `multi` —
+    `secure = false` и `returnKey = default`; нет `click` во фрагментах подсказки поля; у `clearButton.button` нет
+    `enabled` (его выставляет поле) и `events`. Повтор `id` в деревьях одного края допустим (правило 6).
+
+**Реализация на платформах**
+
+| Платформа | Реализация                                                                                                                                      |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| Compose   | `BasicTextField(TextFieldState)`, `KeyboardOptions`, `ContentType` в семантике, `Modifier.onFocusChanged`, `ImeAction.Next` → `moveFocus`       |
+| SwiftUI   | обычное поле — обёртка над `UITextView` (цвет выделенного текста — TextKit 2 `setRenderingAttributes`, рост и прокрутка строк); скрытое — `UITextField` или `SecureField` |
+
+- SwiftUI `TextField` доступа к цвету выделенного текста не даёт, `UITextView` не умеет скрывать ввод — отсюда два
+  представления. Многострочное SwiftUI-поле — `TextField(axis: .vertical)`, `.lineLimit(min...max)`, фокус —
+  `@FocusState`.
+- Открытые вопросы реализации: окраска выделенного текста в Compose (`SpanStyle` по `selection`) и учёт шрифта и
+  цветов `prompt` в SwiftUI — README `TextField`.
+
+**Figma**
+
+21. `TextField` — Figma-компонент (Component Set) `state` × `filled` (`figma-mapping.md`, разделы 3.5, 6.1): `filled`
+    — пустое или непустое `value`; края — только при отрисовке модели, фреймом. Отрисовку поля плагин пока не
+    поддерживает: Figma-компонент не строится, плагин предупреждает «компонент не поддерживается».
+
+## 16. Открытые вопросы
 
 1. Остальные поля `Component`.
 2. Изменения `schema-format.md`: набор поддерживаемых событий у компонента, значения по умолчанию.

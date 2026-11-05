@@ -1,0 +1,42 @@
+{
+  "name": "Keyboard",
+  "type": "object",
+  "description": "Клавиатура поля: раскладка, клавиша Return, автозаполнение и исправление",
+  "properties": [
+    {
+      "name": "type",
+      "$ref": "KeyboardType",
+      "required": true,
+      "default": "text",
+      "description": "Раскладка"
+    },
+    {
+      "name": "returnKey",
+      "$ref": "ReturnKey",
+      "required": true,
+      "default": "default",
+      "description": "Подпись и действие клавиши Return"
+    },
+    {
+      "name": "contentType",
+      "$ref": "ContentType",
+      "required": true,
+      "default": "none",
+      "description": "Смысл данных для автозаполнения"
+    },
+    {
+      "name": "capitalization",
+      "$ref": "Capitalization",
+      "required": true,
+      "default": "auto",
+      "description": "Заглавные буквы"
+    },
+    {
+      "name": "autocorrect",
+      "$ref": "Autocorrect",
+      "required": true,
+      "default": "auto",
+      "description": "Автоисправление"
+    }
+  ]
+}

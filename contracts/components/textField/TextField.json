@@ -1,0 +1,117 @@
+{
+  "name": "TextField",
+  "type": "object",
+  "extends": "core/component/Component",
+  "appearanceContext": [
+    "focusable"
+  ],
+  "description": "Поле ввода: область, в которой пользователь вводит и редактирует текст. Подпись, вспомогательный текст и ошибка — композиция вокруг поля. Рамка оформляется по состоянию (focusable), цвета текста и содержимое краёв — тем же состоянием",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "properties": [
+    {
+      "name": "value",
+      "$ref": "TextFieldValue",
+      "required": true,
+      "default": {
+        "plain": ""
+      },
+      "description": "Текст из данных приложения; ввод пользователя поле хранит само и сбрасывает, когда value меняется"
+    },
+    {
+      "name": "typography",
+      "$ref": "foundation/typographyRole/TypographyRole",
+      "required": true,
+      "sample": "bodyLarge",
+      "description": "Роль типографики введённого текста"
+    },
+    {
+      "name": "color",
+      "$ref": "TextFieldColor",
+      "required": true,
+      "description": "Цвет введённого текста по состояниям поля"
+    },
+    {
+      "name": "alignment",
+      "$ref": "components/text/TextAlignment",
+      "required": true,
+      "description": "Выравнивание текста и подсказки поля по горизонтали"
+    },
+    {
+      "name": "cursorColor",
+      "$ref": "foundation/colorRole/ColorRole",
+      "required": true,
+      "sample": "primary",
+      "description": "Цвет курсора, ручек и подсветки выделения; курсор виден только в фокусе"
+    },
+    {
+      "name": "placeholder",
+      "$ref": "Placeholder",
+      "required": false,
+      "description": "Подсказка поля: видна, пока поле пустое, в том числе в фокусе. Если не задана, подсказки нет"
+    },
+    {
+      "name": "enabled",
+      "type": "boolean",
+      "required": true,
+      "default": true,
+      "description": "Доступность: false — состояние disabled, ввод выключен"
+    },
+    {
+      "name": "secure",
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "sample": false,
+      "description": "Скрытый ввод: системная маска вместо символов"
+    },
+    {
+      "name": "autofocus",
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "description": "Фокус при первом появлении поля; не больше одного поля в дереве",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
+    },
+    {
+      "name": "lines",
+      "$ref": "TextFieldLines",
+      "required": true,
+      "default": "single",
+      "description": "Одна строка или несколько с ростом по высоте"
+    },
+    {
+      "name": "keyboard",
+      "$ref": "Keyboard",
+      "required": true,
+      "default": {},
+      "description": "Клавиатура: раскладка, клавиша Return, автозаполнение",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
+    },
+    {
+      "name": "clearButton",
+      "$ref": "ClearButton",
+      "required": false,
+      "description": "Кнопка очистки справа от текста. Если не задана, кнопки нет"
+    },
+    {
+      "name": "leading",
+      "$ref": "TextFieldEdge",
+      "required": false,
+      "description": "Край слева от текста внутри рамки. Если не задан, края нет"
+    },
+    {
+      "name": "trailing",
+      "$ref": "TextFieldEdge",
+      "required": false,
+      "description": "Край справа от текста и кнопки очистки. Если не задан, края нет"
+    }
+  ]
+}

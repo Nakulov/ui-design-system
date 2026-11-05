@@ -1,0 +1,20 @@
+{
+  "name": "ClearButtonVisibility",
+  "type": "enum",
+  "description": "Когда видна кнопка очистки",
+  "sample": "whileNotEmpty",
+  "values": [
+    {
+      "name": "always",
+      "description": "Всегда"
+    },
+    {
+      "name": "whileEditing",
+      "description": "Пока поле в фокусе"
+    },
+    {
+      "name": "whileNotEmpty",
+      "description": "Пока в поле есть текст"
+    }
+  ]
+}

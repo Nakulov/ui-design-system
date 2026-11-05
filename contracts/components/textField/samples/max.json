@@ -1,0 +1,416 @@
+{
+  "TextField": {
+    "id": "id",
+    "layout": {
+      "width": {
+        "sizing": "hug",
+        "min": "xs",
+        "max": {
+          "custom": {
+            "value": 240
+          }
+        }
+      },
+      "height": {
+        "sizing": "hug",
+        "min": "xs",
+        "max": {
+          "custom": {
+            "value": 240
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "symmetric": {
+        "horizontal": "m",
+        "vertical": "m"
+      }
+    },
+    "appearance": {
+      "focusable": {
+        "default": {
+          "background": {
+            "solid": "surface2"
+          },
+          "shadow": "s",
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "overlay": {
+            "solid": "overlayPressed"
+          },
+          "clip": true
+        },
+        "focused": {
+          "background": {
+            "solid": "surface2"
+          },
+          "shadow": "s",
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "overlay": {
+            "solid": "overlayPressed"
+          },
+          "clip": true
+        },
+        "disabled": {
+          "background": {
+            "solid": "surface2"
+          },
+          "shadow": "s",
+          "cornerRadius": "m",
+          "stroke": {
+            "width": "s",
+            "color": "outline"
+          },
+          "overlay": {
+            "solid": "overlayPressed"
+          },
+          "clip": true
+        }
+      }
+    },
+    "indicators": [
+      {
+        "anchor": "topEnd",
+        "content": {
+          "Badge": {
+            "layout": {
+              "width": {
+                "sizing": {
+                  "fixed": "xs2"
+                }
+              },
+              "height": {
+                "sizing": {
+                  "fixed": "xs2"
+                }
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {
+                "background": {
+                  "solid": "error"
+                },
+                "cornerRadius": "full"
+              }
+            }
+          }
+        },
+        "gap": "xs2"
+      }
+    ],
+    "events": [
+      {
+        "click": {
+          "payload": {
+            "action": "payload"
+          }
+        }
+      }
+    ],
+    "value": {
+      "plain": "anna@example.com"
+    },
+    "typography": "bodyLarge",
+    "color": {
+      "default": {
+        "solid": "onSurface"
+      },
+      "focused": {
+        "solid": "onSurface"
+      },
+      "highlighted": {
+        "solid": "primary"
+      },
+      "disabled": {
+        "solid": "onSurfaceMuted"
+      }
+    },
+    "alignment": "start",
+    "cursorColor": "primary",
+    "placeholder": {
+      "content": {
+        "plain": "E-mail"
+      },
+      "typography": "bodyLarge",
+      "color": {
+        "default": {
+          "solid": "onSurfaceVariant"
+        },
+        "focused": {
+          "solid": "onSurfaceVariant"
+        },
+        "disabled": {
+          "solid": "onSurfaceMuted"
+        }
+      }
+    },
+    "enabled": true,
+    "secure": false,
+    "autofocus": true,
+    "lines": {
+      "multi": {
+        "min": 1,
+        "max": {
+          "count": 5
+        }
+      }
+    },
+    "keyboard": {
+      "type": "text",
+      "returnKey": "default",
+      "contentType": "none",
+      "capitalization": "auto",
+      "autocorrect": "auto"
+    },
+    "clearButton": {
+      "visibility": "whileNotEmpty",
+      "gap": "s",
+      "button": {
+        "layout": {
+          "width": {
+            "sizing": "hug"
+          },
+          "height": {
+            "sizing": "hug"
+          },
+          "position": "flow"
+        },
+        "padding": {
+          "all": "zero"
+        },
+        "appearance": {
+          "control": {
+            "default": {
+              "cornerRadius": "full"
+            },
+            "pressed": {
+              "cornerRadius": "full",
+              "overlay": {
+                "solid": "overlayPressed"
+              }
+            },
+            "disabled": {
+              "cornerRadius": "full"
+            }
+          }
+        },
+        "states": {
+          "default": {
+            "Image": {
+              "layout": {
+                "width": {
+                  "sizing": "hug"
+                },
+                "height": {
+                  "sizing": "hug"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {}
+              },
+              "source": {
+                "resource": {
+                  "icon": {
+                    "name": "close",
+                    "color": "onSurfaceVariant"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "leading": {
+      "content": {
+        "default": {
+          "Image": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "source": {
+              "resource": {
+                "icon": {
+                  "name": "search",
+                  "color": "onSurfaceVariant"
+                }
+              }
+            }
+          }
+        },
+        "focused": {
+          "Image": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "source": {
+              "resource": {
+                "icon": {
+                  "name": "search",
+                  "color": "onSurface"
+                }
+              }
+            }
+          }
+        },
+        "disabled": {
+          "Image": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "source": {
+              "resource": {
+                "icon": {
+                  "name": "search",
+                  "color": "onSurfaceMuted"
+                }
+              }
+            }
+          }
+        }
+      },
+      "gap": "s",
+      "verticalAlignment": "center"
+    },
+    "trailing": {
+      "content": {
+        "default": {
+          "Image": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "source": {
+              "resource": {
+                "icon": {
+                  "name": "search",
+                  "color": "onSurfaceVariant"
+                }
+              }
+            }
+          }
+        },
+        "focused": {
+          "Image": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "source": {
+              "resource": {
+                "icon": {
+                  "name": "search",
+                  "color": "onSurface"
+                }
+              }
+            }
+          }
+        },
+        "disabled": {
+          "Image": {
+            "layout": {
+              "width": {
+                "sizing": "hug"
+              },
+              "height": {
+                "sizing": "hug"
+              },
+              "position": "flow"
+            },
+            "padding": {
+              "all": "zero"
+            },
+            "appearance": {
+              "plain": {}
+            },
+            "source": {
+              "resource": {
+                "icon": {
+                  "name": "search",
+                  "color": "onSurfaceMuted"
+                }
+              }
+            }
+          }
+        }
+      },
+      "gap": "s",
+      "verticalAlignment": "center"
+    }
+  }
+}

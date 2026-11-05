@@ -1,0 +1,7 @@
+{
+  "unfocus": {
+    "payload": {
+      "action": "validateEmail"
+    }
+  }
+}

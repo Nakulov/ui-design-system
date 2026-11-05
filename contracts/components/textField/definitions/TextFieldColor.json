@@ -1,0 +1,48 @@
+{
+  "name": "TextFieldColor",
+  "type": "object",
+  "description": "Цвет введённого текста по состояниям поля",
+  "properties": [
+    {
+      "name": "default",
+      "$ref": "components/text/TextColor",
+      "required": true,
+      "sample": {
+        "solid": "onSurface"
+      },
+      "description": "Обычное состояние"
+    },
+    {
+      "name": "focused",
+      "$ref": "components/text/TextColor",
+      "required": true,
+      "defaultsTo": "default",
+      "sample": {
+        "solid": "onSurface"
+      },
+      "description": "Поле в фокусе. По умолчанию — цвет default"
+    },
+    {
+      "name": "highlighted",
+      "$ref": "components/text/TextColor",
+      "required": true,
+      "defaultsTo": "default",
+      "sample": {
+        "solid": "primary"
+      },
+      "description": "Выделенная часть текста; выделение бывает только в фокусе. По умолчанию — цвет default",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
+    },
+    {
+      "name": "disabled",
+      "$ref": "components/text/TextColor",
+      "required": true,
+      "sample": {
+        "solid": "onSurfaceMuted"
+      },
+      "description": "Недоступное поле (enabled = false)"
+    }
+  ]
+}

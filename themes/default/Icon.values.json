@@ -10,7 +10,10 @@
         "close": { "source": "icons/close.svg", "mirrored": false },
         "check": { "source": "icons/check.svg", "mirrored": false },
         "chevronDown": { "source": "icons/chevronDown.svg", "mirrored": false },
-        "arrowBack": { "source": "icons/arrowBack.svg", "mirrored": true }
+        "arrowBack": { "source": "icons/arrowBack.svg", "mirrored": true },
+        "eye": { "source": "icons/eye.svg", "mirrored": false },
+        "search": { "source": "icons/search.svg", "mirrored": false },
+        "send": { "source": "icons/send.svg", "mirrored": true }
       }
     }
   ]

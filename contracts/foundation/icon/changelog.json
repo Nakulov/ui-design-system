@@ -2,6 +2,27 @@
   "$ref": "Icon",
   "entries": [
     {
+      "date": "2026-11-05",
+      "issue": 173,
+      "kind": "added",
+      "target": "eye",
+      "description": "Символ «глаз»: показать скрытый ввод, например пароль"
+    },
+    {
+      "date": "2026-11-05",
+      "issue": 173,
+      "kind": "added",
+      "target": "search",
+      "description": "Символ «лупа»: поиск"
+    },
+    {
+      "date": "2026-11-05",
+      "issue": 173,
+      "kind": "added",
+      "target": "send",
+      "description": "Символ «отправка»: отправить сообщение"
+    },
+    {
       "date": "2026-10-23",
       "kind": "added",
       "description": "Сущность добавлена"

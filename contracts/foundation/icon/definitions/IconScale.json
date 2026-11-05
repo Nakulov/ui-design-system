@@ -8,6 +8,9 @@
     { "name": "close", "description": "Крестик: закрыть, очистить поле" },
     { "name": "check", "description": "Галочка: отмечено, выполнено" },
     { "name": "chevronDown", "description": "Шеврон вниз: раскрыть список" },
-    { "name": "arrowBack", "description": "Стрелка назад: вернуться на предыдущий экран" }
+    { "name": "arrowBack", "description": "Стрелка назад: вернуться на предыдущий экран" },
+    { "name": "eye", "description": "Глаз: показать скрытый ввод, например пароль", "releaseVersions": { "figma": "notReleased" } },
+    { "name": "search", "description": "Лупа: поиск", "releaseVersions": { "figma": "notReleased" } },
+    { "name": "send", "description": "Отправка: отправить сообщение", "releaseVersions": { "figma": "notReleased" } }
   ]
 }

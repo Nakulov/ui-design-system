@@ -24,6 +24,9 @@ SERVICE_DIRS = {DEFINITIONS, "samples", DEMOS}
 COMPONENT = "core/component/Component"
 APPEARANCE = "core/appearance/Appearance"
 PRESSABLE = "components/pressable/Pressable"
+TEXT_FIELD = "components/textField/TextField"
+# Объекты деревьев состояний: деревья одного объекта — состояния одного элемента (component-model.md, разделы 14, 15).
+STATE_TREES = {"components/pressable/PressableStates", "components/textField/TextFieldStates"}
 SKIPPED = {"build", "figma-plugin"}  # верхние каталоги без контрактов
 
 PRIMITIVES = {
@@ -301,41 +304,93 @@ class Registry:
         yield from self.tree_errors(value, kind, at)
 
     def tree_errors(self, value, kind, at):
-        """Правила дерева модели, которых нет в контрактах: `id` уникален в дереве, где каждый `Pressable` учитывается
-        одним состоянием; корень дерева состояния `Pressable` — только `plain` (component-model.md, разделы 5, 14)."""
-        components, problems = self.components(), []
+        """Правила дерева модели, которых нет в контрактах (component-model.md, разделы 5, 14, 15): `id` уникален в
+        дереве, где деревья одного объекта состояний (`PressableStates`, `TextFieldStates`) учитываются по максимуму;
+        корень дерева состояния `Pressable` — только `plain`; правила `TextField`."""
+        components, problems, autofocus = self.components(), [], []
 
         def ids(name, data, at):
-            """Число повторов каждого id в поддереве компонента: деревья состояний Pressable — по максимуму."""
+            """Число повторов каждого id в поддереве компонента."""
             contract = components[name]
+            if contract.id == TEXT_FIELD:
+                problems.extend(self.text_field_errors(data, at))
+                if data.get("autofocus") is True:
+                    autofocus.append(at)
             counts = Counter([data["id"]] if isinstance(data.get("id"), str) else [])
-            rest = data
-            if contract.id == PRESSABLE and isinstance(data.get("states"), dict):
-                rest = {key: item for key, item in data.items() if key != "states"}
-                states = Counter()
-                for key, tree in data["states"].items():
-                    for child, child_data, child_at in self.nested(tree, self.by_id[COMPONENT], f"{at}.states.{key}"):
-                        appearance = child_data.get("appearance")
-                        if isinstance(appearance, dict) and list(appearance) != ["plain"]:
-                            problems.append(f"{child_at}.appearance: корень дерева состояния — только plain")
-                        states |= ids(child, child_data, child_at)
-                counts += states
-            for child, child_data, child_at in self.nested(rest, contract, at):
+            for child, child_data, child_at in self.nested(data, contract, at, skip_root=True):
                 counts += ids(child, child_data, child_at)
+            for states, trees_at in self.state_trees(data, contract, at):
+                merged = Counter()
+                for key, tree in states.items():
+                    for child, child_data, child_at in self.nested(tree, self.by_id[COMPONENT], f"{trees_at}.{key}"):
+                        appearance = child_data.get("appearance")
+                        if contract.id == PRESSABLE and isinstance(appearance, dict) and list(appearance) != ["plain"]:
+                            problems.append(f"{child_at}.appearance: корень дерева состояния — только plain")
+                        merged |= ids(child, child_data, child_at)
+                counts += merged
             return counts
 
         total = Counter()
         for name, data, node_at in self.nested(value, kind, at):
             total += ids(name, data, node_at)
         yield from problems
+        if len(autofocus) > 1:
+            yield f"{at}: autofocus = true у нескольких TextField: {', '.join(autofocus)} (component-model.md, раздел 15)"
         for duplicate in sorted(n for n, count in total.items() if count > 1):
             yield f"{at}: id «{duplicate}» встречается больше одного раза (component-model.md, раздел 5)"
 
-    def nested(self, value, kind, at):
-        """Компоненты, вложенные в значение типа kind, без захода внутрь них: (имя, данные, путь)."""
+    def state_trees(self, value, kind, at):
+        """Объекты деревьев состояний в значении компонента, без захода во вложенные компоненты: (деревья, путь)."""
+        if isinstance(kind, str) or kind is None or not isinstance(value, dict) or kind.type != "object":
+            return
+        if kind.id in STATE_TREES:
+            yield value, at
+            return
+        for owner, prop in self.declared_properties(kind):
+            target = self.resolve(owner, prop.get("$ref"))
+            if prop["name"] in value and target is not None and target.type == "object" and "extends" not in target.data:
+                yield from self.state_trees(value[prop["name"]], target, f"{at}.{prop['name']}")
+
+    def text_field_errors(self, data, at):
+        """Правила TextField, которых нет в контракте (component-model.md, раздел 15, правило 20)."""
+        lines = data.get("lines")
+        multi = lines.get("multi") if isinstance(lines, dict) else None
+        if isinstance(multi, dict):
+            low, high = multi.get("min"), multi.get("max")
+            count = high.get("count") if isinstance(high, dict) else None
+            if isinstance(low, int) and low < 1:
+                yield f"{at}.lines.multi.min: {low} — меньше 1"
+            if isinstance(count, int) and count < 1:
+                yield f"{at}.lines.multi.max.count: {count} — меньше 1"
+            if isinstance(low, int) and isinstance(count, int) and low > count:
+                yield f"{at}.lines.multi: min {low} больше max {count}"
+            if data.get("secure") is True:
+                yield f"{at}.secure: скрытый ввод только в однострочном поле"
+            keyboard = data.get("keyboard")
+            if isinstance(keyboard, dict) and keyboard.get("returnKey", "default") != "default":
+                yield f"{at}.keyboard.returnKey: в многострочном поле только default (Return переносит строку)"
+        content = data.get("placeholder", {}).get("content") if isinstance(data.get("placeholder"), dict) else None
+        spans = content.get("rich", {}).get("spans", []) if isinstance(content, dict) else []
+        for i, span in enumerate(spans if isinstance(spans, list) else []):
+            if isinstance(span, dict) and isinstance(span.get("text"), dict) and "click" in span["text"]:
+                yield f"{at}.placeholder.content.rich.spans[{i}].text.click: нажатий во фрагментах подсказки поля нет"
+        button = data.get("clearButton", {}).get("button") if isinstance(data.get("clearButton"), dict) else None
+        for key in ("enabled", "events"):
+            if isinstance(button, dict) and key in button:
+                yield f"{at}.clearButton.button.{key}: задаёт поле, в модели не указывается"
+
+    def nested(self, value, kind, at, skip_root=False):
+        """Компоненты, вложенные в значение типа kind, без захода внутрь них и в деревья состояний: (имя, данные,
+        путь). Значение ссылки на контракт компонента — сам компонент, без обёртки (schema-format.md, раздел 4.5);
+        skip_root — обойти свойства такого значения, а не вернуть его."""
         if isinstance(kind, str) or kind is None or value is None:
             return
-        if kind.id == COMPONENT:
+        if "extends" in kind.data and not skip_root:
+            if isinstance(value, dict):
+                yield kind.name, value, at
+        elif kind.id in STATE_TREES:
+            return
+        elif kind.id == COMPONENT:
             if isinstance(value, dict) and len(value) == 1 and next(iter(value)) in self.components():
                 name, data = next(iter(value.items()))
                 if isinstance(data, dict):

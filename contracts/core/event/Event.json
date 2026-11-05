@@ -15,6 +15,22 @@
     {
       "$ref": "EventData",
       "name": "longPress"
+    },
+    {
+      "$ref": "EventData",
+      "name": "change"
+    },
+    {
+      "$ref": "EventData",
+      "name": "submit"
+    },
+    {
+      "$ref": "EventData",
+      "name": "focus"
+    },
+    {
+      "$ref": "EventData",
+      "name": "unfocus"
     }
   ]
 }

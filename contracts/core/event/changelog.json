@@ -2,6 +2,34 @@
   "$ref": "Event",
   "entries": [
     {
+      "date": "2026-11-05",
+      "issue": 173,
+      "kind": "added",
+      "target": "change",
+      "description": "Вариант `change`: изменение текста в поле ввода. Поддерживает `TextField`"
+    },
+    {
+      "date": "2026-11-05",
+      "issue": 173,
+      "kind": "added",
+      "target": "submit",
+      "description": "Вариант `submit`: подтверждение ввода клавишей Return в однострочном поле. Поддерживает `TextField`"
+    },
+    {
+      "date": "2026-11-05",
+      "issue": 173,
+      "kind": "added",
+      "target": "focus",
+      "description": "Вариант `focus`: поле ввода получило фокус. Поддерживает `TextField`"
+    },
+    {
+      "date": "2026-11-05",
+      "issue": 173,
+      "kind": "added",
+      "target": "unfocus",
+      "description": "Вариант `unfocus`: поле ввода потеряло фокус. Поддерживает `TextField`"
+    },
+    {
       "date": "2026-10-23",
       "kind": "added",
       "description": "Сущность добавлена"

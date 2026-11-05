@@ -1,0 +1,11 @@
+{
+  "name": "TextFieldLinesMode",
+  "type": "enum",
+  "description": "Строки поля без параметров",
+  "values": [
+    {
+      "name": "single",
+      "description": "Одна строка: длинный текст прокручивается вбок, Return — действие"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "PlaceholderColor",
+  "type": "object",
+  "description": "Цвет подсказки поля по состояниям поля",
+  "properties": [
+    {
+      "name": "default",
+      "$ref": "components/text/TextColor",
+      "required": true,
+      "sample": {
+        "solid": "onSurfaceVariant"
+      },
+      "description": "Обычное состояние"
+    },
+    {
+      "name": "focused",
+      "$ref": "components/text/TextColor",
+      "required": true,
+      "defaultsTo": "default",
+      "sample": {
+        "solid": "onSurfaceVariant"
+      },
+      "description": "Поле в фокусе. По умолчанию — цвет default"
+    },
+    {
+      "name": "disabled",
+      "$ref": "components/text/TextColor",
+      "required": true,
+      "sample": {
+        "solid": "onSurfaceMuted"
+      },
+      "description": "Недоступное поле (enabled = false); цвета фрагментов подсказки в нём не действуют"
+    }
+  ]
+}

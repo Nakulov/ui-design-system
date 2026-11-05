@@ -55,6 +55,8 @@ SVG_NO_PAINT = {"none", "currentcolor", "inherit", "transparent"}
 
 # Типы, которые Figma не отображает (figma-mapping.md, раздел 4.1, правило 3).
 FIGMA_UNREPRESENTABLE = {"core/event/Event", "core/event/EventData"}
+FILLED = "filled"  # variant пустоты value (figma-mapping.md, раздел 3.5)
+FIGMA_RESERVED = {"state", FILLED}  # имена variant Figma, не свойств компонента (раздел 3.5)
 
 # Области применения переменных Figma по типу переменной (figma-mapping.md, раздел 6.3).
 FIGMA_SCOPES = {
@@ -904,7 +906,7 @@ def figma_mapping(registry, owner, prop):
     """Свойство Figma по умолчанию и допустимые переопределения (figma-mapping.md, раздел 4)."""
     kind = prop.get("type")
     if kind == "boolean":
-        return "boolean", {"variant"}
+        return "boolean", {"variant", "override", "state"}
     if kind == "string":
         return "text", set()
     if kind in ("integer", "float"):
@@ -913,9 +915,11 @@ def figma_mapping(registry, owner, prop):
     if target is None:
         return None, set()
     if "extends" in target.data:
-        return "instanceSwap", set()
+        return "instanceSwap", {"layer"}
     if target.type == "enum":
         return "variant", {"mode", "override"}
+    if target.type == "object":
+        return None, {"override", "layer", "render"}
     if target.type != "oneOf":
         return None, set()
     variants = registry.variants(target)
@@ -924,6 +928,29 @@ def figma_mapping(registry, owner, prop):
     if all(not v.has_data for v in variants):
         return "variant", {"mode", "override"}
     return None, {"override"}
+
+
+def check_filled(registry, path, contract, own, samples, sample):
+    """Variant filled: образцы с пустым и непустым value (figma-mapping.md, раздел 3.5)."""
+    owner, prop = own.get("value", (None, {}))
+    target = registry.resolve(owner, prop.get("$ref")) if owner else None
+    if target is None or not any(v.target == "string" for v in registry.variants(target)):
+        error(path, f"variants.{FILLED}: только у компонента со свойством value — oneOf с вариантом string")
+        return
+    if not isinstance(samples, dict) or not samples:
+        error(path, f"variants.{FILLED}: непустой объект «значение → образец»")
+        return
+    for value, sample_name in samples.items():
+        if value not in ("false", "true"):
+            error(path, f"variants.{FILLED}: «{value}» — не значение (false, true)")
+            continue
+        model = sample(sample_name, f"variants.{FILLED}.{value}")
+        if model is None:
+            continue
+        text = model.get("value", prop.get("default"))
+        filled = isinstance(text, dict) and any(isinstance(v, str) and v for v in text.values())
+        if str(filled).lower() != value:
+            error(path, f"variants.{FILLED}.{value}: у образца {sample_name} value {'не ' if not filled else ''}пустое")
 
 
 def check_figma_components(registry, figma):
@@ -968,6 +995,9 @@ def check_figma_components(registry, figma):
             error(path, "variants — объект с одним свойством (раздел 6.2, правило 3)")
             variants = {}
         for name, samples in variants.items():
+            if name == FILLED:
+                check_filled(registry, path, contract, own, samples, sample)
+                continue
             if name not in own:
                 error(path, f"variants: «{name}» — не свойство {contract.name}")
                 continue
@@ -991,22 +1021,44 @@ def check_figma_components(registry, figma):
                 if actual != value:
                     error(path, f"variants.{name}.{value}: у образца {sample_name} значение «{actual}»")
         properties = project.get("properties", {})
-        for name, override in properties.items():
-            if name not in own:
-                error(path, f"properties: «{name}» — не собственное свойство {contract.name}")
-                continue
-            if name in variants:
-                error(path, f"properties: «{name}» уже задан в variants (раздел 6.1, правило 5)")
-            _, allowed = figma_mapping(registry, *own[name])
-            if not isinstance(override, dict) or override.get("as") not in allowed:
-                error(path, f"properties.{name}: as «{override.get('as') if isinstance(override, dict) else override}» "
-                            f"недопустимо, допустимо: {', '.join(sorted(allowed)) or 'нет'} (раздел 4)")
-        for name, (owner, prop) in own.items():
-            default, _ = figma_mapping(registry, owner, prop)
-            hidden = prop.get("releaseVersions", {}).get("figma") == "willNotBeReleased"
-            if default is None and not hidden and name not in properties and name not in variants:
-                error(path, f"свойство «{name}» не отображается в Figma: нужно переопределение или "
-                            f"figma: willNotBeReleased (раздел 4.1, правило 3)")
+        for name in sorted(own.keys() & FIGMA_RESERVED):
+            error(contract.path, f"свойство «{name}»: имя зарезервировано для variant Figma (figma-mapping.md, раздел 3.5)")
+        check_figma_properties(registry, path, contract.name, own, properties, variants, "properties")
+
+
+def check_figma_properties(registry, path, owner_name, own, properties, variants, at):
+    """Переопределения свойств figma.json, в том числе вложенные у as: layer (figma-mapping.md, разделы 4, 6.1)."""
+    if not isinstance(properties, dict):
+        error(path, f"{at}: объект «свойство → переопределение»")
+        return
+    for name, override in properties.items():
+        if name not in own:
+            error(path, f"{at}: «{name}» — не собственное свойство {owner_name}")
+            continue
+        if name in variants:
+            error(path, f"{at}: «{name}» уже задан в variants (раздел 6.1, правило 5)")
+        owner, prop = own[name]
+        _, allowed = figma_mapping(registry, owner, prop)
+        kind = override.get("as") if isinstance(override, dict) else override
+        if kind not in allowed:
+            error(path, f"{at}.{name}: as «{kind}» недопустимо, допустимо: {', '.join(sorted(allowed)) or 'нет'} (раздел 4)")
+            continue
+        for extra in sorted(override.keys() - {"as", "values", "properties"}):
+            error(path, f"{at}.{name}: поле «{extra}» не определено (раздел 6.1)")
+        if "properties" not in override:
+            continue
+        target = registry.resolve(owner, prop.get("$ref"))
+        if kind != "layer" or target is None or "extends" in target.data:
+            error(path, f"{at}.{name}: вложенные properties — только у as: layer объекта, не компонента (раздел 6.1)")
+            continue
+        nested = {p["name"]: (target, p) for p in target.data["properties"]}
+        check_figma_properties(registry, path, target.name, nested, override["properties"], {}, f"{at}.{name}.properties")
+    for name, (owner, prop) in own.items():
+        default, _ = figma_mapping(registry, owner, prop)
+        hidden = prop.get("releaseVersions", {}).get("figma") == "willNotBeReleased"
+        if default is None and not hidden and name not in properties and name not in variants:
+            error(path, f"{at}: свойство «{name}» не отображается в Figma: нужно переопределение или "
+                        f"figma: willNotBeReleased (раздел 4.1, правило 3)")
 
 
 def check_elements(registry, elements):

@@ -1,0 +1,66 @@
+{
+  "$ref": "TextField",
+  "variants": {
+    "filled": {
+      "false": "emailEmpty",
+      "true": "email"
+    }
+  },
+  "properties": {
+    "value": {
+      "as": "text"
+    },
+    "typography": {
+      "as": "override"
+    },
+    "color": {
+      "as": "override"
+    },
+    "alignment": {
+      "as": "override"
+    },
+    "cursorColor": {
+      "as": "override"
+    },
+    "lines": {
+      "as": "override"
+    },
+    "secure": {
+      "as": "override"
+    },
+    "enabled": {
+      "as": "state"
+    },
+    "placeholder": {
+      "as": "layer",
+      "properties": {
+        "content": {
+          "as": "text"
+        },
+        "typography": {
+          "as": "override"
+        },
+        "color": {
+          "as": "override"
+        }
+      }
+    },
+    "clearButton": {
+      "as": "layer",
+      "properties": {
+        "gap": {
+          "as": "override"
+        },
+        "button": {
+          "as": "layer"
+        }
+      }
+    },
+    "leading": {
+      "as": "render"
+    },
+    "trailing": {
+      "as": "render"
+    }
+  }
+}
