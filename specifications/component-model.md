@@ -1,7 +1,7 @@
 # Модель компонентов
 
 **Статус:** Черновик, в обсуждении  
-**Версия спецификации:** 0.5
+**Версия спецификации:** 0.6
 
 Документ фиксирует согласованные решения по универсальному контракту компонентов. Он будет дополняться по мере
 обсуждения и затем войдёт в спецификацию формата (`schema-format.md`).
@@ -254,7 +254,7 @@ typography: TypographyRole                 — для всего текста
 color:      oneOf solid(ColorRole)
 decoration?: underline | strikethrough
 alignment:  start | center | end
-maxLines?:  integer
+maxLines:   count(integer) | unlimited = unlimited
 truncation: start | middle | end = end      — место многоточия
 TextSpan: oneOf
   text: { value, typography?, color?, decoration?, click? }   — незаданное берётся у Text; color — ColorRole
@@ -273,11 +273,11 @@ TextSpan: oneOf
 5. У фрагмента только `click` (ссылка): долгое нажатие на часть текста платформы не поддерживают.
 6. Markdown — формат записи, а не модель: сервер или приложение переводят inline-markdown во фрагменты. Блочный
    markdown — отдельный компонент из контейнеров и текстов.
-7. Многоточие в начале и середине — только при `maxLines = 1`, при большем значении оно в конце. В Figma только
-   многоточие в конце: `start` и `middle` — `figma: willNotBeReleased`.
+7. Многоточие в начале и середине — только при одной строке (`maxLines.count = 1`), при большем значении оно в конце.
+   В Figma только многоточие в конце: `start` и `middle` — `figma: willNotBeReleased`.
 8. В Figma `Text` — Figma-компонент. `content` — text-свойство, фрагменты при отрисовке модели — стили диапазонов;
-   `typography` и `color` — переопределения слоя; `alignment` и `maxLines` — variant-свойства с отобранными
-   значениями (`figma-mapping.md`, раздел 4.1, правила 7–11). Набор вариантов готовится отдельной задачей.
+   `typography`, `color`, `decoration`, `alignment` и `maxLines` — переопределения слоя (`figma.json`), а не
+   variant-свойства.
 9. Заливка текста — `oneOf`, как фон: градиент (`gradient`) добавится вариантом без несовместимого изменения. Только
    для всего текста: у фрагмента цвет — `ColorRole`, градиент на часть текста не поддерживает `AttributedString`.
 10. Цвет текста по состояниям задаёт `Pressable`: в его дереве состояния у `Text` другой цвет (раздел 14).

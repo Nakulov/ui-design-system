@@ -30,7 +30,9 @@
         "solid": "onSurface"
       },
       "alignment": "start",
-      "maxLines": 1
+      "maxLines": {
+        "count": 1
+      }
     }
   }
 }

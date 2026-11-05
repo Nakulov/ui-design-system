@@ -1,0 +1,11 @@
+{
+  "name": "MaxLinesMode",
+  "type": "enum",
+  "description": "Число строк без величины",
+  "values": [
+    {
+      "name": "unlimited",
+      "description": "Число строк не ограничено"
+    }
+  ]
+}

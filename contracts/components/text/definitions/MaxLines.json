@@ -1,0 +1,16 @@
+{
+  "name": "MaxLines",
+  "type": "oneOf",
+  "description": "Наибольшее число строк текста",
+  "oneOf": [
+    {
+      "name": "count",
+      "type": "integer",
+      "sample": 2
+    },
+    {
+      "$ref": "MaxLinesMode",
+      "inline": true
+    }
+  ]
+}
