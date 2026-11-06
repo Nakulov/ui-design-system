@@ -175,7 +175,7 @@ data class TextFieldStates<T : Component>(
 |-----------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | Compose   | `BasicTextField(TextFieldState)`, `KeyboardOptions`, `ContentType` в семантике, `Modifier.onFocusChanged`, `ImeAction.Next` → `moveFocus`        |
 | SwiftUI   | обычное поле — обёртка над `UITextView` (цвет выделенного текста — TextKit 2, рост и прокрутка строк); скрытое — `UITextField` или `SecureField` |
-| Figma     | Component Set: `state` × `filled`; края — только при отрисовке модели, фреймом                                                                   |
+| Figma     | Component Set `filled` × `state`; модель с краями — фреймом                                                                                      |
 
 Сгенерированные образцы: [минимальная модель](samples/min.json) — только обязательные свойства,
 [полная модель](samples/max.json) — все свойства.
@@ -1395,7 +1395,7 @@ data class TextFieldStates<T : Component>(
       "content": {
         "plain": "Код из SMS"
       },
-      "typography": "bodyLarge",
+      "typography": "headlineMedium",
       "color": {
         "default": {
           "solid": "onSurfaceVariant"
@@ -1516,6 +1516,8 @@ data class TextFieldStates<T : Component>(
 - Кнопку «показать пароль» кладите в `trailing` как `Pressable`; по нажатию приложение присылает модель с
   `secure = false`.
 - Указывайте `contentType`: он включает автозаполнение и менеджер паролей и выбирает заглавные буквы и исправление.
+- В макете нестандартный цвет текста задавайте в каждом состоянии: при смене `state` переопределение цвета
+  сохраняется, только если в обоих состояниях цвет одинаковый.
 - Типографика одна на поле. У подсказки поля своя: подсказка — текст интерфейса, ввод — любая письменность. Разная
   высота строки даёт скачок высоты поля с первым символом.
 
@@ -1529,8 +1531,11 @@ data class TextFieldStates<T : Component>(
   `count ≥ 1`, `min ≤ count`; при `multi` — `secure = false` и `returnKey = default`; нет `click` во фрагментах
   подсказки поля; у `clearButton.button` нет `enabled` и `events`. События `change`, `submit`, `focus`, `unfocus` у
   других компонентов валидатор не отклоняет.
-- В библиотеке Figma `TextField` — Component Set `state` × `filled` (образцы `emailEmpty` и `email`). `value` и
-  текст подсказки — text-свойства; типографика, цвета, выравнивание, строки, `secure` и отступ кнопки очистки —
-  переопределения слоёв. `color.highlighted`, `clearButton.visibility`, `autofocus`, `keyboard` и `events` в Figma не
-  отображаются; края — только при отрисовке модели. Пока плагин Component Set не строит: компонент
-  пропускается с предупреждением «компонент не поддерживается».
+- В библиотеке Figma `TextField` — Component Set `filled` × `state`, 6 variant из образцов `emailEmpty` и `email`
+  (`figma-mapping.md`, раздел 10.7). Свойства: text `value` и `placeholder`, boolean `hasPlaceholder` и
+  `hasClearButton`; символ кнопки очистки — выставленный наружу экземпляр `Image`. Типографика, цвета, выравнивание
+  текстовой области, строки, `secure` и отступ кнопки очистки — переопределения слоёв. `color.highlighted`,
+  `clearButton.visibility`, `autofocus`, `keyboard` и `events` в Figma не отображаются; модель с краями рисуется
+  фреймом.
+- В макете однострочное поле показывает текст по содержимому без многоточия: длинный текст обрезается краем, как
+  прокрутка на платформах. Ширина Figma-компонента общая для всех variant; в макете экземпляру ставят Fill.

@@ -68,7 +68,7 @@
       "content": {
         "plain": "Код из SMS"
       },
-      "typography": "bodyLarge",
+      "typography": "headlineMedium",
       "color": {
         "default": {
           "solid": "onSurfaceVariant"

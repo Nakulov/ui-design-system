@@ -14,9 +14,11 @@ const STATES: Record<string, string[]> = {
   focusable: ["default", "focused", "disabled"],
 };
 /** Свойства Figma на слоях тела по месту слоя (разделы 4.1, правила 11–13, и 10.5). */
-const TEXT_PROPERTY: Record<string, string> = { Text: "content", Badge: "text" };
+const TEXT_PROPERTY: Record<string, string> = { Text: "content", Badge: "text", TextField: "value" };
 
-type Project = { sample?: string; variants?: Record<string, Record<string, string>>; iconSample?: string };
+/** Переопределение свойства в `figma.json`: вид и вложенные переопределения у `layer` (раздел 6.1). */
+type Override = { as: string; properties?: Record<string, Override> };
+type Project = { sample?: string; variants?: Record<string, Record<string, string>>; iconSample?: string; properties?: Record<string, Override> };
 type Model = Record<string, { id?: string; appearance: Record<string, unknown>; [field: string]: unknown }>;
 /** Variant Figma-компонента: значения variant-свойств, образец и его модель. */
 export type Variant = { values: [string, string][]; sample: string; model: Model };
@@ -39,6 +41,11 @@ export async function removeVariant(node: ComponentNode, owner: string, report: 
   report.warn(`${owner}: variant ${node.name} удалён${used}. В других файлах экземпляры останутся на удалённом компоненте без обновлений`);
   node.remove();
   report.deleted("variant");
+}
+
+/** Слои Figma-компонента без слоёв вложенных экземпляров: у них свои свойства. */
+function own(node: ChildrenMixin): SceneNode[] {
+  return node.children.flatMap((child) => [child, ...(child.type !== "INSTANCE" && "children" in child ? own(child) : [])]);
 }
 
 export class ComponentsBuilder {
@@ -162,7 +169,9 @@ export class ComponentsBuilder {
       node.name = target.name;
       mark(node, target.id);
       mark(node, target.variants[0].sample, "sample");
+      this.widen([node], target);
       await this.properties(node, [node], target);
+      tokens.register(target.id, node);
       return node;
     }
     const set = existing?.type === "COMPONENT_SET" ? existing : undefined;
@@ -180,7 +189,7 @@ export class ComponentsBuilder {
       old.delete(name(variant.values));
       // Подмена символа в слое, привязанном к свойству, меняет значение свойства во всём наборе: привязки снимаются
       // до отрисовки и ставятся заново в `properties`.
-      for (const layer of node.children) if (Object.keys(layer.componentPropertyReferences ?? {}).length) layer.componentPropertyReferences = {};
+      for (const layer of own(node)) if (Object.keys(layer.componentPropertyReferences ?? {}).length) layer.componentPropertyReferences = {};
       (set ?? page).appendChild(node);
       await this.draw(node, variant, target, tokens);
       node.name = name(variant.values);
@@ -191,6 +200,9 @@ export class ComponentsBuilder {
     const result = set ?? figma.combineAsVariants(nodes, page);
     result.name = target.name;
     mark(result, target.id);
+    // Следующие компоненты набора рисуют этот экземплярами: символ кнопки очистки поля — экземпляр `Image`.
+    tokens.register(target.id, result);
+    this.widen(nodes, target);
     // Variant в строку: у Component Set без Auto Layout растянутые корни образцов сохраняют размер.
     let x = VARIANT_GAP;
     for (const node of nodes) {
@@ -202,6 +214,26 @@ export class ComponentsBuilder {
     result.resize(x, Math.max(...nodes.map((n) => n.height)) + 2 * VARIANT_GAP);
     await this.properties(result, nodes, target);
     return result;
+  }
+
+  /**
+   * Корень образца с шириной `fill` в Figma-компоненте растягивать некуда: он получает фиксированную ширину —
+   * наибольшую естественную среди variant, а слои с отложенным растяжением (метка `fill`) растягиваются внутри
+   * (раздел 10.7, правило 6). В макете экземпляру ставят Fill.
+   */
+  private widen(nodes: ComponentNode[], target: Target) {
+    const wide = nodes.filter((_, index) => {
+      const body = Object.values(target.variants[index].model)[0] as { layout?: { width?: { sizing?: unknown } } };
+      return body.layout?.width?.sizing === "fill" && nodes[index].children.some((child) => ref(child, "fill") === "horizontal");
+    });
+    if (!wide.length) return;
+    const width = Math.max(...wide.map((node) => node.width));
+    for (const node of wide) {
+      node.resize(width, node.height);
+      node.layoutSizingHorizontal = "FIXED";
+      node.layoutSizingVertical = "HUG";
+      for (const child of node.children) if (ref(child, "fill") === "horizontal" && "layoutSizingHorizontal" in child) child.layoutSizingHorizontal = "FILL";
+    }
   }
 
   /** Переименовывает variant по записям `renamed` журнала, если variant с новым именем ещё нет (раздел 7, правило 3). */
@@ -222,7 +254,9 @@ export class ComponentsBuilder {
     const label = `${target.name}${variant.values.length ? ` (${variant.values.map(([, v]) => v).join(", ")})` : ""}`;
     const body = Object.values(variant.model)[0];
     const slot = body.id ?? "root";
-    const drawn = await new Renderer(tokens, this.report, label, true).draw(variant.model, node.parent as BaseNode & ChildrenMixin, new Map([[slot, node]]), slot);
+    // Состояние variant выбирает не только оформление корня, но и цвета и слои поля ввода (раздел 10.7).
+    const state = variant.values.find(([property]) => property === "state")?.[1];
+    const drawn = await new Renderer(tokens, this.report, label, true).draw(variant.model, node.parent as BaseNode & ChildrenMixin, new Map([[slot, node]]), slot, state);
     if ((drawn as SceneNode | undefined) !== node) this.report.warn(`${label}: образец не отрисован в Figma-компонент`);
   }
 
@@ -238,7 +272,7 @@ export class ComponentsBuilder {
         if (first.get(name) === value) return this.define(owner, name, type, value);
         return this.define(owner, `${name} (${target.variants[index].values.map(([, v]) => v).join(", ")})`, type, value);
       };
-      const layer = (slot: string) => node.children.find((n) => ref(n, "slot") === slot);
+      const layer = (slot: string) => own(node).find((n) => ref(n, "slot") === slot);
       const text = layer("text");
       if (text?.type === "TEXT" && TEXT_PROPERTY[target.contract]) {
         text.componentPropertyReferences = { characters: define(TEXT_PROPERTY[target.contract], "TEXT", text.characters) };
@@ -253,12 +287,40 @@ export class ComponentsBuilder {
         if (visibility) references.visible = define(visibility, "BOOLEAN", true);
         icon.componentPropertyReferences = references;
       }
+      await this.layers(node, target, layer, define);
     }
     // Свойство без слоя Figma не публикует (Unused properties): такое остаётся после выноса variant из набора или
     // удаления variant, который один его использовал.
     const used = new Set(nodes.flatMap((node) => node.findAll((n) => !!n.componentPropertyReferences).flatMap((n) => Object.values(n.componentPropertyReferences ?? {}))));
     for (const [key, definition] of Object.entries(owner.componentPropertyDefinitions)) {
       if (definition.type !== "VARIANT" && !used.has(key)) owner.deleteComponentProperty(key);
+    }
+  }
+
+  /**
+   * Свойства вложенных объектов `"as": "layer"` (раздел 4.1, правило 14): text-свойство с именем объекта у текстового
+   * слоя, `has<Объект>` — видимость необязательного объекта, выставленные наружу экземпляры у вложенного `layer` без
+   * `properties`.
+   */
+  private async layers(node: ComponentNode, target: Target, layer: (slot: string) => SceneNode | undefined,
+    define: (name: string, type: "TEXT" | "BOOLEAN" | "INSTANCE_SWAP", value: string | boolean) => string) {
+    const project = this.bundle.figma[target.id] as Project | undefined;
+    const contract = this.bundle.contracts[target.id];
+    for (const [name, override] of Object.entries(project?.properties ?? {})) {
+      if (override.as !== "layer") continue;
+      const found = layer(name);
+      if (!found) continue;
+      const references: { [key: string]: string } = {};
+      const nested = Object.values(override.properties ?? {});
+      if (found.type === "TEXT" && nested.some((o) => o.as === "text")) references.characters = define(name, "TEXT", found.characters);
+      const required = (contract?.properties as { name: string; required: boolean }[] | undefined)?.find((p) => p.name === name)?.required;
+      if (required === false) references.visible = define(`has${name[0].toUpperCase()}${name.slice(1)}`, "BOOLEAN", true);
+      found.componentPropertyReferences = references;
+      if (nested.some((o) => o.as === "layer" && !o.properties) && "findAll" in found) {
+        for (const instance of found.findAll((n) => n.type === "INSTANCE" && ref(n).startsWith("components/")) as InstanceNode[]) {
+          instance.isExposedInstance = true;
+        }
+      }
     }
   }
 

@@ -41,11 +41,18 @@ type States = { default: Entry; pressed?: Entry; disabled?: Entry };
 type Resource = { icon: { name: string; color: string } };
 type Remote = { origin: { url: string }; scale: "fit" | "crop"; alignment: string; placeholder?: Resource; error?: Resource };
 type Span = { text: { value: string; typography?: string; color?: string; decoration?: string } } | { icon: { name: string; typography?: string; color?: string } };
+/** Цвета поля ввода по состояниям: `focused` по умолчанию — `default` (component-model.md, раздел 15). */
+type FieldColors = { default: Fill; focused?: Fill; disabled: Fill };
+type Placeholder = { content: unknown; typography: string; color: FieldColors };
+/** Деревья края поля по состояниям: `disabled` — любой компонент (component-model.md, раздел 15, правило 6). */
+type FieldStates = { default: Entry; focused?: Entry; disabled: Entry };
+type Edge = { content: FieldStates; gap: Token; verticalAlignment: string };
+type ClearButton = { visibility: "always" | "whileEditing" | "whileNotEmpty"; gap: Token; button: Base };
 
 /** Компоненты, которые всегда рисуются телом — фреймом без Figma-компонента (раздел 3.4). */
 const FRAMES = ["Container", "Pressable"];
 /** Компоненты, которые плагин умеет рисовать; остальные пропускаются с предупреждением — и в модели, и на странице Components. */
-export const RENDERED = [...FRAMES, "Text", "Image", "Badge"];
+export const RENDERED = [...FRAMES, "Text", "Image", "Badge", "TextField"];
 
 const DEFAULT_FONT: FontName = { family: "Inter", style: "Regular" };
 
@@ -200,7 +207,7 @@ export class Renderer {
    */
   constructor(
     private readonly tokens: Tokens, private readonly report: Report, private readonly label: string,
-    private readonly library = false, private readonly instances = !library,
+    private readonly library = false, private instances = !library,
   ) {}
 
   /**
@@ -281,7 +288,8 @@ export class Renderer {
     reuse.delete(key);
     if (model.indicators?.length) return this.indicated(name, model, parent, old, path, at, key);
     // `Container` и `Pressable` — всегда тело: Figma-компонента у них нет (раздел 3.4).
-    if (this.instances && !FRAMES.includes(name) && old?.type !== "COMPONENT") {
+    // Поле ввода с краями — только телом: края в Figma-компонент не входят (раздел 10.7, правило 1).
+    if (this.instances && !FRAMES.includes(name) && old?.type !== "COMPONENT" && (name !== "TextField" || this.fieldFits(model))) {
       const node = await this.instance(name, model, contract, parent, old, key, at);
       if (node) return node;
     }
@@ -300,6 +308,7 @@ export class Renderer {
     mark(frame, key, "slot");
 
     if (name === "Container") this.arrangement(frame, model, at);
+    else if (name === "TextField") frame.layoutMode = "HORIZONTAL";
     else {
       frame.layoutMode = "HORIZONTAL";
       frame.primaryAxisAlignItems = name === "Text" ? "MIN" : "CENTER";
@@ -315,6 +324,7 @@ export class Renderer {
     else if (name === "Text") await this.text(frame, model, kept, at);
     else if (name === "Image") await this.source(frame, model.source, model.layout, true, kept, at);
     else if (name === "Badge") await this.badge(frame, model, kept, at);
+    else if (name === "TextField") await this.textField(frame, model, kept, at);
     if (plain.overlay) this.overlay(frame, plain, kept, at);
     for (const leftover of kept.values()) leftover.remove();
     this.collapseEmpty(frame, model.layout);
@@ -337,7 +347,7 @@ export class Renderer {
       this.tokens.missing.add(id);
       return undefined;
     }
-    if (library.type === "COMPONENT_SET" && "state" in library.componentPropertyDefinitions) values.state = "default";
+    if (library.type === "COMPONENT_SET" && "state" in library.componentPropertyDefinitions) values.state ??= "default";
     const main = library.type === "COMPONENT" ? library : library.children.find((c) =>
       c.type === "COMPONENT" && Object.entries(values).every(([k, v]) => c.variantProperties?.[k] === v)) as ComponentNode | undefined;
     const plain = this.plain(model);
@@ -369,6 +379,7 @@ export class Renderer {
       if (name === "Text") await this.text(frame, model, kept, at);
       else if (name === "Image") await this.source(frame, model.source, model.layout, true, kept, at);
       else if (name === "Badge") await this.badge(frame, model, kept, at);
+      else if (name === "TextField") await this.textField(frame, model, kept, at);
       if (plain.overlay) this.overlay(frame, plain, kept, at);
       // Слои компонента, которых нет в модели, скрываются: менять состав экземпляра Figma не даёт.
       for (const leftover of kept.values()) leftover.visible = false;
@@ -434,6 +445,7 @@ export class Renderer {
   private target(name: string, model: Base, contract: Id): [Id, Record<string, string>] {
     if (name === "Image") return [contract, { source: variant(model.source)[0] }];
     if (name === "Badge") return [contract, { content: model.content === undefined ? "none" : variant(model.content)[0] }];
+    if (name === "TextField") return [contract, { filled: String(this.fieldText(model).length > 0), state: this.active(model) }];
     const [kind, value] = variant<{ spans: Span[] }>(model.content);
     const spans = kind === "rich" ? value.spans : [];
     const edge = spans.length > 1 && ("icon" in spans[0] || "icon" in spans[spans.length - 1]);
@@ -489,9 +501,9 @@ export class Renderer {
     parent.appendChild(node);
   }
 
-  /** Добавляет слой в корень; у экземпляра слои уже на месте, а менять их порядок Figma не даёт. */
+  /** Добавляет слой в корень; у экземпляра и внутри него слои уже на месте, а менять их порядок Figma не даёт. */
   private attach(frame: FrameNode, node: SceneNode, first = false) {
-    if ((frame as SceneNode).type === "INSTANCE") return;
+    for (let at: BaseNode | null = frame; at && at.type !== "PAGE"; at = at.parent) if (at.type === "INSTANCE") return;
     if (first) frame.insertChild(0, node);
     else frame.appendChild(node);
   }
@@ -621,7 +633,10 @@ export class Renderer {
     return value[this.active(model)] as unknown as Plain;
   }
 
-  /** Активное состояние `Pressable`: значение оси `state` у корня варианта пресета, иначе по `enabled`. */
+  /**
+   * Активное состояние `Pressable` и `TextField`: значение оси `state` у корня варианта пресета или variant
+   * Figma-компонента, иначе по `enabled`; фокус в статичной модели не рисуется (раздел 10.1, правило 2).
+   */
   private active(model: Base): string {
     if (this.root?.model === model) return this.root.state;
     return model.enabled === false ? "disabled" : "default";
@@ -979,7 +994,8 @@ export class Renderer {
     if (node.characters.length) for (const font of node.getRangeAllFontNames(0, node.characters.length)) await this.loadFont(font);
     node.textTruncation = "DISABLED";
     node.maxLines = null;
-    node.maxWidth = null;
+    // В экземпляре Figma не даёт переопределить maxWidth, даже сбросом: сбрасывается, только если задан.
+    if (node.maxWidth !== null) node.maxWidth = null;
     node.textDecoration = "NONE";
     const style = this.tokens.textStyle(role);
     if (style) await this.loadFont(style.fontName);
@@ -1030,23 +1046,7 @@ export class Renderer {
     const node = await this.textNode(kept, "text", parts.map((p) => p.value).join(""), typography, color, at);
     this.attach(frame, node);
     node.name = "text";
-    let start = 0;
-    for (const part of parts) {
-      const end = start + part.value.length;
-      const span = part.span && "text" in part.span ? part.span.text : undefined;
-      if (span && end > start) {
-        if (span.typography) {
-          const style = this.tokens.textStyle(span.typography);
-          if (style) {
-            await this.loadFont(style.fontName);
-            await node.setRangeTextStyleIdAsync(start, end, style.id);
-          } else this.warn(at, `нет стиля typography/${span.typography}`);
-        }
-        if (span.color) node.setRangeFills(start, end, [this.paint(span.color, at)]);
-        if (span.decoration) node.setRangeTextDecoration(start, end, DECORATION[span.decoration]);
-      }
-      start = end;
-    }
+    await this.styleRanges(node, parts, true, at);
     if (model.decoration) node.textDecoration = DECORATION[model.decoration as string];
     node.textAlignHorizontal = TEXT_ALIGN[model.alignment as string];
     if (model.layout.width.sizing === "hug" && frame.minWidth === null && frame.maxWidth === null) {
@@ -1083,6 +1083,212 @@ export class Renderer {
         instance.setBoundVariable("height", variable);
       } else this.warn(at, `нет переменной typography/${role}/fontSize`);
     }
+  }
+
+  /** Стили фрагментов — диапазоны текстового слоя (раздел 4.1, правило 11); `colors = false` — без цветов фрагментов. */
+  private async styleRanges(node: TextNode, parts: { value: string; span?: Span }[], colors: boolean, at: string) {
+    let start = 0;
+    for (const part of parts) {
+      const end = start + part.value.length;
+      const span = part.span && "text" in part.span ? part.span.text : undefined;
+      if (span && end > start) {
+        if (span.typography) {
+          const style = this.tokens.textStyle(span.typography);
+          if (style) {
+            await this.loadFont(style.fontName);
+            await node.setRangeTextStyleIdAsync(start, end, style.id);
+          } else this.warn(at, `нет стиля typography/${span.typography}`);
+        }
+        if (span.color && colors) node.setRangeFills(start, end, [this.paint(span.color, at)]);
+        if (span.decoration) node.setRangeTextDecoration(start, end, DECORATION[span.decoration]);
+      }
+      start = end;
+    }
+  }
+
+  // Поле ввода (раздел 10.7).
+
+  /** Текст поля: `value.plain`, отсутствие поля — пустая строка (значение по умолчанию). */
+  private fieldText(model: Base): string {
+    return model.value === undefined ? "" : variant<string>(model.value)[1] ?? "";
+  }
+
+  /**
+   * Модель поля помещается в Figma-компонент (раздел 10.7, правило 1): без краёв, а у кнопки очистки — одно дерево
+   * `default` с символом, как в образце библиотеки.
+   */
+  private fieldFits(model: Base): boolean {
+    if (model.leading || model.trailing) return false;
+    const button = (model.clearButton as ClearButton | undefined)?.button;
+    if (!button) return true;
+    const states = button.states as States;
+    if (Object.keys(states).some((key) => key !== "default")) return false;
+    const [name, tree] = Object.entries(states.default)[0];
+    return name === "Image" && variant(tree.source)[0] === "resource";
+  }
+
+  /**
+   * Корень поля — строка: край `leading`, текстовая область `field`, кнопка очистки, край `trailing`. В текстовой
+   * области — текст или подсказка поля и курсор (только в `focused`); выравнивание области — `alignment`. У экземпляра
+   * слои уже на месте: задаются их значения, лишние скрываются.
+   */
+  private async textField(frame: FrameNode, model: Base, kept: Kept, at: string) {
+    const instance = (frame as SceneNode).type === "INSTANCE";
+    const state = this.active(model) as "default" | "focused" | "disabled";
+    const value = this.fieldText(model);
+    const filled = value.length > 0;
+    const [lines, multi] = variant<{ min: number; max?: { count: number } | "unlimited" }>(model.lines ?? "single");
+    const single = lines === "single";
+    const hug = model.layout.width.sizing === "hug";
+    const shade = (colors: FieldColors) => (state === "focused" ? colors.focused ?? colors.default : colors[state]).solid;
+    if (!instance) {
+      frame.itemSpacing = 0;
+      frame.primaryAxisAlignItems = "MIN";
+    }
+    frame.counterAxisAlignItems = single ? "CENTER" : "MIN";
+    if (model.leading && !instance) await this.edge(frame, model.leading as Edge, "leading", state, kept, at);
+
+    const field = this.take(kept, "field", "FRAME", () => figma.createFrame());
+    const inner: Kept = instance ? new Map(field.children.filter((n) => ref(n, "slot")).map((n) => [ref(n, "slot"), n])) : await this.reset(field);
+    this.attach(frame, field);
+    field.name = "field";
+    if (!instance) {
+      field.layoutMode = "HORIZONTAL";
+      field.itemSpacing = 0;
+      // Длинный текст однострочного поля обрезается краем области: на платформах он прокручивается (правило 2).
+      field.clipsContent = true;
+      // Корень Figma-компонента с `fill` растягивать некуда: область обнимает текст, а растяжение ставит сборка
+      // компонентов после выбора общей ширины variant (раздел 10.7, правило 6).
+      const deferred = !hug && !isAuto(frame.parent as BaseNode);
+      field.layoutSizingHorizontal = hug || deferred ? "HUG" : "FILL";
+      mark(field, deferred ? "horizontal" : "", "fill");
+      field.layoutSizingVertical = "HUG";
+    }
+    field.primaryAxisAlignItems = ALIGN[model.alignment as string];
+    field.counterAxisAlignItems = single ? "CENTER" : "MIN";
+    let role = model.typography as string;
+    if (filled) {
+      const characters = model.secure ? "•".repeat([...value].length) : value;
+      const node = await this.textNode(inner, "text", characters, role, shade(model.color as FieldColors), at);
+      this.attach(field, node);
+      node.name = "text";
+      this.fieldLines(node, single, multi, model.alignment as string);
+    } else if (model.placeholder) {
+      const placeholder = model.placeholder as Placeholder;
+      role = placeholder.typography;
+      const [kind, content] = variant<string | { spans: Span[] }>(placeholder.content);
+      const parts = kind === "plain" ? [{ value: content as string }] : (content as { spans: Span[] }).spans.map((span) => {
+        if ("text" in span) return { value: span.text.value, span };
+        this.warn(at, `символ ${span.icon.name} в подсказке поля заменён пробелом`);
+        return { value: " " };
+      });
+      // Курсор пустого поля — перед подсказкой.
+      if (state === "focused") this.cursor(field, inner, model, role, at);
+      const node = await this.textNode(inner, "placeholder", parts.map((p) => p.value).join(""), role, shade(placeholder.color), at);
+      this.attach(field, node);
+      node.name = "placeholder";
+      // В disabled цвета фрагментов подсказки поля не действуют (component-model.md, раздел 15, правило 5).
+      await this.styleRanges(node, parts, state !== "disabled", at);
+      this.fieldLines(node, single, multi, model.alignment as string);
+    }
+    if (filled && state === "focused") this.cursor(field, inner, model, role, at);
+    for (const leftover of inner.values()) {
+      if (instance) leftover.visible = false;
+      else leftover.remove();
+    }
+
+    const clear = model.clearButton as ClearButton | undefined;
+    const shown = clear && (clear.visibility === "always" || (clear.visibility === "whileEditing" ? state === "focused" : filled));
+    if (clear && shown) await this.clearButton(frame, clear, state !== "disabled" && filled, kept, at);
+    if (model.trailing && !instance) await this.edge(frame, model.trailing as Edge, "trailing", state, kept, at);
+  }
+
+  /** Строки поля: одна — текст по содержимому, несколько — перенос на всю ширину с `maxLines = count` (правило 2). */
+  private fieldLines(node: TextNode, single: boolean, multi: { max?: { count: number } | "unlimited" } | undefined, alignment: string) {
+    node.textAlignHorizontal = TEXT_ALIGN[alignment];
+    if (single) {
+      node.textAutoResize = "WIDTH_AND_HEIGHT";
+      node.layoutSizingHorizontal = "HUG";
+      return;
+    }
+    node.textAutoResize = "HEIGHT";
+    node.layoutSizingHorizontal = "FILL";
+    if (typeof multi?.max === "object") {
+      node.textTruncation = "ENDING";
+      node.maxLines = multi.max.count;
+    }
+  }
+
+  /** Курсор — прямоугольник шириной 2 и высотой строки роли, заливка — `cursorColor` (правило 3). */
+  private cursor(field: FrameNode, inner: Kept, model: Base, role: string, at: string) {
+    if ((field.parent as SceneNode | null)?.type === "INSTANCE") {
+      const old = inner.get("cursor");
+      inner.delete("cursor");
+      if (old && "fills" in old) old.fills = [this.paint(model.cursorColor as string, at)];
+      return;
+    }
+    const node = this.take(inner, "cursor", "RECTANGLE", () => figma.createRectangle());
+    this.attach(field, node);
+    node.name = "cursor";
+    const style = this.tokens.textStyle(role);
+    const height = style?.lineHeight.unit === "PIXELS" ? style.lineHeight.value : (style?.fontSize ?? 16) * 1.2;
+    node.resize(2, height);
+    node.fills = [this.paint(model.cursorColor as string, at)];
+  }
+
+  /**
+   * Кнопка очистки — фрейм с отступом `gap` слева и `Pressable` внутри; `enabled` кнопки выставляет поле. Символ в
+   * библиотеке — экземпляр `Image`: его выставляет наружу сборка компонентов (правило 4). В экземпляре поля меняется
+   * только символ.
+   */
+  private async clearButton(frame: FrameNode, clear: ClearButton, enabled: boolean, kept: Kept, at: string) {
+    const box = this.take(kept, "clearButton", "FRAME", () => figma.createFrame());
+    this.attach(frame, box);
+    box.name = "clearButton";
+    if ((frame as SceneNode).type === "INSTANCE") {
+      const states = clear.button.states as States;
+      const tree = Object.values(enabled ? states.default : states.disabled ?? states.default)[0];
+      const image = box.findOne((n) => n.type === "INSTANCE" && ref(n) === this.tokens.component("Image")) as InstanceNode | null;
+      const resource = tree && variant<Resource>(tree.source);
+      if (image && resource?.[0] === "resource") {
+        const inner: Kept = new Map(image.children.filter((n) => ref(n, "slot")).map((n) => [ref(n, "slot"), n]));
+        await this.icon(inner, "icon", resource[1].icon.name, resource[1].icon.color, `${at}.clearButton`);
+      }
+      return;
+    }
+    const inner = await this.reset(box);
+    box.layoutMode = "HORIZONTAL";
+    box.itemSpacing = 0;
+    box.counterAxisAlignItems = "CENTER";
+    box.layoutSizingHorizontal = box.layoutSizingVertical = "HUG";
+    this.assign(box, "paddingLeft", SPACING, clear.gap, at);
+    const instances = this.instances;
+    // Символ кнопки — экземпляр `Image` и в теле библиотеки: его свойства видны в экземпляре поля.
+    this.instances = true;
+    try {
+      await this.component({ Pressable: { ...clear.button, enabled } }, box, inner, `${at}.clearButton.button`, "button");
+    } finally {
+      this.instances = instances;
+    }
+    for (const leftover of inner.values()) leftover.remove();
+  }
+
+  /** Край поля — фрейм на всю высоту корня с отступом `gap` к тексту и деревом активного состояния (правило 5). */
+  private async edge(frame: FrameNode, edge: Edge, slot: "leading" | "trailing", state: "default" | "focused" | "disabled", kept: Kept, at: string) {
+    const box = this.take(kept, slot, "FRAME", () => figma.createFrame());
+    const inner = await this.reset(box);
+    this.attach(frame, box);
+    box.name = slot;
+    box.layoutMode = "VERTICAL";
+    box.itemSpacing = 0;
+    box.primaryAxisAlignItems = ALIGN[edge.verticalAlignment];
+    box.counterAxisAlignItems = "CENTER";
+    box.layoutSizingHorizontal = "HUG";
+    box.layoutSizingVertical = "FILL";
+    this.assign(box, slot === "leading" ? "paddingRight" : "paddingLeft", SPACING, edge.gap, at);
+    const name = state === "focused" && !edge.content.focused ? "default" : state;
+    await this.component(edge.content[name]!, box, inner, `${at}.${slot}.content.${name}`, "content");
+    for (const leftover of inner.values()) leftover.remove();
   }
 
   // Изображение (раздел 10.4).
