@@ -41,6 +41,13 @@ type ScrollAxis = {
   alignment?: string; gap?: Token; position?: string; reversed?: boolean; snapToItem?: boolean;
   children?: Record<string, { component: Entry; viewportFraction?: number }>[];
 };
+/** Сетка списка: `verticalGrid` или `horizontalGrid` (component-model.md, раздел 16, правило 8). */
+type ScrollGrid = {
+  columns?: Record<string, unknown>; rows?: Record<string, unknown>; rowGap?: Token; columnGap?: Token; snapToItem?: boolean;
+  children?: Record<string, { component: Entry; span?: "full" | { count: number } }>[];
+};
+/** Ячейка сетки по месту: строка, столбец, ширина в строках и в колонках. */
+type GridPlace = [row: number, column: number, rowSpan: number, columnSpan: number];
 /** Деревья состояний `Pressable` (component-model.md, раздел 14). */
 type States = { default: Entry; pressed?: Entry; disabled?: Entry };
 type Resource = { icon: { name: string; color: string } };
@@ -74,7 +81,7 @@ const IMAGE_ALIGN: Record<string, [number, number]> = {
 const BOUND_FIELDS: VariableBindableNodeField[] = [
   "width", "height", "itemSpacing", "counterAxisSpacing", "paddingLeft", "paddingRight", "paddingTop", "paddingBottom",
   "topLeftRadius", "topRightRadius", "bottomLeftRadius", "bottomRightRadius", "minWidth", "maxWidth", "minHeight",
-  "maxHeight", "strokeWeight",
+  "maxHeight", "strokeWeight", "gridRowGap", "gridColumnGap",
 ];
 
 /** Родитель с Auto Layout: дети в потоке. */
@@ -313,7 +320,7 @@ export class Renderer {
     mark(frame, key, "slot");
 
     if (name === "Container") this.arrangement(frame, model, at);
-    else if (name === "ScrollList") frame.layoutMode = variant(model.content)[0] === "horizontal" ? "HORIZONTAL" : "VERTICAL";
+    else if (name === "ScrollList") frame.layoutMode = variant(model.content)[0].startsWith("horizontal") ? "HORIZONTAL" : "VERTICAL";
     else if (name === "TextField") frame.layoutMode = "HORIZONTAL";
     else {
       frame.layoutMode = "HORIZONTAL";
@@ -954,6 +961,7 @@ export class Renderer {
    */
   private async scrollList(frame: FrameNode, model: Base, kept: Kept, at: string) {
     const [kind, axis] = variant<ScrollAxis>(model.content);
+    if (kind.endsWith("Grid")) return this.scrollGrid(frame, model, kind, axis as ScrollGrid, kept, at);
     const vertical = kind === "vertical";
     const along = vertical ? "layoutSizingVertical" : "layoutSizingHorizontal";
     const across = vertical ? "layoutSizingHorizontal" : "layoutSizingVertical";
@@ -964,6 +972,7 @@ export class Renderer {
     mark(frame, kind, "content");
     mark(frame, reversed ? "true" : "", "reversed");
     mark(frame, axis.snapToItem ? "true" : "", "snapToItem");
+    mark(frame, "", "adaptive");
 
     const content = this.take(kept, "content", "FRAME", () => figma.createFrame());
     const inner = await this.reset(content);
@@ -992,6 +1001,7 @@ export class Renderer {
       cell.fills = [];
       mark(cell, element, "element");
       mark(cell, data.viewportFraction !== undefined ? String(data.viewportFraction) : "", "viewportFraction");
+      mark(cell, "", "span");
       cell.layoutMode = frame.layoutMode;
       cell.primaryAxisAlignItems = "MIN";
       cell.counterAxisAlignItems = ALIGN[axis.alignment ?? (vertical ? "start" : "top")];
@@ -1006,6 +1016,125 @@ export class Renderer {
     for (const leftover of inner.values()) leftover.remove();
     this.collapseEmpty(content, { width: { sizing: "hug" }, height: { sizing: "hug" }, position: "flow" });
     this.layouts.push(() => this.scrollLayout(frame, content, cells, vertical, reversed, axis.position, model.layout, at));
+  }
+
+  /**
+   * Сетка (раздел 10.8, правила 6–8): содержимое — Auto Layout `GRID` с промежутками `Spacing`, ячейки расставлены
+   * явно (`MANUAL`). Число адаптивных колонок (строк) и расстановка известны только после раскладки окна.
+   */
+  private async scrollGrid(frame: FrameNode, model: Base, kind: string, grid: ScrollGrid, kept: Kept, at: string) {
+    const vertical = kind === "verticalGrid";
+    const along = vertical ? "layoutSizingVertical" : "layoutSizingHorizontal";
+    const across = vertical ? "layoutSizingHorizontal" : "layoutSizingVertical";
+    const [tracks, size] = variant<number | Token>((vertical ? grid.columns : grid.rows) ?? { fixed: 1 });
+    frame.clipsContent = true;
+    frame.primaryAxisAlignItems = "MIN";
+    frame.counterAxisAlignItems = "MIN";
+    mark(frame, kind, "content");
+    mark(frame, "", "reversed");
+    mark(frame, !vertical && grid.snapToItem ? "true" : "", "snapToItem");
+    mark(frame, tracks === "adaptive" ? JSON.stringify(size) : "", "adaptive");
+
+    const content = this.take(kept, "content", "FRAME", () => figma.createFrame());
+    const inner = await this.reset(content);
+    frame.appendChild(content);
+    content.name = "content";
+    content.fills = [];
+    content.layoutMode = "GRID";
+    content.gridAutoTracks = "NONE";
+    content.gridItemsPositioning = "MANUAL";
+    this.padding(content, (model.contentPadding as Record<string, unknown> | undefined) ?? { all: "zero" }, `${at}.contentPadding`);
+    this.assign(content, "gridRowGap", SPACING, grid.rowGap ?? "zero", `${at}.content.${kind}.rowGap`);
+    this.assign(content, "gridColumnGap", SPACING, grid.columnGap ?? "zero", `${at}.content.${kind}.columnGap`);
+    content.layoutPositioning = "AUTO";
+    // До раскладки ячейки стоят по одной в строке (столбце); место каждой задаёт `gridLayout`.
+    const children = grid.children ?? [];
+    const count = Math.max(children.length, 1);
+    content.gridColumnCount = vertical ? 1 : count;
+    content.gridRowCount = vertical ? count : 1;
+
+    const cells: [FrameNode, string, number | "full"][] = [];
+    for (const [index, child] of children.entries()) {
+      const [element, data] = variant<{ component: Entry; span?: "full" | { count: number } }>(child);
+      const path = `${at}.content.${kind}.children[${index}].${element}`;
+      const cell = this.take(inner, `children[${index}]`, "FRAME", () => figma.createFrame());
+      const cellKept = await this.reset(cell);
+      content.appendChildAt(cell, vertical ? index : 0, vertical ? 0 : index);
+      cell.name = element;
+      cell.fills = [];
+      const span = element === "header" || data.span === "full" ? "full" : (data.span?.count ?? 1);
+      if (typeof span === "number" && span < 1) this.warn(path, `span ${span} меньше 1, нарисован как 1`);
+      mark(cell, element, "element");
+      mark(cell, "", "viewportFraction");
+      mark(cell, element === "item" && span !== 1 ? String(span) : "", "span");
+      cell.layoutMode = vertical ? "VERTICAL" : "HORIZONTAL";
+      cell.primaryAxisAlignItems = "MIN";
+      cell.counterAxisAlignItems = "MIN";
+      cell.layoutPositioning = "AUTO";
+      cell[along] = "HUG";
+      cell[across] = "FILL";
+      await this.component(data.component, cell, cellKept, path, "component");
+      for (const leftover of cellKept.values()) leftover.remove();
+      cells.push([cell, element, span]);
+    }
+    for (const leftover of inner.values()) leftover.remove();
+    content[along] = "HUG";
+    content[across] = frame[across] === "HUG" ? "HUG" : "FILL";
+    this.collapseEmpty(content, { width: { sizing: "hug" }, height: { sizing: "hug" }, position: "flow" });
+    if (tracks === "fixed" && !((size as number) >= 1)) this.warn(at, `${vertical ? "columns" : "rows"} ${size} меньше 1, нарисовано как 1`);
+    const fixed = tracks === "fixed" ? Math.max(Math.floor(size as number), 1) : undefined;
+    const minimum = tracks === "adaptive" ? this.tokens.number(SIZE, size as Token) : 0;
+    this.layouts.push(() => this.gridLayout(content, cells, vertical, fixed, minimum));
+  }
+
+  /**
+   * Расстановка ячеек сетки (раздел 10.8, правило 7): число колонок (строк) — заданное или по размеру содержимого;
+   * элементы заполняют строки (у горизонтальной сетки — столбцы) с начала, не поместившийся в остаток переносится,
+   * `span` прижимается к числу колонок, `header` — на всю строку.
+   */
+  private gridLayout(content: FrameNode, cells: [FrameNode, string, number | "full"][], vertical: boolean, fixed: number | undefined, minimum: number) {
+    if (!cells.length) return;
+    const room = vertical ? content.width - content.paddingLeft - content.paddingRight : content.height - content.paddingTop - content.paddingBottom;
+    const gap = vertical ? content.gridColumnGap : content.gridRowGap;
+    const n = fixed ?? Math.max(Math.floor((room + gap) / (Math.max(minimum, 0.01) + gap)), 1);
+    const places: GridPlace[] = [];
+    let line = 0;
+    let used = 0;
+    for (const [, , span] of cells) {
+      const width = span === "full" ? n : Math.min(Math.max(span, 1), n);
+      if (used + width > n) {
+        line++;
+        used = 0;
+      }
+      places.push(vertical ? [line, used, 1, width] : [used, line, width, 1]);
+      used += width;
+    }
+    const lines = line + 1;
+    const [rows, columns] = vertical ? [lines, n] : [n, lines];
+    // Figma не ставит ячейку на занятое место: сначала все ячейки уходят в свободные строки ниже сетки.
+    const along = vertical ? "layoutSizingVertical" : "layoutSizingHorizontal";
+    content[along] = "FIXED";
+    const parking = Math.max(content.gridRowCount, rows);
+    content.gridRowCount = parking + cells.length;
+    if (content.gridColumnCount < columns) content.gridColumnCount = columns;
+    for (const [index, [cell]] of cells.entries()) {
+      cell.gridRowSpan = 1;
+      cell.gridColumnSpan = 1;
+      cell.setGridChildPosition(parking + index, 0);
+    }
+    for (const [index, [row, column, rowSpan, columnSpan]] of places.entries()) {
+      const [cell] = cells[index];
+      cell.setGridChildPosition(row, column);
+      cell.gridRowSpan = rowSpan;
+      cell.gridColumnSpan = columnSpan;
+    }
+    content.gridRowCount = rows;
+    content.gridColumnCount = columns;
+    // Поперёк оси дорожки делят содержимое поровну (при `hug` окна — по ячейкам), вдоль оси — по ячейкам.
+    const acrossHug = (vertical ? content.layoutSizingHorizontal : content.layoutSizingVertical) === "HUG";
+    for (const track of vertical ? content.gridColumnSizes : content.gridRowSizes) track.type = acrossHug ? "HUG" : "FLEX";
+    for (const track of vertical ? content.gridRowSizes : content.gridColumnSizes) track.type = "HUG";
+    content[along] = "HUG";
   }
 
   /**
