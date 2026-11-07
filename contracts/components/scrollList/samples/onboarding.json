@@ -1,0 +1,440 @@
+{
+  "ScrollList": {
+    "id": "onboarding",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 400
+            }
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
+    },
+    "contentPadding": {
+      "symmetric": {
+        "horizontal": "l",
+        "vertical": "m"
+      }
+    },
+    "content": {
+      "horizontalPager": {
+        "gap": "s",
+        "initialPage": 1,
+        "children": [
+          {
+            "Container": {
+              "id": "onboarding-1",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "l"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "cornerRadius": "l",
+                  "clip": true
+                }
+              },
+              "arrangement": {
+                "vertical": {
+                  "alignment": "center",
+                  "distribution": {
+                    "packed": {
+                      "gap": "m",
+                      "position": "center"
+                    }
+                  }
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": {
+                          "fixed": "xl3"
+                        }
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {
+                        "cornerRadius": "m",
+                        "clip": true
+                      }
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Каталог в кармане"
+                    },
+                    "typography": "headlineSmall",
+                    "color": {
+                      "solid": "onSurface"
+                    },
+                    "alignment": "center"
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Тысячи товаров с доставкой на следующий день"
+                    },
+                    "typography": "bodyMedium",
+                    "color": {
+                      "solid": "onSurfaceVariant"
+                    },
+                    "alignment": "center"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Container": {
+              "id": "onboarding-2",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "l"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "cornerRadius": "l",
+                  "clip": true
+                }
+              },
+              "arrangement": {
+                "vertical": {
+                  "alignment": "center",
+                  "distribution": {
+                    "packed": {
+                      "gap": "m",
+                      "position": "center"
+                    }
+                  }
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": {
+                          "fixed": "xl3"
+                        }
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {
+                        "cornerRadius": "m",
+                        "clip": true
+                      }
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Скидки для вас"
+                    },
+                    "typography": "headlineSmall",
+                    "color": {
+                      "solid": "onSurface"
+                    },
+                    "alignment": "center"
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Подборки и цены, которые подходят именно вам"
+                    },
+                    "typography": "bodyMedium",
+                    "color": {
+                      "solid": "onSurfaceVariant"
+                    },
+                    "alignment": "center"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Container": {
+              "id": "onboarding-3",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "l"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "cornerRadius": "l",
+                  "clip": true
+                }
+              },
+              "arrangement": {
+                "vertical": {
+                  "alignment": "center",
+                  "distribution": {
+                    "packed": {
+                      "gap": "m",
+                      "position": "center"
+                    }
+                  }
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": {
+                          "fixed": "xl3"
+                        }
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {
+                        "cornerRadius": "m",
+                        "clip": true
+                      }
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Оплата в один шаг"
+                    },
+                    "typography": "headlineSmall",
+                    "color": {
+                      "solid": "onSurface"
+                    },
+                    "alignment": "center"
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Сохраните карту и оплачивайте заказ одним касанием"
+                    },
+                    "typography": "bodyMedium",
+                    "color": {
+                      "solid": "onSurfaceVariant"
+                    },
+                    "alignment": "center"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -3,7 +3,8 @@
 ## Назначение
 
 `ScrollList` — прокручиваемый список: окно, в котором содержимое прокручивается вдоль одной оси. Длинный экран
-настроек или формы, лента из данных с подгрузкой (заказы, уведомления, поиск), чат, карусель карточек.
+настроек или формы, лента из данных с подгрузкой (заказы, уведомления, поиск), чат, карусель карточек, постраничная
+прокрутка (онбординг, баннеры, лента видео на всё окно).
 
 Одна модель и для содержимого, заданного в макете, и для списка из данных: модель — дерево, данные в дерево
 разворачивает приложение или сервер. Контракту и Figma всё равно, статический список или из данных; ленивую отрисовку
@@ -11,15 +12,15 @@
 
 Список наследует базовую модель `Component`: размеры и положение в родителе (`layout`), отступ окна (`padding`),
 оформление (`appearance`, контекст `plain`) и события (`events`, в том числе `reachEnd`). Собственные поля — отступ у
-содержимого (`contentPadding`) и содержимое (`content`): вариант задаёт раскладку и элементы — список или сетку.
-Пейджеры добавятся вариантами `content` (#222).
+содержимого (`contentPadding`) и содержимое (`content`): вариант задаёт раскладку и элементы — список, сетку или
+пейджер.
 
 ## Состав
 
 | Файл                                        | Роль                                                                           |
 |---------------------------------------------|--------------------------------------------------------------------------------|
 | `ScrollList.json`                           | Публичный контракт: отступ у содержимого и содержимое.                         |
-| `definitions/ScrollListContent.json`        | Содержимое: `vertical`, `horizontal`, `verticalGrid` или `horizontalGrid`.     |
+| `definitions/ScrollListContent.json`        | Содержимое: списки, сетки или пейджеры — вариант задаёт раскладку.             |
 | `definitions/ScrollListVertical.json`       | Вертикальный список: выравнивание, промежуток, положение, элементы.            |
 | `definitions/ScrollListHorizontal.json`     | Горизонтальный список: выравнивание, промежуток, положение, элементы.          |
 | `definitions/ScrollListElement.json`        | Элемент списка: `header` или `item`.                                           |
@@ -32,6 +33,7 @@
 | `definitions/ScrollListGridItem.json`       | Обычный элемент сетки: компонент и ширина в колонках `span`.                   |
 | `definitions/ScrollListGridSpan.json`       | Ширина в колонках (строках): `count` — число, `full` — на всю строку.          |
 | `definitions/ScrollListGridSpanMode.json`   | Ширина без числа: `full`.                                                      |
+| `definitions/ScrollListPager.json`          | Пейджер: промежуток, начальная страница, страницы.                             |
 | `docs.json`                                 | Манифест документации Figma: секции страницы и примеры.                        |
 | `changelog.json`                            | Журнал изменений API.                                                          |
 | `samples/`                                  | Образцы: `min.json`, `max.json` и по одному на сценарий (`search.json` и др.). |
@@ -52,6 +54,8 @@ ScrollListContent: oneOf
                     children?: [ScrollListGridElement] }
   horizontalGrid  { rows: ScrollListGridTracks, rowGap = zero, columnGap = zero, snapToItem = false,
                     children?: [ScrollListGridElement] }
+  verticalPager   { gap = zero, initialPage = 0, children?: [Component] }
+  horizontalPager { gap = zero, initialPage = 0, children?: [Component] }
 
 ScrollListElement: oneOf
   header  { component: Component }
@@ -89,6 +93,10 @@ ScrollListGridSpan: oneOf
 | `rowGap`, `columnGap` | промежутки между строками и колонками                           | `verticalArrangement` / `horizontalArrangement`  | `spacing:` стека и строки                                   |
 | `span`                | ширина элемента в колонках (у `horizontalGrid` — в строках)     | `GridItemSpan(minOf(n, maxLineSpan))`            | `.containerRelativeFrame(.horizontal, count:span:spacing:)` |
 | `header` в сетке      | ячейка на всю строку (весь столбец)                             | `item(span = { GridItemSpan(maxLineSpan) })`     | строка из одной ячейки, `Section`                           |
+| `verticalPager`       | вертикальный пейджер                                            | `VerticalPager(pageSize = PageSize.Fill)`        | `ScrollView { LazyVStack }`, страницы — ниже                |
+| `horizontalPager`     | горизонтальный пейджер                                          | `HorizontalPager(pageSize = PageSize.Fill)`      | `ScrollView(.horizontal) { LazyHStack }`, страницы — ниже   |
+| `gap` пейджера        | промежуток между страницами                                     | `pageSpacing`                                    | `spacing:` стека                                            |
+| `initialPage`         | страница при первом показе, отсчёт с 0                          | `rememberPagerState(initialPage)`                | `.scrollPosition(id:)`                                      |
 
 **Окно и содержимое.** `padding` — отступ окна по общим правилам: элементы обрезаются у его края. `contentPadding` —
 отступ у содержимого: он есть в начале и в конце, а при прокрутке элементы доезжают до края окна. Ячейка элемента
@@ -128,6 +136,20 @@ ScrollListGridSpan: oneOf
 `LazyVStack(spacing: rowGap)`, ячейка — `.containerRelativeFrame(.horizontal, count: columns, span: span, spacing:
 columnGap)` (iOS 17+); число адаптивных колонок — по ширине окна (`onGeometryChange`). Горизонтальная сетка — так же
 столбцами в `LazyHStack`.
+
+**Пейджер.** Страница — окно минус `contentPadding` вдоль оси и поперёк (Compose `PageSize.Fill`); компонент в
+странице меряется своим `layout`. При нулевом `contentPadding` страница — ровно окно (онбординг, лента видео); при
+ненулевом текущая страница стоит с отступом `contentPadding` от краёв окна, а по бокам видны края соседних страниц
+(баннеры, галерея) — в отличие от списка, где отступ есть только в начале и в конце содержимого. Один жест листает не
+больше одной страницы. `initialPage` больше числа страниц прижимается к последней странице, платформа не падает.
+Если у пейджера вдоль оси `hug`, окна нет — страница меряется своим `layout` (как `viewportFraction`); при `hug`
+поперёк оси окно обнимает самую большую страницу.
+
+**Пейджер в SwiftUI.** Способ проверен компиляцией (`swiftc`): `ScrollView` со стеком `LazyHStack(spacing: gap)`
+(`LazyVStack` у вертикального), страница — `.containerRelativeFrame([.horizontal, .vertical])`, у стека —
+`.scrollTargetLayout()`; отступ — `.contentMargins(…, for: .scrollContent)`; не больше одной страницы за жест —
+`.scrollTargetBehavior(.viewAligned(limitBehavior: .alwaysByOne))` (iOS 18+; на iOS 17 — `.paging`); начальная
+страница — `.scrollPosition(id:)`.
 
 **Вложенная прокрутка** в одном направлении — ошибка проектирования: валидатор её не проверяет, платформа не падает —
 внутренний список рисуется колонкой без своей прокрутки. Разные направления (карусель в ленте) — норма.
@@ -4742,6 +4764,821 @@ columnGap)` (iOS 17+); число адаптивных колонок — по �
 }
 ```
 
+Онбординг: горизонтальный пейджер, `contentPadding` по бокам — видны края соседних страниц; окно открывается на
+второй странице (`initialPage: 1`).
+
+<!-- sample: samples/onboarding.json -->
+```json
+{
+  "ScrollList": {
+    "id": "onboarding",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 400
+            }
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
+    },
+    "contentPadding": {
+      "symmetric": {
+        "horizontal": "l",
+        "vertical": "m"
+      }
+    },
+    "content": {
+      "horizontalPager": {
+        "gap": "s",
+        "initialPage": 1,
+        "children": [
+          {
+            "Container": {
+              "id": "onboarding-1",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "l"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "cornerRadius": "l",
+                  "clip": true
+                }
+              },
+              "arrangement": {
+                "vertical": {
+                  "alignment": "center",
+                  "distribution": {
+                    "packed": {
+                      "gap": "m",
+                      "position": "center"
+                    }
+                  }
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": {
+                          "fixed": "xl3"
+                        }
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {
+                        "cornerRadius": "m",
+                        "clip": true
+                      }
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Каталог в кармане"
+                    },
+                    "typography": "headlineSmall",
+                    "color": {
+                      "solid": "onSurface"
+                    },
+                    "alignment": "center"
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Тысячи товаров с доставкой на следующий день"
+                    },
+                    "typography": "bodyMedium",
+                    "color": {
+                      "solid": "onSurfaceVariant"
+                    },
+                    "alignment": "center"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Container": {
+              "id": "onboarding-2",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "l"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "cornerRadius": "l",
+                  "clip": true
+                }
+              },
+              "arrangement": {
+                "vertical": {
+                  "alignment": "center",
+                  "distribution": {
+                    "packed": {
+                      "gap": "m",
+                      "position": "center"
+                    }
+                  }
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": {
+                          "fixed": "xl3"
+                        }
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {
+                        "cornerRadius": "m",
+                        "clip": true
+                      }
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Скидки для вас"
+                    },
+                    "typography": "headlineSmall",
+                    "color": {
+                      "solid": "onSurface"
+                    },
+                    "alignment": "center"
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Подборки и цены, которые подходят именно вам"
+                    },
+                    "typography": "bodyMedium",
+                    "color": {
+                      "solid": "onSurfaceVariant"
+                    },
+                    "alignment": "center"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Container": {
+              "id": "onboarding-3",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "l"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "cornerRadius": "l",
+                  "clip": true
+                }
+              },
+              "arrangement": {
+                "vertical": {
+                  "alignment": "center",
+                  "distribution": {
+                    "packed": {
+                      "gap": "m",
+                      "position": "center"
+                    }
+                  }
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": {
+                          "fixed": "xl3"
+                        }
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {
+                        "cornerRadius": "m",
+                        "clip": true
+                      }
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Оплата в один шаг"
+                    },
+                    "typography": "headlineSmall",
+                    "color": {
+                      "solid": "onSurface"
+                    },
+                    "alignment": "center"
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Сохраните карту и оплачивайте заказ одним касанием"
+                    },
+                    "typography": "bodyMedium",
+                    "color": {
+                      "solid": "onSurfaceVariant"
+                    },
+                    "alignment": "center"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+Лента видео: вертикальный пейджер, страница — ровно окно; следующая порция — по `reachEnd`.
+
+<!-- sample: samples/videoFeed.json -->
+```json
+{
+  "ScrollList": {
+    "id": "videoFeed",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 480
+            }
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
+    },
+    "events": [
+      {
+        "reachEnd": {
+          "payload": {
+            "action": "loadMoreVideos"
+          }
+        }
+      }
+    ],
+    "contentPadding": {
+      "all": "zero"
+    },
+    "content": {
+      "verticalPager": {
+        "gap": "zero",
+        "initialPage": 0,
+        "children": [
+          {
+            "Container": {
+              "id": "video-1",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "clip": true
+                }
+              },
+              "events": [
+                {
+                  "click": {
+                    "payload": {
+                      "action": "togglePlayback",
+                      "videoId": "video-1"
+                    }
+                  }
+                }
+              ],
+              "arrangement": {
+                "overlay": {
+                  "horizontal": "start",
+                  "vertical": "bottom"
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "fill"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "l"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Как выбрать плед на зиму"
+                    },
+                    "typography": "titleMedium",
+                    "color": {
+                      "solid": "inverseOnSurface"
+                    },
+                    "alignment": "start"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Container": {
+              "id": "video-2",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "clip": true
+                }
+              },
+              "events": [
+                {
+                  "click": {
+                    "payload": {
+                      "action": "togglePlayback",
+                      "videoId": "video-2"
+                    }
+                  }
+                }
+              ],
+              "arrangement": {
+                "overlay": {
+                  "horizontal": "start",
+                  "vertical": "bottom"
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "fill"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "l"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Пять идей для кухни"
+                    },
+                    "typography": "titleMedium",
+                    "color": {
+                      "solid": "inverseOnSurface"
+                    },
+                    "alignment": "start"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Container": {
+              "id": "video-3",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "clip": true
+                }
+              },
+              "events": [
+                {
+                  "click": {
+                    "payload": {
+                      "action": "togglePlayback",
+                      "videoId": "video-3"
+                    }
+                  }
+                }
+              ],
+              "arrangement": {
+                "overlay": {
+                  "horizontal": "start",
+                  "vertical": "bottom"
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "fill"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "l"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Уютный вечер за 10 минут"
+                    },
+                    "typography": "titleMedium",
+                    "color": {
+                      "solid": "inverseOnSurface"
+                    },
+                    "alignment": "start"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
 Сгенерированные образцы: [минимальная модель](samples/min.json), [полная модель](samples/max.json).
 
 Ожидаемая модель на Kotlin:
@@ -4785,6 +5622,18 @@ sealed interface ScrollListContent {
         val columnGap: Spacing = Spacing.Zero,
         val snapToItem: Boolean = false,
         val children: List<ScrollListGridElement>? = null,
+    ) : ScrollListContent
+
+    data class VerticalPager(
+        val gap: Spacing = Spacing.Zero,
+        val initialPage: Int = 0,
+        val children: List<Component>? = null,
+    ) : ScrollListContent
+
+    data class HorizontalPager(
+        val gap: Spacing = Spacing.Zero,
+        val initialPage: Int = 0,
+        val children: List<Component>? = null,
     ) : ScrollListContent
 }
 
@@ -4832,6 +5681,9 @@ sealed interface ScrollListGridSpan {
   шириной колонки — обычно `custom`: шкала `Size` рассчитана на размеры элементов.
 - Короткую горизонтальную сетку в 2–3 строки внутри вертикальной ленты задавайте `horizontalGrid` с фиксированной
   высотой списка.
+- Для онбординга, баннеров и ленты видео на всё окно используйте пейджеры: страница — окно минус `contentPadding`,
+  один жест — одна страница. Края соседних страниц показывайте ненулевым `contentPadding` вдоль оси и `gap`.
+- Задавайте пейджеру размер вдоль оси (`fixed` или `fill`): страница меряется от окна, при `hug` окна нет.
 - Не вкладывайте список в список с той же осью прокрутки: внутренний не прокручивается. Карусель в вертикальной ленте
   — норма.
 
@@ -4854,4 +5706,9 @@ sealed interface ScrollListGridSpan {
 - Не проверено: вертикальная сетка внутри горизонтального списка — в Compose `LazyVerticalGrid` с неограниченной
   шириной, вероятно, падает; правило вложенной прокрутки (платформа не падает) распространяется и на этот случай,
   способ — на этапе 5.
-- Пейджеры (`verticalPager`, `horizontalPager`) — #222.
+- `initialPage` — не меньше 0; формат это ограничение не выражает, валидатор его не проверяет.
+- Не проверено: учитывает ли `.paging` в SwiftUI (iOS 17) отступ `.contentMargins` — страница пейджера при ненулевом
+  `contentPadding`; проверяется на этапе 5.
+- Не проверено: пейджер с `hug` поперёк оси — Compose `HorizontalPager` с `wrapContentHeight` и SwiftUI
+  `.containerRelativeFrame` в стеке без высоты окна; проверяется на этапе 5.
+- Событие смены страницы и индикатор страниц — #219.

@@ -1,7 +1,7 @@
 # Модель компонентов
 
 **Статус:** Черновик, в обсуждении  
-**Версия спецификации:** 0.11
+**Версия спецификации:** 0.12
 
 Документ фиксирует согласованные решения по универсальному контракту компонентов. Он будет дополняться по мере
 обсуждения и затем войдёт в спецификацию формата (`schema-format.md`).
@@ -630,6 +630,8 @@ ScrollListContent: oneOf
   horizontal      ScrollListHorizontal
   verticalGrid    ScrollListVerticalGrid
   horizontalGrid  ScrollListHorizontalGrid
+  verticalPager   ScrollListPager
+  horizontalPager ScrollListPager
 
 ScrollListVertical
   alignment:  ContainerHorizontalAlignment = start   — поперёк оси
@@ -675,22 +677,29 @@ ScrollListGridElement: oneOf
 ScrollListGridSpan: oneOf
   count  integer                                     — ≥ 1
   full                                               — inline-перечисление ScrollListGridSpanMode
+
+ScrollListPager
+  gap:         Spacing = zero
+  initialPage: integer = 0                           — ≥ 0
+  children?:   [Component]                           — страница = окно минус contentPadding
 ```
 
-| Вариант          | Figma                                   | Compose              | SwiftUI                                               |
-|------------------|-----------------------------------------|----------------------|-------------------------------------------------------|
-| `vertical`       | содержимое — вертикальный Auto Layout   | `LazyColumn`         | `ScrollView { LazyVStack }`                           |
-| `horizontal`     | содержимое — горизонтальный Auto Layout | `LazyRow`            | `ScrollView(.horizontal) { LazyHStack }`              |
-| `verticalGrid`   | содержимое — Auto Layout `GRID`         | `LazyVerticalGrid`   | `ScrollView { LazyVStack }` со строками из ячеек      |
-| `horizontalGrid` | содержимое — Auto Layout `GRID`         | `LazyHorizontalGrid` | `ScrollView(.horizontal) { LazyHStack }` со столбцами |
+| Вариант           | Figma                                   | Compose              | SwiftUI                                               |
+|-------------------|-----------------------------------------|----------------------|-------------------------------------------------------|
+| `vertical`        | содержимое — вертикальный Auto Layout   | `LazyColumn`         | `ScrollView { LazyVStack }`                           |
+| `horizontal`      | содержимое — горизонтальный Auto Layout | `LazyRow`            | `ScrollView(.horizontal) { LazyHStack }`              |
+| `verticalGrid`    | содержимое — Auto Layout `GRID`         | `LazyVerticalGrid`   | `ScrollView { LazyVStack }` со строками из ячеек      |
+| `horizontalGrid`  | содержимое — Auto Layout `GRID`         | `LazyHorizontalGrid` | `ScrollView(.horizontal) { LazyHStack }` со столбцами |
+| `verticalPager`   | окно показывает страницу `initialPage`  | `VerticalPager`      | `ScrollView { LazyVStack }`, правило 9                |
+| `horizontalPager` | окно показывает страницу `initialPage`  | `HorizontalPager`    | `ScrollView(.horizontal) { LazyHStack }`, правило 9   |
 
 Имя — `ScrollList`, а не `List`: `List` совпадает с `kotlin.collections.List` (генераторы пишут `List<Component>`,
-`schema-format.md`, раздел 5.2) и со SwiftUI `List`. Пейджеры добавляются вариантами `content` (#222).
+`schema-format.md`, раздел 5.2) и со SwiftUI `List`.
 
 1. `padding` — по общим правилам (раздел 6): отступ окна, элементы обрезаются у его края. `contentPadding` — отступ у
    содержимого: в начале и в конце; при прокрутке элементы доезжают до края окна (Compose `contentPadding`, SwiftUI
-   `.contentMargins`). Ячейка элемента поперёк оси — на всю ширину (высоту) содержимого; вдоль оси — по компоненту или
-   по `viewportFraction`.
+   `.contentMargins`). Исключение — пейджер (правило 9). Ячейка элемента поперёк оси — на всю ширину (высоту)
+   содержимого; вдоль оси — по компоненту или по `viewportFraction`.
 2. Ключ элемента — `id` компонента (раздел 5, правило 3); без `id` — позиция; повтор `id` в модели с сервера —
    повторяющийся элемент получает ключ по позиции, платформа не падает. Задавать `id` элементам из данных — забота
    приложения.
@@ -720,12 +729,23 @@ ScrollListGridSpan: oneOf
    строк — по высоте окна. SwiftUI: у `LazyVGrid` элементы одной ширины, поэтому платформа собирает элементы в строки
    по этому правилу — `HStack` в `LazyVStack`, ячейка `.containerRelativeFrame(.horizontal, count:span:spacing:)`
    (iOS 17+), число адаптивных колонок — по ширине окна; способ проверен компиляцией (`swiftc`).
-9. Вложенная прокрутка в одном направлении — ошибка проектирования, валидатор её не проверяет; платформа не падает:
-   внутренний список рисуется колонкой без своей прокрутки. Разные направления (карусель в ленте) — норма.
+9. Пейджер: страница — окно минус `contentPadding` вдоль оси и поперёк (Compose `PageSize.Fill`), компонент в ней
+   меряется своим `layout`. При нулевом `contentPadding` страница — ровно окно (онбординг, лента видео); при
+   ненулевом текущая страница стоит с отступом `contentPadding` от краёв окна, а не только в начале и в конце
+   содержимого, — по бокам видны края соседних страниц (баннеры, галерея). Один жест — не больше одной страницы.
+   `initialPage` (≥ 0) больше числа страниц прижимается к последней странице, платформа не падает. `hug` вдоль оси —
+   окна нет, страница меряется своим `layout` (как `viewportFraction`, правило 6); `hug` поперёк оси — окно обнимает
+   самую большую страницу. SwiftUI: `ScrollView`
+   со стеком, страница — `.containerRelativeFrame([.horizontal, .vertical])`, не больше страницы за жест —
+   `.scrollTargetBehavior(.viewAligned(limitBehavior: .alwaysByOne))` (iOS 18+; на iOS 17 — `.paging`), начальная
+   страница — `.scrollPosition(id:)`; способ проверен компиляцией (`swiftc`). Событие смены страницы и индикатор
+   страниц — #219.
+10. Вложенная прокрутка в одном направлении — ошибка проектирования, валидатор её не проверяет; платформа не падает:
+    внутренний список рисуется колонкой без своей прокрутки. Разные направления (карусель в ленте) — норма.
 
 **Figma**
 
-10. `ScrollList`, как `Container`, — фрейм без Figma-компонента и `figma.json`; создаётся только при отрисовке модели
+11. `ScrollList`, как `Container`, — фрейм без Figma-компонента и `figma.json`; создаётся только при отрисовке модели
     (`figma-mapping.md`, раздел 3.4): внешний фрейм — окно (`padding`, оформление, clip, высота — `layout.height`),
     внутренний — содержимое (`contentPadding`, `gap`, выравнивание или Auto Layout `GRID` у сеток), каждый элемент —
     фрейм ячейки (в сетке — с `gridColumnSpan` / `gridRowSpan`). Прокрутку в прототипе плагин не ставит. Отрисовка и
@@ -741,7 +761,11 @@ ScrollListGridSpan: oneOf
 - прилипающий `header` в сетке: Compose `stickyHeader` у `LazyGridScope`, SwiftUI `Section` в
   `LazyVStack(pinnedViews:)` со строками из ячеек;
 - вертикальная сетка внутри горизонтального списка: Compose `LazyVerticalGrid` с неограниченной шириной, вероятно,
-  падает; правило 9 (платформа не падает) распространяется и на этот случай, способ — на этапе 5.
+  падает; правило 10 (платформа не падает) распространяется и на этот случай, способ — на этапе 5;
+- страница пейджера при ненулевом `contentPadding` в SwiftUI на iOS 17: учитывает ли `.paging` отступ
+  `.contentMargins`;
+- пейджер с `hug` поперёк оси: Compose `HorizontalPager` с `wrapContentHeight`, SwiftUI `.containerRelativeFrame` в
+  стеке без высоты окна.
 
 ## 17. Открытые вопросы
 
