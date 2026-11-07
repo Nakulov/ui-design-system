@@ -14,7 +14,11 @@
       "all": "zero"
     },
     "appearance": {
-      "plain": {}
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
     },
     "events": [
       {

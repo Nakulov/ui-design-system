@@ -6,7 +6,13 @@
         "sizing": "fill"
       },
       "height": {
-        "sizing": "fill"
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 320
+            }
+          }
+        }
       },
       "position": "flow"
     },
@@ -376,6 +382,40 @@
                       }
                     }
                   ]
+                }
+              }
+            }
+          },
+          {
+            "header": {
+              "component": {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "zero",
+                      "vertical": "xs"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "Вчера"
+                  },
+                  "typography": "labelSmall",
+                  "color": {
+                    "solid": "onSurfaceMuted"
+                  },
+                  "alignment": "center"
                 }
               }
             }

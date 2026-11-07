@@ -100,7 +100,13 @@ ScrollListElement: oneOf
         "sizing": "fill"
       },
       "height": {
-        "sizing": "fill"
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 320
+            }
+          }
+        }
       },
       "position": "flow"
     },
@@ -713,7 +719,13 @@ ScrollListElement: oneOf
         "sizing": "fill"
       },
       "height": {
-        "sizing": "fill"
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 320
+            }
+          }
+        }
       },
       "position": "flow"
     },
@@ -1086,6 +1098,40 @@ ScrollListElement: oneOf
                 }
               }
             }
+          },
+          {
+            "header": {
+              "component": {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "zero",
+                      "vertical": "xs"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "Вчера"
+                  },
+                  "typography": "labelSmall",
+                  "color": {
+                    "solid": "onSurfaceMuted"
+                  },
+                  "alignment": "center"
+                }
+              }
+            }
           }
         ]
       }
@@ -1114,7 +1160,11 @@ ScrollListElement: oneOf
       "all": "zero"
     },
     "appearance": {
-      "plain": {}
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
     },
     "events": [
       {
