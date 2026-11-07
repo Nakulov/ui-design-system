@@ -179,6 +179,10 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="contracts/components/scrollList/definitions/ScrollListPager.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="contracts/components/scrollList/definitions/ScrollListVertical.json" />
                     <option name="mappingKind" value="File" />
                   </Item>

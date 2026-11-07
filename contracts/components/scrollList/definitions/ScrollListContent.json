@@ -18,6 +18,14 @@
     {
       "$ref": "ScrollListHorizontalGrid",
       "name": "horizontalGrid"
+    },
+    {
+      "$ref": "ScrollListPager",
+      "name": "verticalPager"
+    },
+    {
+      "$ref": "ScrollListPager",
+      "name": "horizontalPager"
     }
   ]
 }

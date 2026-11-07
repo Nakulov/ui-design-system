@@ -51,6 +51,16 @@
           "id": "shelf",
           "sample": "shelf",
           "caption": "Полка: горизонтальная сетка в 3 строки"
+        },
+        {
+          "id": "onboarding",
+          "sample": "onboarding",
+          "caption": "Онбординг: горизонтальный пейджер, видны края соседних страниц"
+        },
+        {
+          "id": "videoFeed",
+          "sample": "videoFeed",
+          "caption": "Лента видео: вертикальный пейджер на всё окно"
         }
       ]
     },

@@ -1,0 +1,30 @@
+{
+  "name": "ScrollListPager",
+  "type": "object",
+  "description": "Пейджер: прокрутка по страницам, страница — окно минус contentPadding вдоль оси, один жест — не больше одной страницы",
+  "properties": [
+    {
+      "name": "gap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "default": "zero",
+      "description": "Промежуток между страницами"
+    },
+    {
+      "name": "initialPage",
+      "type": "integer",
+      "required": true,
+      "default": 0,
+      "description": "Страница, которую окно показывает при первом показе; отсчёт с 0. Больше числа страниц — прижимается к последней"
+    },
+    {
+      "name": "children",
+      "type": "array",
+      "items": {
+        "$ref": "core/component/Component"
+      },
+      "required": false,
+      "description": "Страницы в порядке модели; страница занимает окно минус contentPadding, компонент в ней меряется своим layout. Если не заданы, пейджер пустой"
+    }
+  ]
+}

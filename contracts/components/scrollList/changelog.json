@@ -3,6 +3,13 @@
   "entries": [
     {
       "date": "2026-11-08",
+      "issue": 222,
+      "kind": "added",
+      "target": "content",
+      "description": "Пейджеры: варианты verticalPager и horizontalPager — прокрутка по страницам, страница — окно минус contentPadding, начальная страница initialPage"
+    },
+    {
+      "date": "2026-11-08",
       "issue": 221,
       "kind": "added",
       "target": "content",

@@ -1,0 +1,362 @@
+{
+  "ScrollList": {
+    "id": "videoFeed",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 480
+            }
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
+    },
+    "events": [
+      {
+        "reachEnd": {
+          "payload": {
+            "action": "loadMoreVideos"
+          }
+        }
+      }
+    ],
+    "contentPadding": {
+      "all": "zero"
+    },
+    "content": {
+      "verticalPager": {
+        "gap": "zero",
+        "initialPage": 0,
+        "children": [
+          {
+            "Container": {
+              "id": "video-1",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "clip": true
+                }
+              },
+              "events": [
+                {
+                  "click": {
+                    "payload": {
+                      "action": "togglePlayback",
+                      "videoId": "video-1"
+                    }
+                  }
+                }
+              ],
+              "arrangement": {
+                "overlay": {
+                  "horizontal": "start",
+                  "vertical": "bottom"
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "fill"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "l"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Как выбрать плед на зиму"
+                    },
+                    "typography": "titleMedium",
+                    "color": {
+                      "solid": "inverseOnSurface"
+                    },
+                    "alignment": "start"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Container": {
+              "id": "video-2",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "clip": true
+                }
+              },
+              "events": [
+                {
+                  "click": {
+                    "payload": {
+                      "action": "togglePlayback",
+                      "videoId": "video-2"
+                    }
+                  }
+                }
+              ],
+              "arrangement": {
+                "overlay": {
+                  "horizontal": "start",
+                  "vertical": "bottom"
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "fill"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "l"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Пять идей для кухни"
+                    },
+                    "typography": "titleMedium",
+                    "color": {
+                      "solid": "inverseOnSurface"
+                    },
+                    "alignment": "start"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Container": {
+              "id": "video-3",
+              "layout": {
+                "width": {
+                  "sizing": "fill"
+                },
+                "height": {
+                  "sizing": "fill"
+                },
+                "position": "flow"
+              },
+              "padding": {
+                "all": "zero"
+              },
+              "appearance": {
+                "plain": {
+                  "background": {
+                    "solid": "surface2"
+                  },
+                  "clip": true
+                }
+              },
+              "events": [
+                {
+                  "click": {
+                    "payload": {
+                      "action": "togglePlayback",
+                      "videoId": "video-3"
+                    }
+                  }
+                }
+              ],
+              "arrangement": {
+                "overlay": {
+                  "horizontal": "start",
+                  "vertical": "bottom"
+                }
+              },
+              "children": [
+                {
+                  "Image": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "fill"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "zero"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "source": {
+                      "remote": {
+                        "origin": {
+                          "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/banner.jpg"
+                        },
+                        "scale": "crop",
+                        "alignment": "center",
+                        "placeholder": {
+                          "icon": {
+                            "name": "image",
+                            "color": "onSurfaceMuted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "Text": {
+                    "layout": {
+                      "width": {
+                        "sizing": "fill"
+                      },
+                      "height": {
+                        "sizing": "hug"
+                      },
+                      "position": "flow"
+                    },
+                    "padding": {
+                      "all": "l"
+                    },
+                    "appearance": {
+                      "plain": {}
+                    },
+                    "content": {
+                      "plain": "Уютный вечер за 10 минут"
+                    },
+                    "typography": "titleMedium",
+                    "color": {
+                      "solid": "inverseOnSurface"
+                    },
+                    "alignment": "start"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
