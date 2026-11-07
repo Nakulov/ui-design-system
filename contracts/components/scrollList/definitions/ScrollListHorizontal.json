@@ -1,0 +1,52 @@
+{
+  "name": "ScrollListHorizontal",
+  "type": "object",
+  "description": "Горизонтальный список: прокрутка в направлении письма",
+  "properties": [
+    {
+      "name": "alignment",
+      "$ref": "components/container/ContainerVerticalAlignment",
+      "required": true,
+      "default": "top",
+      "description": "Выравнивание элементов поперёк оси, по вертикали"
+    },
+    {
+      "name": "gap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "default": "zero",
+      "description": "Промежуток между соседними элементами"
+    },
+    {
+      "name": "position",
+      "$ref": "components/container/ContainerHorizontalAlignment",
+      "required": true,
+      "default": "start",
+      "description": "Положение элементов вдоль оси, пока содержимое короче окна; reversed его не меняет"
+    },
+    {
+      "name": "reversed",
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "sample": false,
+      "description": "Перевёрнутый список: первый элемент — у конца оси, прокрутка начинается оттуда (чат)"
+    },
+    {
+      "name": "snapToItem",
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "description": "После жеста список докатывается к ближайшему элементу"
+    },
+    {
+      "name": "children",
+      "type": "array",
+      "items": {
+        "$ref": "ScrollListElement"
+      },
+      "required": false,
+      "description": "Элементы в порядке модели. Если не заданы, список пустой"
+    }
+  ]
+}

@@ -1,0 +1,387 @@
+{
+  "ScrollList": {
+    "id": "chat",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "fill"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "background"
+        }
+      }
+    },
+    "events": [
+      {
+        "reachEnd": {
+          "payload": {
+            "action": "loadOlderMessages"
+          }
+        }
+      }
+    ],
+    "contentPadding": {
+      "all": "m"
+    },
+    "content": {
+      "vertical": {
+        "gap": "xs",
+        "position": "bottom",
+        "reversed": true,
+        "children": [
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "message-4",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "top",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "end"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug",
+                            "max": {
+                              "custom": {
+                                "value": 260
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "symmetric": {
+                            "horizontal": "m",
+                            "vertical": "s"
+                          }
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "primaryContainer"
+                            },
+                            "cornerRadius": "l"
+                          }
+                        },
+                        "content": {
+                          "plain": "Отлично, тогда до встречи в семь"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onPrimaryContainer"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "message-3",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "top",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug",
+                            "max": {
+                              "custom": {
+                                "value": 260
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "symmetric": {
+                            "horizontal": "m",
+                            "vertical": "s"
+                          }
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "l"
+                          }
+                        },
+                        "content": {
+                          "plain": "Да, в семь у входа в парк"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "message-2",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "top",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "end"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug",
+                            "max": {
+                              "custom": {
+                                "value": 260
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "symmetric": {
+                            "horizontal": "m",
+                            "vertical": "s"
+                          }
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "primaryContainer"
+                            },
+                            "cornerRadius": "l"
+                          }
+                        },
+                        "content": {
+                          "plain": "Встречаемся сегодня?"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onPrimaryContainer"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "header": {
+              "component": {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "zero",
+                      "vertical": "xs"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "content": {
+                    "plain": "Сегодня"
+                  },
+                  "typography": "labelSmall",
+                  "color": {
+                    "solid": "onSurfaceMuted"
+                  },
+                  "alignment": "center"
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "message-1",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "top",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug",
+                            "max": {
+                              "custom": {
+                                "value": 260
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "symmetric": {
+                            "horizontal": "m",
+                            "vertical": "s"
+                          }
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "l"
+                          }
+                        },
+                        "content": {
+                          "plain": "Привет! Как дела?"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

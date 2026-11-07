@@ -1,0 +1,50 @@
+{
+  "name": "ScrollListItem",
+  "type": "object",
+  "description": "Обычный элемент списка",
+  "properties": [
+    {
+      "name": "component",
+      "$ref": "core/component/Component",
+      "required": true,
+      "sample": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "m",
+              "vertical": "s"
+            }
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Уведомления"
+          },
+          "typography": "bodyLarge",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "start"
+        }
+      },
+      "description": "Компонент элемента; меряется своим layout"
+    },
+    {
+      "name": "viewportFraction",
+      "type": "float",
+      "required": false,
+      "sample": 0.4,
+      "description": "Размер ячейки вдоль оси — доля окна за вычетом contentPadding, 0 < значение ≤ 1. Если не задан, элемент меряется своим layout"
+    }
+  ]
+}

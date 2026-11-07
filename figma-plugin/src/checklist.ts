@@ -6,8 +6,8 @@ import { ICON, ref } from "./ids";
 import { variantName } from "./presets";
 import type { Build, ChecklistView, Imports } from "./messages";
 
-/** `Container` и `Pressable` всегда рисуются телом: у них сокращённый чеклист (figma-mapping.md, раздел 8.3). */
-const FRAMES = ["components/container/Container", "components/pressable/Pressable"];
+/** `Container`, `Pressable` и `ScrollList` всегда рисуются телом: у них сокращённый чеклист (figma-mapping.md, раздел 8.3). */
+const FRAMES = ["components/container/Container", "components/pressable/Pressable", "components/scrollList/ScrollList"];
 
 /** Обязательные секции манифеста (documentation-manifest.md, раздел 4.2). */
 const REQUIRED: Record<Exclude<ChecklistScope, "foundation">, string[]> = {

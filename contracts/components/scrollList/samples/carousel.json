@@ -1,0 +1,643 @@
+{
+  "ScrollList": {
+    "id": "recommendations",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "events": [
+      {
+        "reachEnd": {
+          "payload": {
+            "action": "loadMoreProducts"
+          }
+        }
+      }
+    ],
+    "contentPadding": {
+      "symmetric": {
+        "horizontal": "m",
+        "vertical": "zero"
+      }
+    },
+    "content": {
+      "horizontal": {
+        "gap": "s",
+        "snapToItem": true,
+        "children": [
+          {
+            "item": {
+              "viewportFraction": 0.4,
+              "component": {
+                "Container": {
+                  "id": "product-1",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openProduct",
+                          "productId": "product-1"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "start",
+                      "distribution": {
+                        "packed": {
+                          "gap": "xs",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": "xl3"
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Кружка керамическая"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "1 490 ₽"
+                        },
+                        "typography": "labelLarge",
+                        "color": {
+                          "solid": "primary"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "viewportFraction": 0.4,
+              "component": {
+                "Container": {
+                  "id": "product-2",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openProduct",
+                          "productId": "product-2"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "start",
+                      "distribution": {
+                        "packed": {
+                          "gap": "xs",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": "xl3"
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Плед шерстяной"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "3 200 ₽"
+                        },
+                        "typography": "labelLarge",
+                        "color": {
+                          "solid": "primary"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "viewportFraction": 0.4,
+              "component": {
+                "Container": {
+                  "id": "product-3",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openProduct",
+                          "productId": "product-3"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "start",
+                      "distribution": {
+                        "packed": {
+                          "gap": "xs",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": "xl3"
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Подушка декоративная"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "990 ₽"
+                        },
+                        "typography": "labelLarge",
+                        "color": {
+                          "solid": "primary"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "viewportFraction": 0.4,
+              "component": {
+                "Container": {
+                  "id": "product-4",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openProduct",
+                          "productId": "product-4"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "start",
+                      "distribution": {
+                        "packed": {
+                          "gap": "xs",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": "xl3"
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Лампа настольная"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "2 750 ₽"
+                        },
+                        "typography": "labelLarge",
+                        "color": {
+                          "solid": "primary"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

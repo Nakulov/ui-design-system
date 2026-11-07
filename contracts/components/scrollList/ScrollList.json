@@ -1,0 +1,31 @@
+{
+  "name": "ScrollList",
+  "type": "object",
+  "extends": "core/component/Component",
+  "appearanceContext": [
+    "plain"
+  ],
+  "description": "Прокручиваемый список: окно с содержимым, которое прокручивается вдоль одной оси. Одна модель и для содержимого, заданного в макете, и для списка из данных: данные в дерево разворачивает приложение или сервер, ленивость выбирает платформа. В Figma соответствует двум фреймам: окну и содержимому",
+  "releaseVersions": {
+    "figma": "notReleased",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "properties": [
+    {
+      "name": "contentPadding",
+      "$ref": "core/padding/Padding",
+      "required": true,
+      "default": {
+        "all": "zero"
+      },
+      "description": "Отступ у содержимого: в начале и в конце; при прокрутке элементы доезжают до края окна. Отступ окна — padding"
+    },
+    {
+      "name": "content",
+      "$ref": "ScrollListContent",
+      "required": true,
+      "description": "Содержимое: раскладка вдоль оси прокрутки и элементы"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "$ref": "ScrollList",
+  "sections": [
+    {
+      "id": "overview",
+      "type": "overview",
+      "examples": [
+        {
+          "id": "main",
+          "sample": "settings",
+          "caption": "Экран настроек с заголовками разделов"
+        }
+      ]
+    },
+    {
+      "id": "properties",
+      "type": "properties",
+      "title": "Properties"
+    },
+    {
+      "id": "variants",
+      "type": "variants",
+      "title": "Variants",
+      "examples": [
+        {
+          "id": "settings",
+          "sample": "settings",
+          "caption": "Экран настроек: вертикальный список с заголовками"
+        },
+        {
+          "id": "chat",
+          "sample": "chat",
+          "caption": "Чат: перевёрнутый список, новые сообщения внизу"
+        },
+        {
+          "id": "carousel",
+          "sample": "carousel",
+          "caption": "Карусель: элементы по 0,4 окна, докатывание к элементу"
+        }
+      ]
+    },
+    {
+      "id": "usage",
+      "type": "usage",
+      "title": "Usage"
+    },
+    {
+      "id": "platformSupport",
+      "type": "platformSupport",
+      "title": "Platform Support"
+    },
+    {
+      "id": "history",
+      "type": "history",
+      "title": "History"
+    }
+  ]
+}
