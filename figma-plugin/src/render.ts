@@ -36,6 +36,11 @@ type Entry = Record<string, Base>;
 type Indicator = { anchor: string; content: Entry; gap?: Token };
 /** Узел вложенного пресета (figma-mapping.md, раздел 11.2, правило 2). */
 type PresetNode = { ref: Id; axes: Record<string, string>; id?: string; layout?: Layout };
+/** Список по оси: `vertical` или `horizontal` (component-model.md, раздел 16). */
+type ScrollAxis = {
+  alignment?: string; gap?: Token; position?: string; reversed?: boolean; snapToItem?: boolean;
+  children?: Record<string, { component: Entry; viewportFraction?: number }>[];
+};
 /** Деревья состояний `Pressable` (component-model.md, раздел 14). */
 type States = { default: Entry; pressed?: Entry; disabled?: Entry };
 type Resource = { icon: { name: string; color: string } };
@@ -50,7 +55,7 @@ type Edge = { content: FieldStates; gap: Token; verticalAlignment: string };
 type ClearButton = { visibility: "always" | "whileEditing" | "whileNotEmpty"; gap: Token; button: Base };
 
 /** Компоненты, которые всегда рисуются телом — фреймом без Figma-компонента (раздел 3.4). */
-const FRAMES = ["Container", "Pressable"];
+const FRAMES = ["Container", "Pressable", "ScrollList"];
 /** Компоненты, которые плагин умеет рисовать; остальные пропускаются с предупреждением — и в модели, и на странице Components. */
 export const RENDERED = [...FRAMES, "Text", "Image", "Badge", "TextField"];
 
@@ -287,7 +292,7 @@ export class Renderer {
     const old = reuse.get(key);
     reuse.delete(key);
     if (model.indicators?.length) return this.indicated(name, model, parent, old, path, at, key);
-    // `Container` и `Pressable` — всегда тело: Figma-компонента у них нет (раздел 3.4).
+    // `Container`, `Pressable` и `ScrollList` — всегда тело: Figma-компонента у них нет (раздел 3.4).
     // Поле ввода с краями — только телом: края в Figma-компонент не входят (раздел 10.7, правило 1).
     if (this.instances && !FRAMES.includes(name) && old?.type !== "COMPONENT" && (name !== "TextField" || this.fieldFits(model))) {
       const node = await this.instance(name, model, contract, parent, old, key, at);
@@ -308,6 +313,7 @@ export class Renderer {
     mark(frame, key, "slot");
 
     if (name === "Container") this.arrangement(frame, model, at);
+    else if (name === "ScrollList") frame.layoutMode = variant(model.content)[0] === "horizontal" ? "HORIZONTAL" : "VERTICAL";
     else if (name === "TextField") frame.layoutMode = "HORIZONTAL";
     else {
       frame.layoutMode = "HORIZONTAL";
@@ -321,6 +327,7 @@ export class Renderer {
 
     if (name === "Container") await this.children(frame, model, kept, at);
     else if (name === "Pressable") await this.state(frame, model, kept, at);
+    else if (name === "ScrollList") await this.scrollList(frame, model, kept, at);
     else if (name === "Text") await this.text(frame, model, kept, at);
     else if (name === "Image") await this.source(frame, model.source, model.layout, true, kept, at);
     else if (name === "Badge") await this.badge(frame, model, kept, at);
@@ -936,6 +943,94 @@ export class Renderer {
     }
     const [kind, value] = variant<{ horizontal: string; vertical: string }>(model.arrangement);
     if (kind === "overlay") this.layouts.push(() => this.overlayLayout(frame, model.layout, value, drawn));
+  }
+
+  // Список (раздел 10.8).
+
+  /**
+   * Окно — корень: поля базовой модели, обрезка, метки `content`, `reversed`, `snapToItem`. Внутри — фрейм содержимого
+   * `content` с `contentPadding` и `gap`: поперёк оси на всё окно, вдоль оси — по элементам. Каждый элемент — фрейм
+   * ячейки с видом элемента (`header` или `item`) и компонентом внутри; при `reversed` слои ячеек идут в обратном порядке.
+   */
+  private async scrollList(frame: FrameNode, model: Base, kept: Kept, at: string) {
+    const [kind, axis] = variant<ScrollAxis>(model.content);
+    const vertical = kind === "vertical";
+    const along = vertical ? "layoutSizingVertical" : "layoutSizingHorizontal";
+    const across = vertical ? "layoutSizingHorizontal" : "layoutSizingVertical";
+    const reversed = axis.reversed === true;
+    frame.clipsContent = true;
+    frame.primaryAxisAlignItems = ALIGN[axis.position ?? (vertical ? "top" : "start")];
+    frame.counterAxisAlignItems = "MIN";
+    mark(frame, kind, "content");
+    mark(frame, reversed ? "true" : "", "reversed");
+    mark(frame, axis.snapToItem ? "true" : "", "snapToItem");
+
+    const content = this.take(kept, "content", "FRAME", () => figma.createFrame());
+    const inner = await this.reset(content);
+    frame.appendChild(content);
+    content.name = "content";
+    content.fills = [];
+    content.layoutMode = frame.layoutMode;
+    content.counterAxisAlignItems = "MIN";
+    content.primaryAxisAlignItems = "MIN";
+    this.padding(content, (model.contentPadding as Record<string, unknown> | undefined) ?? { all: "zero" }, `${at}.contentPadding`);
+    this.assign(content, "itemSpacing", SPACING, axis.gap ?? "zero", `${at}.content.${kind}.gap`);
+    content.layoutPositioning = "AUTO";
+    content[along] = "HUG";
+    content[across] = frame[across] === "HUG" ? "HUG" : "FILL";
+
+    const cells: [FrameNode, number][] = [];
+    const children = axis.children ?? [];
+    const order = reversed ? [...children.keys()].reverse() : [...children.keys()];
+    for (const index of order) {
+      const [element, data] = variant<{ component: Entry; viewportFraction?: number }>(children[index]);
+      const path = `${at}.content.${kind}.children[${index}].${element}`;
+      const cell = this.take(inner, `children[${index}]`, "FRAME", () => figma.createFrame());
+      const cellKept = await this.reset(cell);
+      content.appendChild(cell);
+      cell.name = element;
+      cell.fills = [];
+      mark(cell, element, "element");
+      mark(cell, data.viewportFraction !== undefined ? String(data.viewportFraction) : "", "viewportFraction");
+      cell.layoutMode = frame.layoutMode;
+      cell.primaryAxisAlignItems = "MIN";
+      cell.counterAxisAlignItems = ALIGN[axis.alignment ?? (vertical ? "start" : "top")];
+      cell.layoutPositioning = "AUTO";
+      cell[along] = "HUG";
+      // Поперёк оси ячейка — на всё содержимое: при `hug` окна FILL тянет ячейки по самой большой (раздел 10.8).
+      cell[across] = "FILL";
+      await this.component(data.component, cell, cellKept, path, "component");
+      for (const leftover of cellKept.values()) leftover.remove();
+      if (data.viewportFraction !== undefined) cells.push([cell, data.viewportFraction]);
+    }
+    for (const leftover of inner.values()) leftover.remove();
+    this.collapseEmpty(content, { width: { sizing: "hug" }, height: { sizing: "hug" }, position: "flow" });
+    this.layouts.push(() => this.scrollLayout(frame, content, cells, vertical, reversed, axis.position, model.layout, at));
+  }
+
+  /**
+   * Размеры, известные после раскладки (раздел 10.8, правила 4–5): ячейка `viewportFraction` — доля окна за вычетом
+   * отступов окна и `contentPadding`, при `hug` окна вдоль оси — по компоненту; содержимое длиннее окна прижато к началу,
+   * у перевёрнутого списка — к концу.
+   */
+  private scrollLayout(frame: FrameNode, content: FrameNode, cells: [FrameNode, number][], vertical: boolean, reversed: boolean,
+    position: string | undefined, layout: Layout, at: string) {
+    const along = vertical ? "layoutSizingVertical" : "layoutSizingHorizontal";
+    const hug = (vertical ? layout.height : layout.width).sizing === "hug";
+    const window = vertical ? frame.height - frame.paddingTop - frame.paddingBottom : frame.width - frame.paddingLeft - frame.paddingRight;
+    const room = window - (vertical ? content.paddingTop + content.paddingBottom : content.paddingLeft + content.paddingRight);
+    for (const [cell, fraction] of cells) {
+      if (hug) {
+        cell[along] = "HUG";
+        continue;
+      }
+      if (!(fraction > 0 && fraction <= 1)) this.warn(at, `viewportFraction ${fraction} вне 0 < значение ≤ 1`);
+      const size = Math.max(room * fraction, 0.01);
+      cell.resize(vertical ? cell.width : size, vertical ? size : cell.height);
+      cell[along] = "FIXED";
+    }
+    const length = vertical ? content.height : content.width;
+    frame.primaryAxisAlignItems = !hug && length > window ? (reversed ? "MAX" : "MIN") : ALIGN[position ?? (vertical ? "top" : "start")];
   }
 
   /** Контейнер overlay: размеры по детям и координаты детей по выравниванию (раздел 10.3). */

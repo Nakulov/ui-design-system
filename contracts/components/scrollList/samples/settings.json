@@ -6,7 +6,13 @@
         "sizing": "fill"
       },
       "height": {
-        "sizing": "fill"
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 320
+            }
+          }
+        }
       },
       "position": "flow"
     },
