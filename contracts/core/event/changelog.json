@@ -2,6 +2,13 @@
   "$ref": "Event",
   "entries": [
     {
+      "date": "2026-11-07",
+      "issue": 220,
+      "kind": "added",
+      "target": "reachEnd",
+      "description": "Вариант `reachEnd`: список долистали до текущего конца содержимого. Поддерживает `ScrollList`"
+    },
+    {
       "date": "2026-11-05",
       "issue": 173,
       "kind": "added",

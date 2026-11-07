@@ -1,0 +1,160 @@
+{
+  "name": "ScrollListVertical",
+  "type": "object",
+  "description": "Вертикальный список: прокрутка сверху вниз",
+  "properties": [
+    {
+      "name": "alignment",
+      "$ref": "components/container/ContainerHorizontalAlignment",
+      "required": true,
+      "default": "start",
+      "description": "Выравнивание элементов поперёк оси, по горизонтали"
+    },
+    {
+      "name": "gap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "default": "zero",
+      "description": "Промежуток между соседними элементами"
+    },
+    {
+      "name": "position",
+      "$ref": "components/container/ContainerVerticalAlignment",
+      "required": true,
+      "default": "top",
+      "description": "Положение элементов вдоль оси, пока содержимое короче окна; reversed его не меняет"
+    },
+    {
+      "name": "reversed",
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "sample": false,
+      "description": "Перевёрнутый список: первый элемент — у конца оси, прокрутка начинается оттуда (чат)"
+    },
+    {
+      "name": "snapToItem",
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "description": "После жеста список докатывается к ближайшему элементу"
+    },
+    {
+      "name": "children",
+      "type": "array",
+      "items": {
+        "$ref": "ScrollListElement"
+      },
+      "required": false,
+      "sample": [
+        {
+          "header": {
+            "component": {
+              "Text": {
+                "layout": {
+                  "width": {
+                    "sizing": "fill"
+                  },
+                  "height": {
+                    "sizing": "hug"
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "m",
+                    "vertical": "s"
+                  }
+                },
+                "appearance": {
+                  "plain": {
+                    "background": {
+                      "solid": "surface"
+                    }
+                  }
+                },
+                "content": {
+                  "plain": "Основные"
+                },
+                "typography": "titleSmall",
+                "color": {
+                  "solid": "primary"
+                },
+                "alignment": "start"
+              }
+            }
+          }
+        },
+        {
+          "item": {
+            "component": {
+              "Text": {
+                "layout": {
+                  "width": {
+                    "sizing": "fill"
+                  },
+                  "height": {
+                    "sizing": "hug"
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "m",
+                    "vertical": "s"
+                  }
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "content": {
+                  "plain": "Уведомления"
+                },
+                "typography": "bodyLarge",
+                "color": {
+                  "solid": "onSurface"
+                },
+                "alignment": "start"
+              }
+            }
+          }
+        },
+        {
+          "item": {
+            "component": {
+              "Text": {
+                "layout": {
+                  "width": {
+                    "sizing": "fill"
+                  },
+                  "height": {
+                    "sizing": "hug"
+                  },
+                  "position": "flow"
+                },
+                "padding": {
+                  "symmetric": {
+                    "horizontal": "m",
+                    "vertical": "s"
+                  }
+                },
+                "appearance": {
+                  "plain": {}
+                },
+                "content": {
+                  "plain": "Звук"
+                },
+                "typography": "bodyLarge",
+                "color": {
+                  "solid": "onSurface"
+                },
+                "alignment": "start"
+              }
+            }
+          }
+        }
+      ],
+      "description": "Элементы в порядке модели. Если не заданы, список пустой"
+    }
+  ]
+}

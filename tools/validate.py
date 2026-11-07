@@ -36,7 +36,7 @@ CHANGELOG_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/chang
 PRESET_SCHEMA = Draft202012Validator(json.loads((ROOT / "specifications/preset.schema.json").read_text()))
 
 # Компоненты, которые в Figma рисуются фреймом: без Figma-компонента и figma.json (figma-mapping.md, разделы 3.4, 8.3).
-FRAMES = {"components/container/Container", "components/pressable/Pressable"}
+FRAMES = {"components/container/Container", "components/pressable/Pressable", "components/scrollList/ScrollList"}
 CONTROL_STATES = ["default", "pressed", "disabled"]  # контекст control (figma-mapping.md, раздел 3.5)
 
 # Спецификации с версией в spec-versions.json (schema-format.md, раздел 11.3).
@@ -247,7 +247,7 @@ def checklist_spec():
         else:
             items[int(match.group(2))] = {"kind": kind, "text": " ".join(line.strip() for line in match.group(3).split("\n")),
                                           "appliesTo": ["component"]}
-    for entity, numbers in re.findall(r"^- (foundation|core|`Container` и `Pressable`): пункты ([\d, ]+)", short, re.M):
+    for entity, numbers in re.findall(r"^- (foundation|core|`Container`, `Pressable` и `ScrollList`): пункты ([\d, ]+)", short, re.M):
         for number in numbers.replace(" ", "").strip(",").split(","):
             items[int(number)]["appliesTo"].append("container" if entity.startswith("`") else entity)
     return items

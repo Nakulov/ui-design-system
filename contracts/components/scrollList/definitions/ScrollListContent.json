@@ -1,0 +1,15 @@
+{
+  "name": "ScrollListContent",
+  "type": "oneOf",
+  "description": "Содержимое списка: раскладка и элементы",
+  "oneOf": [
+    {
+      "$ref": "ScrollListVertical",
+      "name": "vertical"
+    },
+    {
+      "$ref": "ScrollListHorizontal",
+      "name": "horizontal"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 # Модель компонентов
 
 **Статус:** Черновик, в обсуждении  
-**Версия спецификации:** 0.8
+**Версия спецификации:** 0.9
 
 Документ фиксирует согласованные решения по универсальному контракту компонентов. Он будет дополняться по мере
 обсуждения и затем войдёт в спецификацию формата (`schema-format.md`).
@@ -100,6 +100,9 @@ layout:
 2. В Figma `id` хранится в `sharedPluginData` слоя (пространство имён `uiContracts`, ключ `id`; `figma-mapping.md`,
    раздел 10.2). Дизайнер видит его в имени слоя `<Компонент> · <id>`; плагин находит слой по метке, а не по имени,
    при повторной отрисовке модели.
+3. В списке (`ScrollList`, раздел 16) `id` компонента элемента — ключ элемента; без `id` ключ — позиция. Если в модели
+   с сервера `id` повторяется, повторяющийся элемент получает ключ по позиции, платформа не падает. Образцы с повтором
+   `id` валидатор по-прежнему отклоняет (правило 1).
 
 ## 6. `padding`
 
@@ -128,17 +131,19 @@ Event: oneOf
   submit(payload)
   focus(payload)
   unfocus(payload)
+  reachEnd(payload)                — ScrollList (раздел 16)
 payload: Payload                   — тип задаёт приложение
 ```
 
-| Вариант     | Смысл          | Compose                                   | SwiftUI                    |
-|-------------|----------------|-------------------------------------------|----------------------------|
-| `click`     | нажатие        | `Modifier.clickable` / `onClick`          | `.onTapGesture` / `Button` |
-| `longPress` | долгое нажатие | `Modifier.combinedClickable(onLongClick)` | `.onLongPressGesture`      |
-| `change`    | изменение текста поля ввода      | `TextFieldState`, `snapshotFlow { text }` | `.onChange(of: text)`      |
-| `submit`    | Return в однострочном поле ввода | `KeyboardActions` / `onKeyboardAction`    | `.onSubmit`                |
-| `focus`     | поле ввода получило фокус        | `Modifier.onFocusChanged`                 | `@FocusState`, `.onChange` |
-| `unfocus`   | поле ввода потеряло фокус        | `Modifier.onFocusChanged`                 | `@FocusState`, `.onChange` |
+| Вариант     | Смысл                            | Compose                                                         | SwiftUI                         |
+|-------------|----------------------------------|-----------------------------------------------------------------|---------------------------------|
+| `click`     | нажатие                          | `Modifier.clickable` / `onClick`                                | `.onTapGesture` / `Button`      |
+| `longPress` | долгое нажатие                   | `Modifier.combinedClickable(onLongClick)`                       | `.onLongPressGesture`           |
+| `change`    | изменение текста поля ввода      | `TextFieldState`, `snapshotFlow { text }`                       | `.onChange(of: text)`           |
+| `submit`    | Return в однострочном поле ввода | `KeyboardActions` / `onKeyboardAction`                          | `.onSubmit`                     |
+| `focus`     | поле ввода получило фокус        | `Modifier.onFocusChanged`                                       | `@FocusState`, `.onChange`      |
+| `unfocus`   | поле ввода потеряло фокус        | `Modifier.onFocusChanged`                                       | `@FocusState`, `.onChange`      |
+| `reachEnd`  | долистали до конца списка        | `LazyListState`, `snapshotFlow` по последнему видимому элементу | `.onAppear` последнего элемента |
 
 1. `payload` описывает, что нужно сделать. Его тип — `Payload` (`schema-format.md`, раздел 4.1): на Android
    `interface Payload`, на iOS `protocol Payload`; приложение реализует его своими моделями. Дизайн-система не знает
@@ -147,8 +152,9 @@ payload: Payload                   — тип задаёт приложение
 2. Поле — массив с уникальными вариантами (`schema-format.md`, раздел 5.1), поэтому одно событие нельзя задать дважды.
    Новые триггеры добавляются вариантами `Event` по мере необходимости.
 3. Компонент обрабатывает события, которые поддерживает. В формате набор поддерживаемых событий пока не выражается
-   (раздел 16, пункт 2), и валидатор деревьев неподдерживаемые события пока не проверяет: `change`, `submit`, `focus`
-   и `unfocus` поддерживает только `TextField` (раздел 15), у других компонентов они не отклоняются.
+   (раздел 17, пункт 2), и валидатор деревьев неподдерживаемые события пока не проверяет: `change`, `submit`, `focus`
+   и `unfocus` поддерживает только `TextField` (раздел 15), `reachEnd` — только `ScrollList` (раздел 16); у других
+   компонентов они не отклоняются.
 4. Обработчик на платформе получает `payload` без изменений и, у событий поля ввода, текущее значение поля
    (`TextFieldValue`). Значения в контракте события нет: его нет в модели поля, и `core` не ссылается на
    `components`.
@@ -603,7 +609,94 @@ Keyboard:         { type: KeyboardType = text, returnKey: ReturnKey = default, c
     Однострочное поле — текст по содержимому без многоточия, курсор сразу после текста; длинный текст обрезается
     краем текстовой области, как прокрутка на платформах.
 
-## 16. Открытые вопросы
+## 16. `ScrollList`
+
+`ScrollList` (`components/scrollList/ScrollList`) — прокручиваемый список: окно, в котором содержимое прокручивается
+вдоль одной оси. Одна модель и для прокрутки содержимого, заданного в макете, и для списка из данных: модель — дерево,
+данные в дерево разворачивает приложение или сервер (привязка к данным и загрузка данных — не в модели, `ROADMAP.md`).
+Ленивую отрисовку выбирает платформа. Вариант `content` целиком описывает список — раскладку и детей; бессмысленные
+сочетания исключает `oneOf`. Контекст оформления — `plain`.
+
+```
+ScrollList : Component
+  id?, layout?, padding?, appearance?, indicators?   — из Component
+  events?:        Set<Event>                         — + reachEnd
+
+  contentPadding: Padding = all(zero)                — отступ у содержимого
+  content:        ScrollListContent
+
+ScrollListContent: oneOf
+  vertical    ScrollListVertical
+  horizontal  ScrollListHorizontal
+
+ScrollListVertical
+  alignment:  ContainerHorizontalAlignment = start   — поперёк оси
+  gap:        Spacing = zero
+  position:   ContainerVerticalAlignment = top       — вдоль оси, пока содержимое короче окна
+  reversed:   boolean = false
+  snapToItem: boolean = false
+  children?:  [ScrollListElement]
+
+ScrollListHorizontal
+  alignment:  ContainerVerticalAlignment = top
+  gap:        Spacing = zero
+  position:   ContainerHorizontalAlignment = start
+  reversed:   boolean = false
+  snapToItem: boolean = false
+  children?:  [ScrollListElement]
+
+ScrollListElement: oneOf
+  header  ScrollListHeader { component: Component }
+  item    ScrollListItem   { component: Component, viewportFraction?: float }
+```
+
+| Вариант      | Figma                                   | Compose      | SwiftUI                                  |
+|--------------|-----------------------------------------|--------------|------------------------------------------|
+| `vertical`   | содержимое — вертикальный Auto Layout   | `LazyColumn` | `ScrollView { LazyVStack }`              |
+| `horizontal` | содержимое — горизонтальный Auto Layout | `LazyRow`    | `ScrollView(.horizontal) { LazyHStack }` |
+
+Имя — `ScrollList`, а не `List`: `List` совпадает с `kotlin.collections.List` (генераторы пишут `List<Component>`,
+`schema-format.md`, раздел 5.2) и со SwiftUI `List`. Сетки и пейджеры добавляются вариантами `content` (#221, #222).
+
+1. `padding` — по общим правилам (раздел 6): отступ окна, элементы обрезаются у его края. `contentPadding` — отступ у
+   содержимого: в начале и в конце; при прокрутке элементы доезжают до края окна (Compose `contentPadding`, SwiftUI
+   `.contentMargins`). Ячейка элемента поперёк оси — на всю ширину (высоту) содержимого; вдоль оси — по компоненту или
+   по `viewportFraction`.
+2. Ключ элемента — `id` компонента (раздел 5, правило 3); без `id` — позиция; повтор `id` в модели с сервера —
+   повторяющийся элемент получает ключ по позиции, платформа не падает. Задавать `id` элементам из данных — забота
+   приложения.
+3. `header` — обычный компонент; прилипание к краю окна обеспечивает платформа (Compose `stickyHeader`, SwiftUI
+   `LazyVStack(pinnedViews: .sectionHeaders)`). Размер компонента в ячейке — его `layout`.
+4. `position` визуальный, `reversed` его смысл не меняет. `reversed`: первый ребёнок — у конца оси (внизу), прокрутка
+   начинается оттуда; порядок в модели — от новых к старым, подгрузка истории — дописывание в конец `children` и
+   `reachEnd` (в перевёрнутом списке конец — верх).
+5. `reachEnd` (раздел 7) срабатывает относительно текущего конца содержимого: пришла порция — конец сдвинулся, старых
+   меток нет.
+6. `viewportFraction` — доля окна вдоль оси, окно — за вычетом `contentPadding` (пример: окно 360, `contentPadding` по
+   16, `0.4` → (360 − 32) × 0.4 ≈ 131); `0 < viewportFraction ≤ 1`. Если у списка вдоль оси `hug`, окна нет —
+   `viewportFraction` игнорируется, элемент меряется своим `layout`. Размер ячейки задаёт список, компонент в ней
+   меряется своим `layout`; без поля элемент меряется своим `layout`.
+7. `snapToItem` — после жеста список докатывается к ближайшему элементу; сильный свайп пролистывает несколько (Compose
+   `rememberSnapFlingBehavior`, SwiftUI `.scrollTargetBehavior(.viewAligned)`).
+8. Вложенная прокрутка в одном направлении — ошибка проектирования, валидатор её не проверяет; платформа не падает:
+   внутренний список рисуется колонкой без своей прокрутки. Разные направления (карусель в ленте) — норма.
+
+**Figma**
+
+9. `ScrollList`, как `Container`, — фрейм без Figma-компонента и `figma.json`; создаётся только при отрисовке модели
+   (`figma-mapping.md`, раздел 3.4): внешний фрейм — окно (`padding`, оформление, clip, высота — `layout.height`),
+   внутренний — содержимое (`contentPadding`, `gap`, выравнивание). Прокрутку в прототипе плагин не ставит. Отрисовка
+   и метки описываются в `figma-mapping.md`, раздел 10, вместе с плагином (#220).
+
+**Не проверено** (поведение во время работы, компиляцией не проверяется; проверяется на этапе 5):
+
+- прилипающий `header` в перевёрнутом списке: Compose `stickyHeader` и `reverseLayout`, SwiftUI
+  `LazyVStack(pinnedViews:)`;
+- `reversed` в SwiftUI: прямого аналога `reverseLayout` нет;
+- учёт `contentPadding` в доле окна: Compose `Modifier.fillParentMaxWidth(fraction)`, SwiftUI
+  `.containerRelativeFrame`.
+
+## 17. Открытые вопросы
 
 1. Остальные поля `Component`.
 2. Изменения `schema-format.md`: набор поддерживаемых событий у компонента, значения по умолчанию.

@@ -1,7 +1,7 @@
 # Спецификация формата UI-контрактов
 
 **Статус:** Черновик  
-**Версия спецификации:** 0.32
+**Версия спецификации:** 0.33
 
 ## 1. Назначение
 
@@ -934,7 +934,7 @@ README не дублирует машиночитаемые данные кон�
      `boolean` (раздел 5.2);
    - **Figma:** свойство с типом `Event` или `EventData` указывает `figma: willNotBeReleased` (`figma-mapping.md`,
      раздел 4.1); у публичной foundation-сущности с примитивным `valueType` есть `figma.json` с верным `$ref` и
-     допустимыми `scopes` (`figma-mapping.md`, раздел 6.3); у компонента, кроме `Container` и `Pressable` (в Figma —
+     допустимыми `scopes` (`figma-mapping.md`, раздел 6.3); у компонента, кроме `Container`, `Pressable` и `ScrollList` (в Figma —
      фреймы, `figma-mapping.md`, раздел 3.4), — `figma.json` с существующими образцами
      без индикаторов, допустимыми `variants` и переопределениями, а свойства, не отображаемые в Figma, переопределены
      или имеют `figma: willNotBeReleased` (`figma-mapping.md`, разделы 4, 6, 9);

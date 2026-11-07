@@ -1,0 +1,47 @@
+{
+  "name": "ScrollListHeader",
+  "type": "object",
+  "description": "Заголовок раздела: прилипает к началу окна, пока виден его раздел",
+  "properties": [
+    {
+      "name": "component",
+      "$ref": "core/component/Component",
+      "required": true,
+      "sample": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "m",
+              "vertical": "s"
+            }
+          },
+          "appearance": {
+            "plain": {
+              "background": {
+                "solid": "surface"
+              }
+            }
+          },
+          "content": {
+            "plain": "Основные"
+          },
+          "typography": "titleSmall",
+          "color": {
+            "solid": "primary"
+          },
+          "alignment": "start"
+        }
+      },
+      "description": "Компонент заголовка; меряется своим layout"
+    }
+  ]
+}

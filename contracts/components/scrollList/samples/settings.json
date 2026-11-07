@@ -1,0 +1,606 @@
+{
+  "ScrollList": {
+    "id": "settings",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": "fill"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
+    },
+    "contentPadding": {
+      "symmetric": {
+        "horizontal": "zero",
+        "vertical": "s"
+      }
+    },
+    "content": {
+      "vertical": {
+        "children": [
+          {
+            "header": {
+              "component": {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "sides": {
+                      "start": "m",
+                      "top": "l",
+                      "end": "m",
+                      "bottom": "xs"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface"
+                      }
+                    }
+                  },
+                  "content": {
+                    "plain": "Аккаунт"
+                  },
+                  "typography": "titleSmall",
+                  "color": {
+                    "solid": "primary"
+                  },
+                  "alignment": "start"
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "profile",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "m",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "profile"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": "spaceBetween"
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Профиль"
+                        },
+                        "typography": "bodyLarge",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Анна"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurfaceVariant"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "phone",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "m",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "phone"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": "spaceBetween"
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Телефон"
+                        },
+                        "typography": "bodyLarge",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "+7 900 000-00-00"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurfaceVariant"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "header": {
+              "component": {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "sides": {
+                      "start": "m",
+                      "top": "l",
+                      "end": "m",
+                      "bottom": "xs"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface"
+                      }
+                    }
+                  },
+                  "content": {
+                    "plain": "Приложение"
+                  },
+                  "typography": "titleSmall",
+                  "color": {
+                    "solid": "primary"
+                  },
+                  "alignment": "start"
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "language",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "m",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "language"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": "spaceBetween"
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Язык"
+                        },
+                        "typography": "bodyLarge",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Русский"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurfaceVariant"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "theme",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "m",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "theme"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": "spaceBetween"
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Тема"
+                        },
+                        "typography": "bodyLarge",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Как в системе"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurfaceVariant"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "notifications",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "m",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "notifications"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": "spaceBetween"
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Уведомления"
+                        },
+                        "typography": "bodyLarge",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Включены"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurfaceVariant"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

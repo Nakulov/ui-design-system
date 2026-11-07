@@ -31,6 +31,10 @@
     {
       "$ref": "EventData",
       "name": "unfocus"
+    },
+    {
+      "$ref": "EventData",
+      "name": "reachEnd"
     }
   ]
 }

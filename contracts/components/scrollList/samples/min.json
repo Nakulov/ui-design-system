@@ -1,0 +1,22 @@
+{
+  "ScrollList": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "m"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "content": {
+      "vertical": {}
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "ScrollListElement",
+  "type": "oneOf",
+  "description": "Элемент списка: заголовок или обычный элемент",
+  "oneOf": [
+    {
+      "$ref": "ScrollListHeader",
+      "name": "header"
+    },
+    {
+      "$ref": "ScrollListItem",
+      "name": "item"
+    }
+  ]
+}
