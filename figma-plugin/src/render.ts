@@ -46,6 +46,8 @@ type ScrollGrid = {
   columns?: Record<string, unknown>; rows?: Record<string, unknown>; rowGap?: Token; columnGap?: Token; snapToItem?: boolean;
   children?: Record<string, { component: Entry; span?: "full" | { count: number } }>[];
 };
+/** Пейджер: `verticalPager` или `horizontalPager` (component-model.md, раздел 16, правило 9). */
+type ScrollPager = { gap?: Token; initialPage?: number; children?: Entry[] };
 /** Ячейка сетки по месту: строка, столбец, ширина в строках и в колонках. */
 type GridPlace = [row: number, column: number, rowSpan: number, columnSpan: number];
 /** Деревья состояний `Pressable` (component-model.md, раздел 14). */
@@ -486,6 +488,17 @@ export class Renderer {
       const slot = ref(child, "slot");
       if (slot && !kept.has(slot)) kept.set(slot, child);
       else child.remove();
+    }
+    // Из `GRID` с ячейками на местах Figma не переключает раскладку («Cannot delete occupied row/column»): сохранённые
+    // ячейки выносятся к родителю с шириной 1, место в сетке им задаёт отрисовка (раздел 10.8, правило 7).
+    if (frame.layoutMode === "GRID" && frame.parent && "appendChild" in frame.parent) {
+      for (const child of kept.values()) {
+        if ("gridRowSpan" in child) {
+          child.gridRowSpan = 1;
+          child.gridColumnSpan = 1;
+        }
+        frame.parent.appendChild(child);
+      }
     }
     await this.clear(frame);
     frame.layoutMode = "NONE";
@@ -962,6 +975,7 @@ export class Renderer {
   private async scrollList(frame: FrameNode, model: Base, kept: Kept, at: string) {
     const [kind, axis] = variant<ScrollAxis>(model.content);
     if (kind.endsWith("Grid")) return this.scrollGrid(frame, model, kind, axis as ScrollGrid, kept, at);
+    if (kind.endsWith("Pager")) return this.scrollPager(frame, model, kind, axis as ScrollPager, kept, at);
     const vertical = kind === "vertical";
     const along = vertical ? "layoutSizingVertical" : "layoutSizingHorizontal";
     const across = vertical ? "layoutSizingHorizontal" : "layoutSizingVertical";
@@ -973,6 +987,7 @@ export class Renderer {
     mark(frame, reversed ? "true" : "", "reversed");
     mark(frame, axis.snapToItem ? "true" : "", "snapToItem");
     mark(frame, "", "adaptive");
+    mark(frame, "", "initialPage");
 
     const content = this.take(kept, "content", "FRAME", () => figma.createFrame());
     const inner = await this.reset(content);
@@ -1034,6 +1049,7 @@ export class Renderer {
     mark(frame, "", "reversed");
     mark(frame, !vertical && grid.snapToItem ? "true" : "", "snapToItem");
     mark(frame, tracks === "adaptive" ? JSON.stringify(size) : "", "adaptive");
+    mark(frame, "", "initialPage");
 
     const content = this.take(kept, "content", "FRAME", () => figma.createFrame());
     const inner = await this.reset(content);
@@ -1085,6 +1101,100 @@ export class Renderer {
     const fixed = tracks === "fixed" ? Math.max(Math.floor(size as number), 1) : undefined;
     const minimum = tracks === "adaptive" ? this.tokens.number(SIZE, size as Token) : 0;
     this.layouts.push(() => this.gridLayout(content, cells, vertical, fixed, minimum));
+  }
+
+  /**
+   * Пейджер (раздел 10.8, правила 9–10): содержимое — Auto Layout по оси с `contentPadding` и `gap`, каждая страница —
+   * фрейм ячейки `page` с компонентом внутри. Размер страниц и сдвиг к `initialPage` известны только после раскладки окна.
+   */
+  private async scrollPager(frame: FrameNode, model: Base, kind: string, pager: ScrollPager, kept: Kept, at: string) {
+    const vertical = kind === "verticalPager";
+    const along = vertical ? "layoutSizingVertical" : "layoutSizingHorizontal";
+    const across = vertical ? "layoutSizingHorizontal" : "layoutSizingVertical";
+    frame.clipsContent = true;
+    frame.primaryAxisAlignItems = "MIN";
+    frame.counterAxisAlignItems = "MIN";
+    mark(frame, kind, "content");
+    mark(frame, "", "reversed");
+    mark(frame, "", "snapToItem");
+    mark(frame, "", "adaptive");
+    const initial = pager.initialPage ?? 0;
+    mark(frame, initial !== 0 ? String(initial) : "", "initialPage");
+
+    const content = this.take(kept, "content", "FRAME", () => figma.createFrame());
+    const inner = await this.reset(content);
+    frame.appendChild(content);
+    content.name = "content";
+    content.fills = [];
+    content.layoutMode = frame.layoutMode;
+    content.counterAxisAlignItems = "MIN";
+    content.primaryAxisAlignItems = "MIN";
+    this.padding(content, (model.contentPadding as Record<string, unknown> | undefined) ?? { all: "zero" }, `${at}.contentPadding`);
+    this.assign(content, "itemSpacing", SPACING, pager.gap ?? "zero", `${at}.content.${kind}.gap`);
+    content.layoutPositioning = "AUTO";
+    content[along] = "HUG";
+    content[across] = frame[across] === "HUG" ? "HUG" : "FILL";
+
+    const pages: FrameNode[] = [];
+    for (const [index, entry] of (pager.children ?? []).entries()) {
+      const path = `${at}.content.${kind}.children[${index}]`;
+      const cell = this.take(inner, `children[${index}]`, "FRAME", () => figma.createFrame());
+      const cellKept = await this.reset(cell);
+      content.appendChild(cell);
+      cell.name = "page";
+      cell.fills = [];
+      mark(cell, "page", "element");
+      mark(cell, "", "viewportFraction");
+      mark(cell, "", "span");
+      cell.layoutMode = frame.layoutMode;
+      cell.primaryAxisAlignItems = "MIN";
+      cell.counterAxisAlignItems = "MIN";
+      cell.layoutPositioning = "AUTO";
+      cell[along] = "HUG";
+      cell[across] = "FILL";
+      await this.component(entry, cell, cellKept, path, "component");
+      for (const leftover of cellKept.values()) leftover.remove();
+      pages.push(cell);
+    }
+    for (const leftover of inner.values()) leftover.remove();
+    this.collapseEmpty(content, { width: { sizing: "hug" }, height: { sizing: "hug" }, position: "flow" });
+    if (initial < 0) this.warn(at, `initialPage ${initial} меньше 0, показана первая страница`);
+    else if (pages.length && initial > pages.length - 1) this.warn(at, `initialPage ${initial} больше числа страниц, показана последняя`);
+    this.layouts.push(() => this.pagerLayout(frame, content, pages, vertical, initial, model.layout));
+  }
+
+  /**
+   * Страницы и сдвиг пейджера (раздел 10.8, правило 10): страница — окно минус `contentPadding` вдоль оси, поперёк — на
+   * всё содержимое (при `hug` окна — по самой большой странице). Содержимое становится `ABSOLUTE` и сдвигается так, что
+   * страница `initialPage` стоит с отступом `contentPadding` от края окна. Окно с одними `ABSOLUTE`-детьми не пересчитывает
+   * `hug`, поэтому его размер плагин задаёт сам и возвращает режимы размеров модели. При `hug` вдоль оси окна нет:
+   * страницы по компоненту, сдвига нет.
+   */
+  private pagerLayout(frame: FrameNode, content: FrameNode, pages: FrameNode[], vertical: boolean, initial: number, layout: Layout) {
+    if (!pages.length || (vertical ? layout.height : layout.width).sizing === "hug") return;
+    const along = vertical ? "layoutSizingVertical" : "layoutSizingHorizontal";
+    const window = vertical ? frame.height - frame.paddingTop - frame.paddingBottom : frame.width - frame.paddingLeft - frame.paddingRight;
+    const room = Math.max(window - (vertical ? content.paddingTop + content.paddingBottom : content.paddingLeft + content.paddingRight), 0.01);
+    for (const page of pages) {
+      page.resize(vertical ? page.width : room, vertical ? room : page.height);
+      page[along] = "FIXED";
+    }
+    const [width, height] = [frame.width, frame.height];
+    const crossSize = vertical ? content.width : content.height;
+    content.layoutPositioning = "ABSOLUTE";
+    frame.resize(width, height);
+    const auto = !!frame.parent && "layoutMode" in frame.parent && frame.parent.layoutMode !== "NONE" && layout.position === "flow";
+    for (const [sizing, dimension] of [["layoutSizingHorizontal", layout.width], ["layoutSizingVertical", layout.height]] as const) {
+      if (dimension.sizing === "hug") frame[sizing] = "HUG";
+      else if (dimension.sizing === "fill" && auto) frame[sizing] = "FILL";
+    }
+    content.resize(vertical ? crossSize : content.width, vertical ? content.height : crossSize);
+    content[vertical ? "layoutSizingHorizontal" : "layoutSizingVertical"] = "FIXED";
+    const shown = Math.min(Math.max(initial, 0), pages.length - 1);
+    const offset = shown * (room + content.itemSpacing);
+    content.x = frame.paddingLeft - (vertical ? 0 : offset);
+    content.y = frame.paddingTop - (vertical ? offset : 0);
+    content.constraints = { horizontal: "MIN", vertical: "MIN" };
   }
 
   /**
