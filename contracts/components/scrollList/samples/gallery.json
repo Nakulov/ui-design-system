@@ -1,0 +1,507 @@
+{
+  "ScrollList": {
+    "id": "gallery",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 320
+            }
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
+    },
+    "contentPadding": {
+      "all": "s"
+    },
+    "content": {
+      "verticalGrid": {
+        "columns": {
+          "adaptive": {
+            "custom": {
+              "value": 96
+            }
+          }
+        },
+        "rowGap": "xs",
+        "columnGap": "xs",
+        "children": [
+          {
+            "item": {
+              "span": {
+                "count": 2
+              },
+              "component": {
+                "Image": {
+                  "id": "photo-1",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 96
+                          }
+                        }
+                      }
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m",
+                      "clip": true
+                    }
+                  },
+                  "source": {
+                    "remote": {
+                      "origin": {
+                        "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                      },
+                      "scale": "crop",
+                      "alignment": "center",
+                      "placeholder": {
+                        "icon": {
+                          "name": "image",
+                          "color": "onSurfaceMuted"
+                        }
+                      },
+                      "error": {
+                        "icon": {
+                          "name": "brokenImage",
+                          "color": "onSurfaceMuted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Image": {
+                  "id": "photo-2",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 96
+                          }
+                        }
+                      }
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m",
+                      "clip": true
+                    }
+                  },
+                  "source": {
+                    "remote": {
+                      "origin": {
+                        "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                      },
+                      "scale": "crop",
+                      "alignment": "center",
+                      "placeholder": {
+                        "icon": {
+                          "name": "image",
+                          "color": "onSurfaceMuted"
+                        }
+                      },
+                      "error": {
+                        "icon": {
+                          "name": "brokenImage",
+                          "color": "onSurfaceMuted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Image": {
+                  "id": "photo-3",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 96
+                          }
+                        }
+                      }
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m",
+                      "clip": true
+                    }
+                  },
+                  "source": {
+                    "remote": {
+                      "origin": {
+                        "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                      },
+                      "scale": "crop",
+                      "alignment": "center",
+                      "placeholder": {
+                        "icon": {
+                          "name": "image",
+                          "color": "onSurfaceMuted"
+                        }
+                      },
+                      "error": {
+                        "icon": {
+                          "name": "brokenImage",
+                          "color": "onSurfaceMuted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Image": {
+                  "id": "photo-4",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 96
+                          }
+                        }
+                      }
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m",
+                      "clip": true
+                    }
+                  },
+                  "source": {
+                    "remote": {
+                      "origin": {
+                        "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                      },
+                      "scale": "crop",
+                      "alignment": "center",
+                      "placeholder": {
+                        "icon": {
+                          "name": "image",
+                          "color": "onSurfaceMuted"
+                        }
+                      },
+                      "error": {
+                        "icon": {
+                          "name": "brokenImage",
+                          "color": "onSurfaceMuted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Image": {
+                  "id": "photo-5",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 96
+                          }
+                        }
+                      }
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m",
+                      "clip": true
+                    }
+                  },
+                  "source": {
+                    "remote": {
+                      "origin": {
+                        "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                      },
+                      "scale": "crop",
+                      "alignment": "center",
+                      "placeholder": {
+                        "icon": {
+                          "name": "image",
+                          "color": "onSurfaceMuted"
+                        }
+                      },
+                      "error": {
+                        "icon": {
+                          "name": "brokenImage",
+                          "color": "onSurfaceMuted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Image": {
+                  "id": "photo-6",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 96
+                          }
+                        }
+                      }
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m",
+                      "clip": true
+                    }
+                  },
+                  "source": {
+                    "remote": {
+                      "origin": {
+                        "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                      },
+                      "scale": "crop",
+                      "alignment": "center",
+                      "placeholder": {
+                        "icon": {
+                          "name": "image",
+                          "color": "onSurfaceMuted"
+                        }
+                      },
+                      "error": {
+                        "icon": {
+                          "name": "brokenImage",
+                          "color": "onSurfaceMuted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Image": {
+                  "id": "photo-7",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 96
+                          }
+                        }
+                      }
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m",
+                      "clip": true
+                    }
+                  },
+                  "source": {
+                    "remote": {
+                      "origin": {
+                        "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                      },
+                      "scale": "crop",
+                      "alignment": "center",
+                      "placeholder": {
+                        "icon": {
+                          "name": "image",
+                          "color": "onSurfaceMuted"
+                        }
+                      },
+                      "error": {
+                        "icon": {
+                          "name": "brokenImage",
+                          "color": "onSurfaceMuted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Image": {
+                  "id": "photo-8",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 96
+                          }
+                        }
+                      }
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m",
+                      "clip": true
+                    }
+                  },
+                  "source": {
+                    "remote": {
+                      "origin": {
+                        "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                      },
+                      "scale": "crop",
+                      "alignment": "center",
+                      "placeholder": {
+                        "icon": {
+                          "name": "image",
+                          "color": "onSurfaceMuted"
+                        }
+                      },
+                      "error": {
+                        "icon": {
+                          "name": "brokenImage",
+                          "color": "onSurfaceMuted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

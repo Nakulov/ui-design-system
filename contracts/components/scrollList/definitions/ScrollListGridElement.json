@@ -1,0 +1,15 @@
+{
+  "name": "ScrollListGridElement",
+  "type": "oneOf",
+  "description": "Элемент сетки: заголовок на всю строку (весь столбец) или обычный элемент",
+  "oneOf": [
+    {
+      "$ref": "ScrollListHeader",
+      "name": "header"
+    },
+    {
+      "$ref": "ScrollListGridItem",
+      "name": "item"
+    }
+  ]
+}

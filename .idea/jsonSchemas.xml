@@ -143,6 +143,26 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="contracts/components/scrollList/definitions/ScrollListGridElement.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/scrollList/definitions/ScrollListGridItem.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/scrollList/definitions/ScrollListGridSpan.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/scrollList/definitions/ScrollListGridSpanMode.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/scrollList/definitions/ScrollListGridTracks.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="contracts/components/scrollList/definitions/ScrollListHeader.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
@@ -151,11 +171,19 @@
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
+                    <option name="path" value="contracts/components/scrollList/definitions/ScrollListHorizontalGrid.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
                     <option name="path" value="contracts/components/scrollList/definitions/ScrollListItem.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>
                     <option name="path" value="contracts/components/scrollList/definitions/ScrollListVertical.json" />
+                    <option name="mappingKind" value="File" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="contracts/components/scrollList/definitions/ScrollListVerticalGrid.json" />
                     <option name="mappingKind" value="File" />
                   </Item>
                   <Item>

@@ -1,0 +1,16 @@
+{
+  "name": "ScrollListGridSpan",
+  "type": "oneOf",
+  "description": "Ширина элемента в колонках (строках): число или на всю строку (весь столбец)",
+  "oneOf": [
+    {
+      "name": "count",
+      "type": "integer",
+      "sample": 2
+    },
+    {
+      "$ref": "ScrollListGridSpanMode",
+      "inline": true
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "ScrollListGridItem",
+  "type": "object",
+  "description": "Обычный элемент сетки",
+  "properties": [
+    {
+      "name": "component",
+      "$ref": "core/component/Component",
+      "required": true,
+      "sample": {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "fill"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "symmetric": {
+              "horizontal": "m",
+              "vertical": "s"
+            }
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Уведомления"
+          },
+          "typography": "bodyLarge",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "start"
+        }
+      },
+      "description": "Компонент элемента; меряется своим layout"
+    },
+    {
+      "name": "span",
+      "$ref": "ScrollListGridSpan",
+      "required": true,
+      "default": {
+        "count": 1
+      },
+      "description": "Ширина элемента в колонках (у горизонтальной сетки — высота в строках)"
+    }
+  ]
+}

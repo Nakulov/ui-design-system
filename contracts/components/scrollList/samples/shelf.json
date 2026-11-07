@@ -1,0 +1,1436 @@
+{
+  "ScrollList": {
+    "id": "shelf",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 192
+            }
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
+    },
+    "events": [
+      {
+        "reachEnd": {
+          "payload": {
+            "action": "loadMoreTracks"
+          }
+        }
+      }
+    ],
+    "contentPadding": {
+      "symmetric": {
+        "horizontal": "m",
+        "vertical": "zero"
+      }
+    },
+    "content": {
+      "horizontalGrid": {
+        "rows": {
+          "fixed": 3
+        },
+        "rowGap": "xs",
+        "columnGap": "m",
+        "snapToItem": true,
+        "children": [
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "track-1",
+                  "layout": {
+                    "width": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 240
+                          }
+                        }
+                      }
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openTrack",
+                          "trackId": "track-1"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "s",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Container": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "arrangement": {
+                          "vertical": {
+                            "alignment": "start",
+                            "distribution": {
+                              "packed": {
+                                "gap": "zero",
+                                "position": "top"
+                              }
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Запись 1"
+                              },
+                              "typography": "bodyLarge",
+                              "color": {
+                                "solid": "onSurface"
+                              },
+                              "alignment": "start"
+                            }
+                          },
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Подпись"
+                              },
+                              "typography": "bodyMedium",
+                              "color": {
+                                "solid": "onSurfaceMuted"
+                              },
+                              "alignment": "start"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "track-2",
+                  "layout": {
+                    "width": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 240
+                          }
+                        }
+                      }
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openTrack",
+                          "trackId": "track-2"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "s",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Container": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "arrangement": {
+                          "vertical": {
+                            "alignment": "start",
+                            "distribution": {
+                              "packed": {
+                                "gap": "zero",
+                                "position": "top"
+                              }
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Запись 2"
+                              },
+                              "typography": "bodyLarge",
+                              "color": {
+                                "solid": "onSurface"
+                              },
+                              "alignment": "start"
+                            }
+                          },
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Подпись"
+                              },
+                              "typography": "bodyMedium",
+                              "color": {
+                                "solid": "onSurfaceMuted"
+                              },
+                              "alignment": "start"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "track-3",
+                  "layout": {
+                    "width": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 240
+                          }
+                        }
+                      }
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openTrack",
+                          "trackId": "track-3"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "s",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Container": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "arrangement": {
+                          "vertical": {
+                            "alignment": "start",
+                            "distribution": {
+                              "packed": {
+                                "gap": "zero",
+                                "position": "top"
+                              }
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Запись 3"
+                              },
+                              "typography": "bodyLarge",
+                              "color": {
+                                "solid": "onSurface"
+                              },
+                              "alignment": "start"
+                            }
+                          },
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Подпись"
+                              },
+                              "typography": "bodyMedium",
+                              "color": {
+                                "solid": "onSurfaceMuted"
+                              },
+                              "alignment": "start"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "track-4",
+                  "layout": {
+                    "width": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 240
+                          }
+                        }
+                      }
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openTrack",
+                          "trackId": "track-4"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "s",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Container": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "arrangement": {
+                          "vertical": {
+                            "alignment": "start",
+                            "distribution": {
+                              "packed": {
+                                "gap": "zero",
+                                "position": "top"
+                              }
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Запись 4"
+                              },
+                              "typography": "bodyLarge",
+                              "color": {
+                                "solid": "onSurface"
+                              },
+                              "alignment": "start"
+                            }
+                          },
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Подпись"
+                              },
+                              "typography": "bodyMedium",
+                              "color": {
+                                "solid": "onSurfaceMuted"
+                              },
+                              "alignment": "start"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "track-5",
+                  "layout": {
+                    "width": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 240
+                          }
+                        }
+                      }
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openTrack",
+                          "trackId": "track-5"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "s",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Container": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "arrangement": {
+                          "vertical": {
+                            "alignment": "start",
+                            "distribution": {
+                              "packed": {
+                                "gap": "zero",
+                                "position": "top"
+                              }
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Запись 5"
+                              },
+                              "typography": "bodyLarge",
+                              "color": {
+                                "solid": "onSurface"
+                              },
+                              "alignment": "start"
+                            }
+                          },
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Подпись"
+                              },
+                              "typography": "bodyMedium",
+                              "color": {
+                                "solid": "onSurfaceMuted"
+                              },
+                              "alignment": "start"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "track-6",
+                  "layout": {
+                    "width": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 240
+                          }
+                        }
+                      }
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openTrack",
+                          "trackId": "track-6"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "s",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Container": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "arrangement": {
+                          "vertical": {
+                            "alignment": "start",
+                            "distribution": {
+                              "packed": {
+                                "gap": "zero",
+                                "position": "top"
+                              }
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Запись 6"
+                              },
+                              "typography": "bodyLarge",
+                              "color": {
+                                "solid": "onSurface"
+                              },
+                              "alignment": "start"
+                            }
+                          },
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Подпись"
+                              },
+                              "typography": "bodyMedium",
+                              "color": {
+                                "solid": "onSurfaceMuted"
+                              },
+                              "alignment": "start"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "track-7",
+                  "layout": {
+                    "width": {
+                      "sizing": {
+                        "fixed": {
+                          "custom": {
+                            "value": 240
+                          }
+                        }
+                      }
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "all": "zero"
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openTrack",
+                          "trackId": "track-7"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "horizontal": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "s",
+                          "position": "start"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Image": {
+                        "layout": {
+                          "width": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "sizing": {
+                              "fixed": {
+                                "custom": {
+                                  "value": 48
+                                }
+                              }
+                            }
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {
+                            "background": {
+                              "solid": "surface2"
+                            },
+                            "cornerRadius": "m",
+                            "clip": true
+                          }
+                        },
+                        "source": {
+                          "remote": {
+                            "origin": {
+                              "url": "https://raw.githubusercontent.com/Nakulov/ui-design-system/dev/assets/images/product.jpg"
+                            },
+                            "scale": "crop",
+                            "alignment": "center",
+                            "placeholder": {
+                              "icon": {
+                                "name": "image",
+                                "color": "onSurfaceMuted"
+                              }
+                            },
+                            "error": {
+                              "icon": {
+                                "name": "brokenImage",
+                                "color": "onSurfaceMuted"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "Container": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "arrangement": {
+                          "vertical": {
+                            "alignment": "start",
+                            "distribution": {
+                              "packed": {
+                                "gap": "zero",
+                                "position": "top"
+                              }
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Запись 7"
+                              },
+                              "typography": "bodyLarge",
+                              "color": {
+                                "solid": "onSurface"
+                              },
+                              "alignment": "start"
+                            }
+                          },
+                          {
+                            "Text": {
+                              "layout": {
+                                "width": {
+                                  "sizing": "fill"
+                                },
+                                "height": {
+                                  "sizing": "hug"
+                                },
+                                "position": "flow"
+                              },
+                              "padding": {
+                                "all": "zero"
+                              },
+                              "appearance": {
+                                "plain": {}
+                              },
+                              "content": {
+                                "plain": "Подпись"
+                              },
+                              "typography": "bodyMedium",
+                              "color": {
+                                "solid": "onSurfaceMuted"
+                              },
+                              "alignment": "start"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

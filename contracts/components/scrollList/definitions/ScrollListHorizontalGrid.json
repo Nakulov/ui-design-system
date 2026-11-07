@@ -1,0 +1,43 @@
+{
+  "name": "ScrollListHorizontalGrid",
+  "type": "object",
+  "description": "Горизонтальная сетка: элементы заполняют столбцы сверху вниз, прокрутка в направлении письма",
+  "properties": [
+    {
+      "name": "rows",
+      "$ref": "ScrollListGridTracks",
+      "required": true,
+      "description": "Строки: фиксированное число или минимальная высота строки"
+    },
+    {
+      "name": "rowGap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "default": "zero",
+      "description": "Промежуток между строками"
+    },
+    {
+      "name": "columnGap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "default": "zero",
+      "description": "Промежуток между столбцами"
+    },
+    {
+      "name": "snapToItem",
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "description": "После жеста сетка докатывается к ближайшему столбцу"
+    },
+    {
+      "name": "children",
+      "type": "array",
+      "items": {
+        "$ref": "ScrollListGridElement"
+      },
+      "required": false,
+      "description": "Элементы в порядке модели. Если не заданы, сетка пустая"
+    }
+  ]
+}

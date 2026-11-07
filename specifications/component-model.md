@@ -1,7 +1,7 @@
 # Модель компонентов
 
 **Статус:** Черновик, в обсуждении  
-**Версия спецификации:** 0.10
+**Версия спецификации:** 0.11
 
 Документ фиксирует согласованные решения по универсальному контракту компонентов. Он будет дополняться по мере
 обсуждения и затем войдёт в спецификацию формата (`schema-format.md`).
@@ -626,8 +626,10 @@ ScrollList : Component
   content:        ScrollListContent
 
 ScrollListContent: oneOf
-  vertical    ScrollListVertical
-  horizontal  ScrollListHorizontal
+  vertical        ScrollListVertical
+  horizontal      ScrollListHorizontal
+  verticalGrid    ScrollListVerticalGrid
+  horizontalGrid  ScrollListHorizontalGrid
 
 ScrollListVertical
   alignment:  ContainerHorizontalAlignment = start   — поперёк оси
@@ -648,15 +650,42 @@ ScrollListHorizontal
 ScrollListElement: oneOf
   header  ScrollListHeader { component: Component }
   item    ScrollListItem   { component: Component, viewportFraction?: float }
+
+ScrollListVerticalGrid
+  columns:   ScrollListGridTracks                    — обязательно
+  rowGap:    Spacing = zero
+  columnGap: Spacing = zero
+  children?: [ScrollListGridElement]
+
+ScrollListHorizontalGrid
+  rows:       ScrollListGridTracks                   — обязательно
+  rowGap:     Spacing = zero
+  columnGap:  Spacing = zero
+  snapToItem: boolean = false
+  children?:  [ScrollListGridElement]
+
+ScrollListGridTracks: oneOf
+  fixed     integer                                  — число колонок (строк), ≥ 1
+  adaptive  Size                                     — минимальная ширина колонки (высота строки)
+
+ScrollListGridElement: oneOf
+  header  ScrollListHeader                           — ячейка на всю строку (весь столбец)
+  item    ScrollListGridItem { component: Component, span: ScrollListGridSpan = count(1) }
+
+ScrollListGridSpan: oneOf
+  count  integer                                     — ≥ 1
+  full                                               — inline-перечисление ScrollListGridSpanMode
 ```
 
-| Вариант      | Figma                                   | Compose      | SwiftUI                                  |
-|--------------|-----------------------------------------|--------------|------------------------------------------|
-| `vertical`   | содержимое — вертикальный Auto Layout   | `LazyColumn` | `ScrollView { LazyVStack }`              |
-| `horizontal` | содержимое — горизонтальный Auto Layout | `LazyRow`    | `ScrollView(.horizontal) { LazyHStack }` |
+| Вариант          | Figma                                   | Compose              | SwiftUI                                               |
+|------------------|-----------------------------------------|----------------------|-------------------------------------------------------|
+| `vertical`       | содержимое — вертикальный Auto Layout   | `LazyColumn`         | `ScrollView { LazyVStack }`                           |
+| `horizontal`     | содержимое — горизонтальный Auto Layout | `LazyRow`            | `ScrollView(.horizontal) { LazyHStack }`              |
+| `verticalGrid`   | содержимое — Auto Layout `GRID`         | `LazyVerticalGrid`   | `ScrollView { LazyVStack }` со строками из ячеек      |
+| `horizontalGrid` | содержимое — Auto Layout `GRID`         | `LazyHorizontalGrid` | `ScrollView(.horizontal) { LazyHStack }` со столбцами |
 
 Имя — `ScrollList`, а не `List`: `List` совпадает с `kotlin.collections.List` (генераторы пишут `List<Component>`,
-`schema-format.md`, раздел 5.2) и со SwiftUI `List`. Сетки и пейджеры добавляются вариантами `content` (#221, #222).
+`schema-format.md`, раздел 5.2) и со SwiftUI `List`. Пейджеры добавляются вариантами `content` (#222).
 
 1. `padding` — по общим правилам (раздел 6): отступ окна, элементы обрезаются у его края. `contentPadding` — отступ у
    содержимого: в начале и в конце; при прокрутке элементы доезжают до края окна (Compose `contentPadding`, SwiftUI
@@ -666,7 +695,8 @@ ScrollListElement: oneOf
    повторяющийся элемент получает ключ по позиции, платформа не падает. Задавать `id` элементам из данных — забота
    приложения.
 3. `header` — обычный компонент; прилипание к краю окна обеспечивает платформа (Compose `stickyHeader`, SwiftUI
-   `LazyVStack(pinnedViews: .sectionHeaders)`). Размер компонента в ячейке — его `layout`.
+   `LazyVStack(pinnedViews: .sectionHeaders)`). В сетке ячейка `header` — всегда на всю строку (весь столбец). Размер
+   компонента в ячейке — его `layout`.
 4. `position` визуальный, `reversed` его смысл не меняет. `reversed`: первый ребёнок — у конца оси (внизу), прокрутка
    начинается оттуда; порядок в модели — от новых к старым, подгрузка истории — дописывание в конец `children` и
    `reachEnd` (в перевёрнутом списке конец — верх).
@@ -677,16 +707,29 @@ ScrollListElement: oneOf
    `viewportFraction` игнорируется, элемент меряется своим `layout`. Размер ячейки задаёт список, компонент в ней
    меряется своим `layout`; без поля элемент меряется своим `layout`.
 7. `snapToItem` — после жеста список докатывается к ближайшему элементу; сильный свайп пролистывает несколько (Compose
-   `rememberSnapFlingBehavior`, SwiftUI `.scrollTargetBehavior(.viewAligned)`).
-8. Вложенная прокрутка в одном направлении — ошибка проектирования, валидатор её не проверяет; платформа не падает:
+   `rememberSnapFlingBehavior`, SwiftUI `.scrollTargetBehavior(.viewAligned)`). У `verticalGrid` поля нет — случаев
+   нет.
+8. Сетка: ширина колонки зависит от ширины окна (за вычетом `contentPadding`) и числа колонок, а не от числа
+   элементов. Элементы заполняют строки с начала; элемент, которому не хватает места в строке, начинает новую.
+   Неполная строка — элементы с начала, колонки сохраняют ширину, пустые ячейки остаются пустыми (2 плитки при 4
+   колонках занимают половину строки). `span` — ширина элемента в колонках; больше числа колонок — прижимается к нему,
+   элемент на всю строку, платформа не падает (Compose `GridItemSpan(minOf(n, maxLineSpan))`; при адаптивных колонках
+   число зависит от ширины экрана). Адаптивные колонки (`adaptive`): число колонок считает платформа по ширине окна —
+   столько, сколько помещается колонок не уже заданного размера (Compose `GridCells.Adaptive`). `horizontalGrid` — то
+   же поперёк: элементы заполняют столбцы сверху вниз, `span` — в строках, `header` — весь столбец, число адаптивных
+   строк — по высоте окна. SwiftUI: у `LazyVGrid` элементы одной ширины, поэтому платформа собирает элементы в строки
+   по этому правилу — `HStack` в `LazyVStack`, ячейка `.containerRelativeFrame(.horizontal, count:span:spacing:)`
+   (iOS 17+), число адаптивных колонок — по ширине окна; способ проверен компиляцией (`swiftc`).
+9. Вложенная прокрутка в одном направлении — ошибка проектирования, валидатор её не проверяет; платформа не падает:
    внутренний список рисуется колонкой без своей прокрутки. Разные направления (карусель в ленте) — норма.
 
 **Figma**
 
-9. `ScrollList`, как `Container`, — фрейм без Figma-компонента и `figma.json`; создаётся только при отрисовке модели
-   (`figma-mapping.md`, раздел 3.4): внешний фрейм — окно (`padding`, оформление, clip, высота — `layout.height`),
-   внутренний — содержимое (`contentPadding`, `gap`, выравнивание), каждый элемент — фрейм ячейки. Прокрутку в
-   прототипе плагин не ставит. Отрисовка и метки — `figma-mapping.md`, раздел 10.8.
+10. `ScrollList`, как `Container`, — фрейм без Figma-компонента и `figma.json`; создаётся только при отрисовке модели
+    (`figma-mapping.md`, раздел 3.4): внешний фрейм — окно (`padding`, оформление, clip, высота — `layout.height`),
+    внутренний — содержимое (`contentPadding`, `gap`, выравнивание или Auto Layout `GRID` у сеток), каждый элемент —
+    фрейм ячейки (в сетке — с `gridColumnSpan` / `gridRowSpan`). Прокрутку в прототипе плагин не ставит. Отрисовка и
+    метки — `figma-mapping.md`, раздел 10.8.
 
 **Не проверено** (поведение во время работы, компиляцией не проверяется; проверяется на этапе 5):
 
@@ -694,7 +737,11 @@ ScrollListElement: oneOf
   `LazyVStack(pinnedViews:)`;
 - `reversed` в SwiftUI: прямого аналога `reverseLayout` нет;
 - учёт `contentPadding` в доле окна: Compose `Modifier.fillParentMaxWidth(fraction)`, SwiftUI
-  `.containerRelativeFrame`.
+  `.containerRelativeFrame`; так же — ширина ячейки сетки в SwiftUI;
+- прилипающий `header` в сетке: Compose `stickyHeader` у `LazyGridScope`, SwiftUI `Section` в
+  `LazyVStack(pinnedViews:)` со строками из ячеек;
+- вертикальная сетка внутри горизонтального списка: Compose `LazyVerticalGrid` с неограниченной шириной, вероятно,
+  падает; правило 9 (платформа не падает) распространяется и на этот случай, способ — на этапе 5.
 
 ## 17. Открытые вопросы
 
