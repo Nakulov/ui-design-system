@@ -10,6 +10,14 @@
     {
       "$ref": "ScrollListHorizontal",
       "name": "horizontal"
+    },
+    {
+      "$ref": "ScrollListVerticalGrid",
+      "name": "verticalGrid"
+    },
+    {
+      "$ref": "ScrollListHorizontalGrid",
+      "name": "horizontalGrid"
     }
   ]
 }

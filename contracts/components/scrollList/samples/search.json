@@ -1,0 +1,943 @@
+{
+  "ScrollList": {
+    "id": "search",
+    "layout": {
+      "width": {
+        "sizing": "fill"
+      },
+      "height": {
+        "sizing": {
+          "fixed": {
+            "custom": {
+              "value": 480
+            }
+          }
+        }
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "zero"
+    },
+    "appearance": {
+      "plain": {
+        "background": {
+          "solid": "surface"
+        }
+      }
+    },
+    "events": [
+      {
+        "reachEnd": {
+          "payload": {
+            "action": "loadMoreResults"
+          }
+        }
+      }
+    ],
+    "contentPadding": {
+      "symmetric": {
+        "horizontal": "m",
+        "vertical": "s"
+      }
+    },
+    "content": {
+      "verticalGrid": {
+        "columns": {
+          "fixed": 4
+        },
+        "rowGap": "s",
+        "columnGap": "s",
+        "children": [
+          {
+            "header": {
+              "component": {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "sides": {
+                      "start": "zero",
+                      "top": "s",
+                      "end": "zero",
+                      "bottom": "xs"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface"
+                      }
+                    }
+                  },
+                  "content": {
+                    "plain": "Категории"
+                  },
+                  "typography": "titleSmall",
+                  "color": {
+                    "solid": "primary"
+                  },
+                  "alignment": "start"
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "category-1",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "xs",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m"
+                    }
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openCategory",
+                          "categoryId": "category-1"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "А"
+                        },
+                        "typography": "titleMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "center"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "category-2",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "xs",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m"
+                    }
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openCategory",
+                          "categoryId": "category-2"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Б"
+                        },
+                        "typography": "titleMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "center"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "category-3",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "xs",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m"
+                    }
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openCategory",
+                          "categoryId": "category-3"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "В"
+                        },
+                        "typography": "titleMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "center"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "category-4",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "xs",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m"
+                    }
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openCategory",
+                          "categoryId": "category-4"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Г"
+                        },
+                        "typography": "titleMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "center"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "category-5",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "xs",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m"
+                    }
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openCategory",
+                          "categoryId": "category-5"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Д"
+                        },
+                        "typography": "titleMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "center"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "component": {
+                "Container": {
+                  "id": "category-6",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "xs",
+                      "vertical": "m"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface2"
+                      },
+                      "cornerRadius": "m"
+                    }
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openCategory",
+                          "categoryId": "category-6"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "center",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "hug"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Е"
+                        },
+                        "typography": "titleMedium",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "center"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "header": {
+              "component": {
+                "Text": {
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "sides": {
+                      "start": "zero",
+                      "top": "s",
+                      "end": "zero",
+                      "bottom": "xs"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {
+                      "background": {
+                        "solid": "surface"
+                      }
+                    }
+                  },
+                  "content": {
+                    "plain": "Результаты"
+                  },
+                  "typography": "titleSmall",
+                  "color": {
+                    "solid": "primary"
+                  },
+                  "alignment": "start"
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "span": "full",
+              "component": {
+                "Container": {
+                  "id": "result-1",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "zero",
+                      "vertical": "s"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openResult",
+                          "resultId": "result-1"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "start",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Результат 1"
+                        },
+                        "typography": "bodyLarge",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Краткое описание результата"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurfaceMuted"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "span": "full",
+              "component": {
+                "Container": {
+                  "id": "result-2",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "zero",
+                      "vertical": "s"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openResult",
+                          "resultId": "result-2"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "start",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Результат 2"
+                        },
+                        "typography": "bodyLarge",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Краткое описание результата"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurfaceMuted"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "item": {
+              "span": "full",
+              "component": {
+                "Container": {
+                  "id": "result-3",
+                  "layout": {
+                    "width": {
+                      "sizing": "fill"
+                    },
+                    "height": {
+                      "sizing": "hug"
+                    },
+                    "position": "flow"
+                  },
+                  "padding": {
+                    "symmetric": {
+                      "horizontal": "zero",
+                      "vertical": "s"
+                    }
+                  },
+                  "appearance": {
+                    "plain": {}
+                  },
+                  "events": [
+                    {
+                      "click": {
+                        "payload": {
+                          "action": "openResult",
+                          "resultId": "result-3"
+                        }
+                      }
+                    }
+                  ],
+                  "arrangement": {
+                    "vertical": {
+                      "alignment": "start",
+                      "distribution": {
+                        "packed": {
+                          "gap": "zero",
+                          "position": "top"
+                        }
+                      }
+                    }
+                  },
+                  "children": [
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Результат 3"
+                        },
+                        "typography": "bodyLarge",
+                        "color": {
+                          "solid": "onSurface"
+                        },
+                        "alignment": "start"
+                      }
+                    },
+                    {
+                      "Text": {
+                        "layout": {
+                          "width": {
+                            "sizing": "fill"
+                          },
+                          "height": {
+                            "sizing": "hug"
+                          },
+                          "position": "flow"
+                        },
+                        "padding": {
+                          "all": "zero"
+                        },
+                        "appearance": {
+                          "plain": {}
+                        },
+                        "content": {
+                          "plain": "Краткое описание результата"
+                        },
+                        "typography": "bodyMedium",
+                        "color": {
+                          "solid": "onSurfaceMuted"
+                        },
+                        "alignment": "start"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

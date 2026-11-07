@@ -1,0 +1,36 @@
+{
+  "name": "ScrollListVerticalGrid",
+  "type": "object",
+  "description": "Вертикальная сетка: элементы заполняют строки слева направо, прокрутка сверху вниз",
+  "properties": [
+    {
+      "name": "columns",
+      "$ref": "ScrollListGridTracks",
+      "required": true,
+      "description": "Колонки: фиксированное число или минимальная ширина колонки"
+    },
+    {
+      "name": "rowGap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "default": "zero",
+      "description": "Промежуток между строками"
+    },
+    {
+      "name": "columnGap",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "default": "zero",
+      "description": "Промежуток между колонками"
+    },
+    {
+      "name": "children",
+      "type": "array",
+      "items": {
+        "$ref": "ScrollListGridElement"
+      },
+      "required": false,
+      "description": "Элементы в порядке модели. Если не заданы, сетка пустая"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "ScrollListGridSpanMode",
+  "type": "enum",
+  "description": "Ширина элемента без числа",
+  "values": [
+    {
+      "name": "full",
+      "description": "На всю строку (весь столбец)"
+    }
+  ]
+}

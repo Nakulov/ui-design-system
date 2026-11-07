@@ -2,6 +2,13 @@
   "$ref": "ScrollList",
   "entries": [
     {
+      "date": "2026-11-08",
+      "issue": 221,
+      "kind": "added",
+      "target": "content",
+      "description": "Сетки: варианты verticalGrid и horizontalGrid — колонки (строки) числом или адаптивные, ширина элемента span, заголовок на всю строку"
+    },
+    {
       "date": "2026-11-07",
       "issue": 220,
       "kind": "added",

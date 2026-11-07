@@ -1,0 +1,16 @@
+{
+  "name": "ScrollListGridTracks",
+  "type": "oneOf",
+  "description": "Колонки (строки) сетки: фиксированное число или адаптивные по размеру окна",
+  "oneOf": [
+    {
+      "name": "fixed",
+      "type": "integer",
+      "sample": 4
+    },
+    {
+      "$ref": "foundation/size/Size",
+      "name": "adaptive"
+    }
+  ]
+}
