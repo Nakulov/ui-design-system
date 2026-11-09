@@ -1,40 +1,359 @@
 package io.github.nakulov.designsystem.generator.model
 
+import io.github.nakulov.designsystem.generator.format.ReleaseStatus
+import io.github.nakulov.designsystem.generator.format.ReleaseVersions
+import io.github.nakulov.designsystem.generator.format.VersionedStatus
+import kotlinx.serialization.json.JsonPrimitive
 import java.nio.file.Path
-import kotlin.io.path.Path
-import kotlin.io.path.isRegularFile
-import kotlin.io.path.name
-import kotlin.io.path.nameWithoutExtension
-import kotlin.io.path.relativeTo
 import kotlin.io.path.toPath
-import kotlin.io.path.walk
 
-const val COMPONENT = "core/component/Component"
-const val BADGE = "components/badge/Badge"
-const val BADGE_CONTENT = "components/badge/BadgeContent"
-const val BORDER_WIDTH = "foundation/borderWidth/BorderWidth"
-const val TEXT_ALIGNMENT = "components/text/TextAlignment"
-const val PRESSABLE_STATES = "components/pressable/PressableStates"
-const val LAYOUT_PINNED = "core/layout/LayoutPinned"
+const val COMPONENT_DESCRIPTION = "Базовая модель компонента. Каждый компонент содержит поля базовой модели"
+const val COMPONENT_ID_DESCRIPTION =
+    "Идентификатор компонента: UI-тесты, источник событий, ключ элемента в списках, аналитика. " +
+        "Если задан, уникален в пределах дерева модели"
+const val BADGE_TEXT_DESCRIPTION = "Текст бейджа в одну строку, без переноса и многоточия: бейдж растёт по тексту"
+const val BADGE_TEXT_VALUE_DESCRIPTION =
+    "Текст: например, «9» или «99+». Сокращение и форматирование чисел выполняет сервер или приложение"
 
-/** Каталог `contracts/` репозитория: путь передаёт сборка в свойстве `contracts`. */
-fun makeContractsRoot(): Path = Path(System.getProperty("contracts"))
+/** Каталог контрактов случая из ресурсов `contracts/<случай>/`. */
+fun makeContractsRoot(case: String): Path =
+    ContractResolverSpec::class.java.getResource("/contracts/$case")!!.toURI().toPath()
 
-/** Тип-ссылка на контракт по идентификатору. */
-fun makeContractRef(id: String): TypeRef.Contract = TypeRef.Contract(ContractId(id))
+/** Статусы главных контрактов: в Figma выпущен, на платформах нет. */
+fun makeFigmaOnlyReleaseVersions(): ReleaseVersions = ReleaseVersions(
+    android = VersionedStatus(ReleaseStatus.NOT_RELEASED),
+    ios = VersionedStatus(ReleaseStatus.NOT_RELEASED),
+    figma = ReleaseStatus.RELEASED,
+)
 
-/** Идентификаторы по файлам: главные контракты и `definitions/` (schema-format.md, раздел 11.1). */
-fun makeContractIds(root: Path): Set<ContractId> = root.walk()
-    .filter { it.isRegularFile() && it.name.endsWith(".json") }
-    .map { it.relativeTo(root) }
-    .filter { path ->
-        val entity = path.getName(1).name
-        path.nameCount == 3 && path.nameWithoutExtension == entity.replaceFirstChar { it.uppercase() } ||
-            path.nameCount == 4 && path.getName(2).name == "definitions"
-    }
-    .map { ContractId("${it.getName(0)}/${it.getName(1)}/${it.nameWithoutExtension}") }
-    .toSet()
+/** `BadgeText` с одним свойством `value`. */
+fun makeBadgeText(): ObjectContract = ObjectContract(
+    id = ContractId("components/badge/BadgeText"),
+    name = "BadgeText",
+    description = BADGE_TEXT_DESCRIPTION,
+    kind = ContractKind.HELPER,
+    releaseVersions = null,
+    base = null,
+    appearanceContext = emptyList(),
+    properties = listOf(
+        Property(
+            name = "value",
+            description = BADGE_TEXT_VALUE_DESCRIPTION,
+            type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.STRING)),
+            required = true,
+            default = null,
+            sample = JsonPrimitive("99+"),
+            releaseVersions = null,
+            declaredIn = ContractId("components/badge/BadgeText"),
+        ),
+    ),
+)
 
-/** Каталог контрактов с ошибкой из ресурсов `broken/<случай>/`. */
-fun makeBrokenContractsRoot(case: String): Path =
-    ContractResolverSpec::class.java.getResource("/broken/$case")!!.toURI().toPath()
+/** Наследование: свойства `Component` перед собственными свойствами `Badge`, `ComponentIndicator` — из сущности `Component`. */
+/** Свойство `id` базовой модели. */
+fun makeComponentIdProperty(): Property = Property(
+    name = "id",
+    description = COMPONENT_ID_DESCRIPTION,
+    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.STRING)),
+    required = false,
+    default = null,
+    sample = null,
+    releaseVersions = null,
+    declaredIn = ContractId("core/component/Component"),
+)
+
+/** Свойство `indicators` базовой модели: элементы — `ComponentIndicator` из сущности `Component`. */
+fun makeComponentIndicatorsProperty(): Property = Property(
+    name = "indicators",
+    description = "Индикаторы у углов формы компонента: точка, символ, счётчик. Компонент вырезает их из своей " +
+        "формы с зазором; размер компонента в раскладке не меняется",
+    type = PropertyType.Array(TypeRef.Contract(ContractId("core/component/ComponentIndicator")), false),
+    required = false,
+    default = null,
+    sample = null,
+    releaseVersions = null,
+    declaredIn = ContractId("core/component/Component"),
+)
+
+/** Наследование: свойства `Component` перед собственными свойствами `Badge`. */
+fun makeInheritanceModel(): ContractModel = ContractModel(
+    mapOf(
+        ContractId("core/component/Component") to ObjectContract(
+            id = ContractId("core/component/Component"),
+            name = "Component",
+            description = COMPONENT_DESCRIPTION,
+            kind = ContractKind.PUBLIC,
+            releaseVersions = makeFigmaOnlyReleaseVersions(),
+            base = null,
+            appearanceContext = emptyList(),
+            properties = listOf(makeComponentIdProperty(), makeComponentIndicatorsProperty()),
+        ),
+        ContractId("core/component/ComponentIndicator") to EnumContract(
+            id = ContractId("core/component/ComponentIndicator"),
+            name = "ComponentIndicator",
+            description = "Индикатор у угла носителя: рисуется поверх, может выступать за границы и не меняет " +
+                "размер носителя в раскладке",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            values = listOf(EnumValue("dot", "Точка", null)),
+            sample = null,
+        ),
+        ContractId("components/badge/Badge") to ObjectContract(
+            id = ContractId("components/badge/Badge"),
+            name = "Badge",
+            description = "Метка внимания: форма с текстом, символом или картинкой либо без содержимого. " +
+                "Ширина не меньше высоты: один знак — круг, длинный текст — таблетка",
+            kind = ContractKind.PUBLIC,
+            releaseVersions = makeFigmaOnlyReleaseVersions(),
+            base = ContractId("core/component/Component"),
+            appearanceContext = listOf("plain"),
+            properties = listOf(
+                makeComponentIdProperty(),
+                makeComponentIndicatorsProperty(),
+                Property(
+                    name = "content",
+                    description = "Содержимое по центру. Если не задано, бейдж — только фон (точка)",
+                    type = PropertyType.Single(TypeRef.Contract(ContractId("components/badge/BadgeText"))),
+                    required = false,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("components/badge/Badge"),
+                ),
+            ),
+        ),
+        ContractId("components/badge/BadgeText") to makeBadgeText(),
+    ),
+)
+
+/** `inline`: значения `BorderWidthScale` — варианты `BorderWidth` без данных, `custom` — свойства объекта. */
+fun makeInlineModel(): ContractModel = ContractModel(
+    mapOf(
+        ContractId("foundation/borderWidth/BorderWidth") to OneOfContract(
+            id = ContractId("foundation/borderWidth/BorderWidth"),
+            name = "BorderWidth",
+            description = "Толщина обводки или разделителя. Значения задаются в условных единицах: dp на Android, " +
+                "pt на iOS, px в Figma",
+            kind = ContractKind.PUBLIC,
+            releaseVersions = makeFigmaOnlyReleaseVersions(),
+            variants = listOf(
+                Variant("zero", "Без обводки, 0 условных единиц", VariantData.None, null, null),
+                Variant(
+                    "s",
+                    "Обычная обводка и разделители, по умолчанию 1 условная единица",
+                    VariantData.None,
+                    null,
+                    null,
+                ),
+                Variant(
+                    "m",
+                    "Выделение: фокус, выбранный элемент, по умолчанию 2 условные единицы",
+                    VariantData.None,
+                    null,
+                    null,
+                ),
+                Variant(
+                    "l",
+                    "Акцентная обводка и индикаторы, по умолчанию 4 условные единицы",
+                    VariantData.None,
+                    null,
+                    null,
+                ),
+                Variant(
+                    "custom",
+                    null,
+                    VariantData.Fields(ContractId("foundation/borderWidth/BorderWidthCustom")),
+                    null,
+                    null,
+                ),
+            ),
+            sample = JsonPrimitive("s"),
+        ),
+        ContractId("foundation/borderWidth/BorderWidthScale") to EnumContract(
+            id = ContractId("foundation/borderWidth/BorderWidthScale"),
+            name = "BorderWidthScale",
+            description = "Именованные значения шкалы толщины обводки",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            values = listOf(
+                EnumValue("zero", "Без обводки, 0 условных единиц", null),
+                EnumValue("s", "Обычная обводка и разделители, по умолчанию 1 условная единица", null),
+                EnumValue("m", "Выделение: фокус, выбранный элемент, по умолчанию 2 условные единицы", null),
+                EnumValue("l", "Акцентная обводка и индикаторы, по умолчанию 4 условные единицы", null),
+            ),
+            sample = null,
+        ),
+        ContractId("foundation/borderWidth/BorderWidthCustom") to ObjectContract(
+            id = ContractId("foundation/borderWidth/BorderWidthCustom"),
+            name = "BorderWidthCustom",
+            description = "Произвольная толщина обводки вне шкалы",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            base = null,
+            appearanceContext = emptyList(),
+            properties = listOf(
+                Property(
+                    name = "value",
+                    description = "Толщина обводки в условных единицах",
+                    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.INTEGER)),
+                    required = true,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("foundation/borderWidth/BorderWidthCustom"),
+                ),
+            ),
+        ),
+    ),
+)
+
+/** Именованные варианты: ссылка на объект — свойства, на `oneOf` — одно значение, `type` — одно значение. */
+fun makeNamedVariantModel(): ContractModel = ContractModel(
+    mapOf(
+        ContractId("components/badge/BadgeContent") to OneOfContract(
+            id = ContractId("components/badge/BadgeContent"),
+            name = "BadgeContent",
+            description = "Содержимое бейджа",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            variants = listOf(
+                Variant("text", null, VariantData.Fields(ContractId("components/badge/BadgeText")), null, null),
+                Variant(
+                    "image",
+                    null,
+                    VariantData.Value(TypeRef.Contract(ContractId("components/image/ImageSource"))),
+                    null,
+                    null,
+                ),
+            ),
+            sample = null,
+        ),
+        ContractId("components/badge/BadgeText") to makeBadgeText(),
+        ContractId("components/image/ImageSource") to OneOfContract(
+            id = ContractId("components/image/ImageSource"),
+            name = "ImageSource",
+            description = "Источник изображения: ресурс показывается сразу, удалённая картинка загружается",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            variants = listOf(
+                Variant("remote", null, VariantData.Value(TypeRef.Primitive(PrimitiveType.STRING)), null, null),
+            ),
+            sample = null,
+        ),
+    ),
+)
+
+/** Перечисление: значения по порядку. */
+fun makeEnumModel(): ContractModel = ContractModel(
+    mapOf(
+        ContractId("components/text/TextAlignment") to EnumContract(
+            id = ContractId("components/text/TextAlignment"),
+            name = "TextAlignment",
+            description = "Выравнивание строк текста по горизонтали",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            values = listOf(
+                EnumValue("start", "По начальному краю: слева при письме слева направо", null),
+                EnumValue("center", "По центру", null),
+                EnumValue("end", "По конечному краю: справа при письме слева направо", null),
+            ),
+            sample = null,
+        ),
+    ),
+)
+
+/** `defaultsTo`: `pressed` по умолчанию — значение `default`. */
+fun makeDefaultsToModel(): ContractModel = ContractModel(
+    mapOf(
+        ContractId("core/component/Component") to ObjectContract(
+            id = ContractId("core/component/Component"),
+            name = "Component",
+            description = COMPONENT_DESCRIPTION,
+            kind = ContractKind.PUBLIC,
+            releaseVersions = null,
+            base = null,
+            appearanceContext = emptyList(),
+            properties = listOf(
+                Property(
+                    name = "id",
+                    description = COMPONENT_ID_DESCRIPTION,
+                    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.STRING)),
+                    required = false,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("core/component/Component"),
+                ),
+            ),
+        ),
+        ContractId("components/pressable/PressableStates") to ObjectContract(
+            id = ContractId("components/pressable/PressableStates"),
+            name = "PressableStates",
+            description = "Деревья содержимого Pressable по состояниям. Деревья — один и тот же компонент, корень " +
+                "оформлен plain; узлы с одинаковым id в разных деревьях — один элемент",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            base = null,
+            appearanceContext = emptyList(),
+            properties = listOf(
+                Property(
+                    name = "default",
+                    description = "Обычное состояние",
+                    type = PropertyType.Single(TypeRef.Contract(ContractId("core/component/Component"))),
+                    required = true,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("components/pressable/PressableStates"),
+                ),
+                Property(
+                    name = "pressed",
+                    description = "Состояние во время нажатия. По умолчанию — дерево default целиком, с его событиями",
+                    type = PropertyType.Single(TypeRef.Contract(ContractId("core/component/Component"))),
+                    required = true,
+                    default = DefaultValue.Sibling("default"),
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("components/pressable/PressableStates"),
+                ),
+            ),
+        ),
+    ),
+)
+
+/** `default`: значение из контракта записано как есть. */
+fun makeDefaultModel(): ContractModel = ContractModel(
+    mapOf(
+        ContractId("core/layout/LayoutPinned") to ObjectContract(
+            id = ContractId("core/layout/LayoutPinned"),
+            name = "LayoutPinned",
+            description = "Закрепление компонента относительно родителя. Допустимо только у детей контейнера " +
+                "наложения. Смещения — позиция, а не отступ: размер и область нажатия компонента не меняются",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            base = null,
+            appearanceContext = emptyList(),
+            properties = listOf(
+                Property(
+                    name = "relativeTo",
+                    description = "От чего отсчитываются смещения",
+                    type = PropertyType.Single(TypeRef.Contract(ContractId("core/layout/LayoutPinReference"))),
+                    required = true,
+                    default = DefaultValue.Value(JsonPrimitive("edge")),
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("core/layout/LayoutPinned"),
+                ),
+            ),
+        ),
+        ContractId("core/layout/LayoutPinReference") to EnumContract(
+            id = ContractId("core/layout/LayoutPinReference"),
+            name = "LayoutPinReference",
+            description = "От чего отсчитываются смещения закрепления",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            values = listOf(EnumValue("edge", "От края родителя", null)),
+            sample = null,
+        ),
+    ),
+)

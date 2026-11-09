@@ -50,13 +50,24 @@ enum class ReleaseStatus { @SerialName("released") RELEASED, @SerialName("willNo
    проверяются через публичные вызовы.
 4. Тестовые данные, только если нужны, лежат в `<Имя>SpecData.kt`. Именованных классов-спек там нет: такой класс Kotest
    запустит как настоящий тест.
-5. Тестовые данные объявляются функциями с префиксом `make` и названием по контексту: `makeContractRef(...)`,
+5. Тестовые данные объявляются функциями с префиксом `make` и названием по контексту: `makeBadgeText()`,
    `makeObjectContractFile()`. Коротких безымянных помощников вроде `fun id()` нет.
 6. `val` в тестовых данных — только константы, и они объявляются как `const val`.
+7. В тестах и тестовых данных нет логики: ни `map`, `filter`, `single`, `let`, ни приведений и вычислений. Тест вызывает
+   проверяемый метод и сравнивает результат с ожидаемым значением целиком; ожидаемое — литерал в `make…`.
+8. Вход метода, который читает файлы, — образец в `src/test/resources`; код под тесты не меняется (зависимости ради
+   моков не вводятся).
 
 ```kotlin
-// ContractResolverSpecData.kt
-const val BADGE = "components/badge/Badge"
+// ContractResolverSpec.kt
+shouldReturnTest(makeEnumModel()) { ContractResolver.load(makeContractsRoot("enum")) }
 
-fun makeContractRef(id: String): TypeRef.Contract = TypeRef.Contract(ContractId(id))
+// ContractResolverSpecData.kt
+fun makeEnumModel(): ContractModel = ContractModel(mapOf(ContractId("components/text/TextAlignment") to EnumContract(...)))
+```
+
+Не так:
+
+```kotlin
+(model[ContractId(BADGE)] as ObjectContract).properties.single { it.name == name }.let { it.declaredIn to it.type }
 ```

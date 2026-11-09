@@ -74,6 +74,7 @@ python3 tools/validate_model.py <файл>             # проверить од
 python3 tools/bundle.py                            # набор для плагина из ветки задачи: build/bundle.json
 cd figma-plugin && npm ci && npm run build         # плагин: dist/
 cd generator && ./gradlew test                     # тесты генератора: чтение и разрешение контрактов
+cd generator && ./gradlew run --args=../contracts  # генератор на контрактах репозитория: все разрешаются
 ```
 
 Генератору нужны JDK 21 и токен GitHub classic с `read:packages` для KotestKit из GitHub Packages:

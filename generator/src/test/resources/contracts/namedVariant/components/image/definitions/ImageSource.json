@@ -1,0 +1,11 @@
+{
+  "name": "ImageSource",
+  "type": "oneOf",
+  "description": "Источник изображения: ресурс показывается сразу, удалённая картинка загружается",
+  "oneOf": [
+    {
+      "name": "remote",
+      "type": "string"
+    }
+  ]
+}

@@ -56,6 +56,12 @@ jobs:
           GPR_USER: ${{ github.actor }}
           GPR_KEY: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew test
+      - name: Все контракты разрешаются
+        working-directory: generator
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_KEY: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew run --args=../contracts
 
   publish:
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'

@@ -1,0 +1,14 @@
+{
+  "name": "LayoutPinned",
+  "type": "object",
+  "description": "Закрепление компонента относительно родителя. Допустимо только у детей контейнера наложения. Смещения — позиция, а не отступ: размер и область нажатия компонента не меняются",
+  "properties": [
+    {
+      "name": "relativeTo",
+      "$ref": "LayoutPinReference",
+      "required": true,
+      "default": "edge",
+      "description": "От чего отсчитываются смещения"
+    }
+  ]
+}
