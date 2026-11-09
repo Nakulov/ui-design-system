@@ -27,7 +27,7 @@ PRESSABLE = "components/pressable/Pressable"
 TEXT_FIELD = "components/textField/TextField"
 # Объекты деревьев состояний: деревья одного объекта — состояния одного элемента (component-model.md, разделы 14, 15).
 STATE_TREES = {"components/pressable/PressableStates", "components/textField/TextFieldStates"}
-SKIPPED = {"build", "figma-plugin"}  # верхние каталоги без контрактов
+SKIPPED = {"build", "figma-plugin", "generator"}  # верхние каталоги без контрактов
 
 PRIMITIVES = {
     "string": lambda v: isinstance(v, str),
