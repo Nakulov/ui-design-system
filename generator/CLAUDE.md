@@ -3,3 +3,8 @@
 При работе с кодом модуля следуй правилам кода:
 
 @CODESTYLE.md
+
+Тесты пиши по стандарту KotestKit для проектов-потребителей: [«Как писать тесты» и «JSON и DTO»](https://github.com/Nakulov/KotestKit/blob/v2.1.0/README.md#как-писать-тесты).
+Форма выбирается по тому, что проверяет тест: значение — `shouldReturnTest`, исключение — `shouldThrow*Test`,
+соответствие JSON и DTO — `shouldDecodeTest` / `shouldEncodeTest` внутри `withJson(ContractJson)`; образцы JSON —
+только ресурсы в `src/test/resources`. Случай вне стандарта — сначала сообщи владельцу.

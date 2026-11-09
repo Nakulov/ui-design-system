@@ -1,0 +1,20 @@
+{
+  "name": "ExampleSize",
+  "type": "oneOf",
+  "description": "Варианты всех видов",
+  "oneOf": [
+    {
+      "$ref": "ExampleScale",
+      "inline": true
+    },
+    {
+      "$ref": "ExampleCustom",
+      "name": "custom"
+    },
+    {
+      "name": "plain",
+      "type": "string",
+      "sample": "текст"
+    }
+  ]
+}

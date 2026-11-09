@@ -6,6 +6,7 @@ kotestkit = "2.1.0"
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotestkit = { module = "io.github.nakulov:kotestkit", version.ref = "kotestkit" }
+kotestkit-serialization = { module = "io.github.nakulov:kotestkit-serialization", version.ref = "kotestkit" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

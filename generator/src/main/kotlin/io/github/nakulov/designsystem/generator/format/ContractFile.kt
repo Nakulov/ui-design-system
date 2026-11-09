@@ -8,6 +8,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.JsonTransformingSerializer
 
+/** Строгий разбор контрактов: неизвестное поле — ошибка (раздел 3, «Другие поля в контракте не используются»). */
+val ContractJson: Json = Json { ignoreUnknownKeys = false }
+
 /**
  * Файл контракта как он записан: specifications/contract.schema.json, schema-format.md, разделы 3–8.
  *
@@ -38,10 +41,7 @@ data class ContractFile(
     val releaseVersions: ReleaseVersions? = null,
 ) {
     companion object {
-        /** Строгий разбор: неизвестное поле — ошибка (раздел 3, «Другие поля в контракте не используются»). */
-        private val json = Json { ignoreUnknownKeys = false }
-
-        fun parse(text: String): ContractFile = json.decodeFromString(serializer(), text)
+        fun parse(text: String): ContractFile = ContractJson.decodeFromString(serializer(), text)
     }
 }
 

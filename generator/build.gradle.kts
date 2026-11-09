@@ -7,6 +7,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.kotestkit)
+    testImplementation(libs.kotestkit.serialization)
 }
 
 kotlin {

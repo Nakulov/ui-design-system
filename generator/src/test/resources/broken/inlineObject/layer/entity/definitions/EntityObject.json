@@ -1,0 +1,13 @@
+{
+  "name": "EntityObject",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "a",
+      "type": "string",
+      "required": true,
+      "description": "Строка"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Entity",
+  "type": "oneOf",
+  "description": "Ссылка на несуществующий контракт",
+  "oneOf": [
+    {
+      "$ref": "Missing"
+    }
+  ]
+}
