@@ -83,6 +83,12 @@ cd generator && ./gradlew run --args=../contracts  # генератор на к�
 блокирует.
 Правила кода модуля — `generator/CODESTYLE.md`.
 
+Генератор в Android Studio или IntelliJ: сборка лежит в `generator/`, поэтому корень репозитория IDE как Gradle-проект
+не видит. Откройте папку `generator/` (File → Open) или подключите `generator/build.gradle.kts` (правый клик → Link
+Gradle Project); Gradle JDK — 21 (Settings → Build Tools → Gradle). Отчёт покрытия Kover собирается после каждого
+прогона тестов: `generator/build/reports/kover/html/index.html`. В worktree модуль, ещё не слитый в `dev`, есть
+только в папке, где открыта его ветка.
+
 ## Проверка в Figma
 
 1. Figma Desktop → **Plugins → Development → UI Design System** (первый раз: Import plugin from manifest… →
