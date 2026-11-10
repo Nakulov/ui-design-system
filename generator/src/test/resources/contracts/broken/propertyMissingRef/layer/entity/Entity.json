@@ -1,0 +1,13 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "a",
+      "$ref": "Missing",
+      "required": true,
+      "description": "Свойство a"
+    }
+  ]
+}

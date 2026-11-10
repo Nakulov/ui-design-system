@@ -1,0 +1,11 @@
+{
+  "name": "LayoutPinReference",
+  "type": "enum",
+  "description": "От чего отсчитываются смещения закрепления",
+  "values": [
+    {
+      "name": "edge",
+      "description": "От края родителя"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "name": "Example",
+  "type": "object",
+  "extends": "core/component/Component",
+  "appearanceContext": [
+    "plain",
+    "control"
+  ],
+  "description": "Объект со всеми полями свойств",
+  "releaseVersions": {
+    "figma": "released",
+    "android": "notReleased",
+    "ios": {
+      "status": "released",
+      "version": "1.2"
+    }
+  },
+  "properties": [
+    {
+      "name": "title",
+      "type": "string",
+      "required": false,
+      "description": "Необязательная строка",
+      "sample": "Заголовок",
+      "releaseVersions": {
+        "figma": "willNotBeReleased"
+      }
+    },
+    {
+      "name": "spacing",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "default": {
+        "custom": {
+          "value": 6
+        }
+      },
+      "description": "Ссылка со значением по умолчанию"
+    },
+    {
+      "name": "pressed",
+      "$ref": "foundation/spacing/Spacing",
+      "required": true,
+      "defaultsTo": "spacing",
+      "description": "Значение по умолчанию — соседнее свойство"
+    },
+    {
+      "name": "events",
+      "type": "array",
+      "items": {
+        "$ref": "core/event/Event"
+      },
+      "uniqueVariants": true,
+      "required": false,
+      "description": "Массив без повторов вариантов"
+    }
+  ]
+}

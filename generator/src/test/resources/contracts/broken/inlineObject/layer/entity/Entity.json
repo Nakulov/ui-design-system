@@ -1,0 +1,11 @@
+{
+  "name": "Entity",
+  "type": "oneOf",
+  "description": "inline на объект",
+  "oneOf": [
+    {
+      "$ref": "EntityObject",
+      "inline": true
+    }
+  ]
+}

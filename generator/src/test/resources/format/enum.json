@@ -1,0 +1,21 @@
+{
+  "name": "ExampleScale",
+  "type": "enum",
+  "description": "Перечисление",
+  "sample": "m",
+  "values": [
+    {
+      "name": "s",
+      "description": "Малый"
+    },
+    {
+      "name": "m",
+      "description": "Средний",
+      "releaseVersions": {
+        "android": {
+          "status": "notReleased"
+        }
+      }
+    }
+  ]
+}

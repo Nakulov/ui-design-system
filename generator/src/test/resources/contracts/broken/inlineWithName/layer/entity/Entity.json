@@ -1,0 +1,12 @@
+{
+  "name": "Entity",
+  "type": "oneOf",
+  "description": "Варианты",
+  "oneOf": [
+    {
+      "$ref": "EntityEnum",
+      "inline": true,
+      "name": "a"
+    }
+  ]
+}

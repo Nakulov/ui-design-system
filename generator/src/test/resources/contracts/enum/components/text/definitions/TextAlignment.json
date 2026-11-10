@@ -1,0 +1,19 @@
+{
+  "name": "TextAlignment",
+  "type": "enum",
+  "description": "Выравнивание строк текста по горизонтали",
+  "values": [
+    {
+      "name": "start",
+      "description": "По начальному краю: слева при письме слева направо"
+    },
+    {
+      "name": "center",
+      "description": "По центру"
+    },
+    {
+      "name": "end",
+      "description": "По конечному краю: справа при письме слева направо"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Entity",
+  "type": "enum",
+  "description": "Неизвестное поле",
+  "title": "x",
+  "values": [
+    {
+      "name": "a",
+      "description": "Значение"
+    }
+  ]
+}

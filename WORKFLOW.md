@@ -73,7 +73,15 @@ python3 tools/validate.py --base origin/dev        # проверка, как в
 python3 tools/validate_model.py <файл>             # проверить одну модель по контракту
 python3 tools/bundle.py                            # набор для плагина из ветки задачи: build/bundle.json
 cd figma-plugin && npm ci && npm run build         # плагин: dist/
+cd generator && ./gradlew check                    # тесты генератора и порог покрытия Kover; отчёт: build/reports/kover/html
+cd generator && ./gradlew run --args=../contracts  # генератор на контрактах репозитория: все разрешаются
 ```
+
+Генератору нужны JDK 21 и токен GitHub classic с `read:packages` для KotestKit из GitHub Packages:
+`gpr.user=<логин>` и `gpr.key=<токен>` в `~/.gradle/gradle.properties`. Gradle ставить не нужно — его скачивает
+`gradlew`. В CI тесты генератора — необязательная задача `generator`: её падение видно в PR, но слияние не
+блокирует.
+Правила кода модуля — `generator/CODESTYLE.md`.
 
 ## Проверка в Figma
 
@@ -96,5 +104,6 @@ cd figma-plugin && npm ci && npm run build         # плагин: dist/
 | Демо-экраны            | `screens/`                                  |
 | Темы                   | `themes/`                                   |
 | Плагин                 | `figma-plugin/`                             |
+| Генератор              | `generator/`                                |
 | Скиллы процесса        | `.claude/skills/groom`, `take`, `contract-authoring` |
 | Шаблоны задачи и PR    | `.github/`                                  |

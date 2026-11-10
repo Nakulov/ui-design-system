@@ -1,0 +1,27 @@
+{
+  "name": "Component",
+  "type": "object",
+  "description": "Базовая модель компонента. Каждый компонент содержит поля базовой модели",
+  "releaseVersions": {
+    "figma": "released",
+    "android": "notReleased",
+    "ios": "notReleased"
+  },
+  "properties": [
+    {
+      "name": "id",
+      "type": "string",
+      "required": false,
+      "description": "Идентификатор компонента: UI-тесты, источник событий, ключ элемента в списках, аналитика. Если задан, уникален в пределах дерева модели"
+    },
+    {
+      "name": "indicators",
+      "type": "array",
+      "items": {
+        "$ref": "ComponentIndicator"
+      },
+      "required": false,
+      "description": "Индикаторы у углов формы компонента: точка, символ, счётчик. Компонент вырезает их из своей формы с зазором; размер компонента в раскладке не меняется"
+    }
+  ]
+}

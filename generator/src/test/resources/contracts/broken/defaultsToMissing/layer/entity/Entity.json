@@ -1,0 +1,14 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "defaultsTo на несуществующее свойство",
+  "properties": [
+    {
+      "name": "b",
+      "type": "string",
+      "required": true,
+      "defaultsTo": "c",
+      "description": "Строка"
+    }
+  ]
+}

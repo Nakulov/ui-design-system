@@ -36,6 +36,33 @@ jobs:
           npm run typecheck
           npm run build
 
+  # Генератор идёт параллельно с этапом 3: PR, сломавший генератор, видит предупреждение, слияние не блокируется.
+  generator:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Тесты и покрытие генератора
+        working-directory: generator
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_KEY: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew check
+      - name: Все контракты разрешаются
+        working-directory: generator
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_KEY: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew run --args=../contracts
+
   publish:
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     needs: validate
