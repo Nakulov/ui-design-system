@@ -36,7 +36,7 @@ import kotlin.io.path.readText
  */
 object ContractResolver {
     /** Базовая модель компонента (раздел 5.2). */
-    val COMPONENT = ContractId("core/component/Component")
+    val COMPONENT = ContractId(value = "core/component/Component")
 
     private const val DEFINITIONS = "definitions"
 
@@ -46,7 +46,7 @@ object ContractResolver {
         val files = mutableMapOf<ContractId, Loaded>()
         for (entity in root.dirs().flatMap { layer -> layer.dirs() }) {
             for ((path, kind) in entityFiles(entity)) {
-                val id = ContractId("${entity.parent.name}/${entity.name}/${path.nameWithoutExtension}")
+                val id = ContractId(value = "${entity.parent.name}/${entity.name}/${path.nameWithoutExtension}")
                 val file = read(id, path, errors) ?: continue
                 files[id] = Loaded(file, kind)
             }
@@ -58,17 +58,15 @@ object ContractResolver {
 
     /** Главный файл сущности (если есть) и её определения из `definitions/`. */
     private fun entityFiles(entity: Path): List<Pair<Path, ContractKind>> {
-        val main = entity.resolve("${entity.name.replaceFirstChar { it.uppercase() }}.json")
+        val main = entity.resolve(/* other = */ "${entity.name.replaceFirstChar { char -> char.uppercase() }}.json")
         val definitions = entity.resolve(DEFINITIONS)
         val helpers = if (definitions.isDirectory()) {
-            definitions.listDirectoryEntries(
-                "*.json",
-            ).sorted()
+            definitions.listDirectoryEntries(glob = "*.json").sorted()
         } else {
             emptyList()
         }
-        return listOfNotNull(main.takeIf { it.isRegularFile() }).map { it to ContractKind.PUBLIC } +
-            helpers.map { it to ContractKind.HELPER }
+        return listOfNotNull(main.takeIf { path -> path.isRegularFile() }).map { path -> path to ContractKind.PUBLIC } +
+            helpers.map { path -> path to ContractKind.HELPER }
     }
 
     /** Файл контракта; ошибка чтения или разбора — ошибка контракта, а не падение. */
@@ -88,9 +86,13 @@ object ContractResolver {
         return file
     }
 
-    private fun Exception.firstLine(): String? = message?.lineSequence()?.first()
+    private fun Exception.firstLine(): String? {
+        return message?.lineSequence()?.first()
+    }
 
-    private fun Path.dirs(): List<Path> = listDirectoryEntries().filter { it.isDirectory() }.sorted()
+    private fun Path.dirs(): List<Path> {
+        return listDirectoryEntries().filter { path -> path.isDirectory() }.sorted()
+    }
 
     private class Loaded(
         val file: ContractFile,
@@ -103,13 +105,15 @@ object ContractResolver {
     ) {
         private val ownProperties = mutableMapOf<ContractId, List<Property>>()
 
-        fun run() = ContractModel(files.mapValues { (id, loaded) -> resolve(id, loaded) })
+        fun run(): ContractModel {
+            return ContractModel(files.mapValues { (id, loaded) -> resolve(id, loaded) })
+        }
 
         private fun resolve(id: ContractId, loaded: Loaded): ResolvedContract {
             val file = loaded.file
             return when (file.type) {
                 ContractType.OBJECT -> {
-                    val base = file.extends?.let { base(id, it) }
+                    val base = file.extends?.let { ref -> base(id, ref) }
                     ObjectContract(
                         id = id,
                         name = file.name,
@@ -118,7 +122,8 @@ object ContractResolver {
                         releaseVersions = file.releaseVersions,
                         base = base,
                         appearanceContext = file.appearanceContext.orEmpty(),
-                        properties = base?.let { own(it, files.getValue(it).file) }.orEmpty() + own(id, file),
+                        properties = base?.let { baseId -> own(baseId, files.getValue(baseId).file) }.orEmpty() +
+                            own(id, file),
                     )
                 }
 
@@ -128,7 +133,9 @@ object ContractResolver {
                     description = file.description,
                     kind = loaded.kind,
                     releaseVersions = file.releaseVersions,
-                    values = file.values.orEmpty().map { EnumValue(it.name, it.description, it.releaseVersions) },
+                    values = file.values.orEmpty().map { value ->
+                        EnumValue(value.name, value.description, value.releaseVersions)
+                    },
                     sample = file.sample,
                 )
 
@@ -148,13 +155,15 @@ object ContractResolver {
         private fun base(id: ContractId, ref: String): ContractId? {
             val base = reference(id, ref) ?: return null
             if (base != COMPONENT) errors += "$id: extends ссылается на $base, а не на $COMPONENT"
-            return base.takeIf { it == COMPONENT }
+            return base.takeIf { baseId -> baseId == COMPONENT }
         }
 
         /** Собственные свойства; у компонента базовые идут перед ними (раздел 5.2, правило 1). */
-        private fun own(id: ContractId, file: ContractFile): List<Property> = ownProperties.getOrPut(id) {
-            val defs = file.properties.orEmpty()
-            defs.map { property(id, it, defs) }
+        private fun own(id: ContractId, file: ContractFile): List<Property> {
+            return ownProperties.getOrPut(id) {
+                val defs = file.properties.orEmpty()
+                defs.map { def -> property(id, def, defs) }
+            }
         }
 
         private fun property(id: ContractId, def: PropertyDef, siblings: List<PropertyDef>): Property {
@@ -180,7 +189,7 @@ object ContractResolver {
 
                 items == null -> {
                     errors += "$at: у массива нет items"
-                    PropertyType.Array(TypeRef.Primitive(PrimitiveType.PAYLOAD), false)
+                    PropertyType.Array(TypeRef.Primitive(PrimitiveType.PAYLOAD), uniqueVariants = false)
                 }
 
                 else -> PropertyType.Array(
@@ -206,7 +215,7 @@ object ContractResolver {
 
         /** `defaultsTo` — соседнее обязательное свойство того же типа без своего `defaultsTo`. */
         private fun sibling(at: String, def: PropertyDef, name: String, siblings: List<PropertyDef>): DefaultValue {
-            val target = siblings.find { it.name == name }
+            val target = siblings.find { sibling -> sibling.name == name }
             when {
                 target == null || target === def -> errors += "$at: defaultsTo «$name» — не соседнее свойство"
 
@@ -221,9 +230,9 @@ object ContractResolver {
 
         /** Варианты `oneOf` (раздел 7). */
         private fun variants(id: ContractId, file: ContractFile): List<Variant> {
-            val variants = file.oneOf.orEmpty().flatMap { variant(id, it) }
-            variants.groupBy { it.name }.filterValues { it.size > 1 }.keys
-                .forEach { errors += "$id: вариант «$it» повторяется" }
+            val variants = file.oneOf.orEmpty().flatMap { item -> variant(id, item) }
+            variants.groupBy { variant -> variant.name }.filterValues { group -> group.size > 1 }.keys
+                .forEach { name -> errors += "$id: вариант «$name» повторяется" }
             return variants
         }
 
@@ -266,7 +275,7 @@ object ContractResolver {
             val target = reference(id, ref) ?: return emptyList()
             if (item.inline == true) return inlineVariants(id, item, target)
             val file = files.getValue(target).file
-            val name = item.name ?: file.name.replaceFirstChar { it.lowercase() }
+            val name = item.name ?: file.name.replaceFirstChar { char -> char.lowercase() }
             val data = if (file.type == ContractType.OBJECT) {
                 VariantData.Fields(target)
             } else {
@@ -290,13 +299,13 @@ object ContractResolver {
                 errors += "$id: inline ссылается на $target, а не на enum"
                 return emptyList()
             }
-            return file.values.orEmpty().map {
+            return file.values.orEmpty().map { value ->
                 Variant(
-                    name = it.name,
-                    description = it.description,
+                    name = value.name,
+                    description = value.description,
                     data = VariantData.None,
                     sample = null,
-                    releaseVersions = it.releaseVersions,
+                    releaseVersions = value.releaseVersions,
                 )
             }
         }
@@ -329,7 +338,8 @@ object ContractResolver {
 
         /** Ссылка по разделу 6: имя без `/` — контракт своей сущности, с `/` — идентификатор. */
         private fun reference(from: ContractId, ref: String): ContractId? {
-            val id = if ('/' in ref) ContractId(ref) else ContractId("${from.value.substringBeforeLast('/')}/$ref")
+            val entity = from.value.substringBeforeLast(delimiter = '/')
+            val id = if ('/' in ref) ContractId(ref) else ContractId(value = "$entity/$ref")
             if (id !in files) {
                 errors += "$from: ссылка «$ref» не найдена ($id)"
                 return null

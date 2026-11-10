@@ -1,0 +1,13 @@
+package sample
+
+sealed class Shape {
+    data class Circle(
+        val radius: Int,
+    ) : Shape()
+
+    private class Helper
+}
+
+fun makeShape(): Shape {
+    return Shape.Circle(radius = 1)
+}

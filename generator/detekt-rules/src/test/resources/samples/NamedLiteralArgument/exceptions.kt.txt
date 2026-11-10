@@ -1,0 +1,6 @@
+@Suppress("UNUSED")
+fun main() {
+    val list = listOf("a", "b")
+    val pair = "a" to 1
+    println(message = list + pair.first)
+}

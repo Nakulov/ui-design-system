@@ -1,0 +1,7 @@
+fun greet(name: String, times: Int) {
+    println(message = "$name: $times")
+}
+
+fun main() {
+    greet(name = "Ann", times = -1)
+}

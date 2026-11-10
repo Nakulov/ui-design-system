@@ -1,0 +1,4 @@
+data class Plain(
+    val a: String? = null,
+    val b: String,
+)

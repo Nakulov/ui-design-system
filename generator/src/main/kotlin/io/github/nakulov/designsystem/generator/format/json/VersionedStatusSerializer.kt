@@ -9,6 +9,7 @@ import kotlinx.serialization.serializer
 
 /** Статус строкой или объектом `{ "status", "version" }`. */
 object VersionedStatusSerializer : JsonTransformingSerializer<VersionedStatus>(serializer<VersionedStatus>()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement =
-        if (element is JsonPrimitive) JsonObject(mapOf("status" to element)) else element
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        return if (element is JsonPrimitive) JsonObject(mapOf("status" to element)) else element
+    }
 }

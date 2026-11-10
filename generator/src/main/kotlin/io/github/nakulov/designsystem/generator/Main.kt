@@ -9,14 +9,14 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
     val root = args.singleOrNull()
     if (root == null) {
-        System.err.println("Использование: generator <каталог contracts>")
-        exitProcess(2)
+        System.err.println(/* x = */ "Использование: generator <каталог contracts>")
+        exitProcess(status = 2)
     }
     try {
         val model = ContractResolver.load(Path(root))
-        println("Контракты разрешены: ${model.contracts.size}")
+        println(message = "Контракты разрешены: ${model.contracts.size}")
     } catch (e: ContractResolutionException) {
         System.err.println(e.message)
-        exitProcess(1)
+        exitProcess(status = 1)
     }
 }

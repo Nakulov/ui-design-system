@@ -1,0 +1,5 @@
+class ExampleSpec :
+    io.kotest.core.spec.style.BehaviorSpec({
+    })
+
+class Child : Base()

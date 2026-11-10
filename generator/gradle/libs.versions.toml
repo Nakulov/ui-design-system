@@ -9,6 +9,8 @@ detekt = "2.0.0-alpha.6"
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotestkit = { module = "io.github.nakulov:kotestkit", version.ref = "kotestkit" }
 kotestkit-serialization = { module = "io.github.nakulov:kotestkit-serialization", version.ref = "kotestkit" }
+detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
+detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
 detekt-rules-ktlint-wrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
 
 [plugins]

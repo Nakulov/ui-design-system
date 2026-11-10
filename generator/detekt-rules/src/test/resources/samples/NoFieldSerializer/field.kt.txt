@@ -1,0 +1,9 @@
+@Serializable
+data class Dto(
+    @SerialName("status")
+    @Serializable(with = StatusSerializer::class)
+    val status: Status,
+) {
+    @Serializable(with = StatusSerializer::class)
+    val previous: Status? = null
+}

@@ -1,0 +1,14 @@
+open class Base(
+    val name: String,
+)
+
+class Child : Base("x")
+
+fun greet(name: String, times: Int, loud: Boolean, mark: Char, extra: String?) {
+    println(name)
+}
+
+fun main() {
+    greet("Ann", 2, true, '!', null)
+    repeat(-1) { }
+}

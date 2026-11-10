@@ -1,0 +1,4 @@
+fun main() {
+    System.err.println("x")
+    System.err.println(/* p0 = */ "y")
+}

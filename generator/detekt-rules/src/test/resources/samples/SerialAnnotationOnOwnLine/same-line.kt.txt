@@ -1,0 +1,14 @@
+@Serializable
+data class Dto(
+    @SerialName("a") val a: String,
+    @SerialName("b")
+    val b: String,
+)
+
+@Serializable
+enum class Kind {
+    @SerialName("one") ONE,
+
+    @SerialName("two")
+    TWO,
+}

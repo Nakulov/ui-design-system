@@ -1,0 +1,3 @@
+fun letters(names: List<String>): List<String> {
+    return names.map { name -> name.filter { it.isLetter() } }
+}
