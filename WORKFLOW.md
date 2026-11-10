@@ -73,7 +73,8 @@ python3 tools/validate.py --base origin/dev        # проверка, как в
 python3 tools/validate_model.py <файл>             # проверить одну модель по контракту
 python3 tools/bundle.py                            # набор для плагина из ветки задачи: build/bundle.json
 cd figma-plugin && npm ci && npm run build         # плагин: dist/
-cd generator && ./gradlew check                    # тесты генератора и порог покрытия Kover; отчёт: build/reports/kover/html
+cd generator && ./gradlew check                    # тесты генератора, порог покрытия Kover, detekt; отчёты: build/reports/kover/html, build/reports/detekt
+cd generator && ./gradlew detektMain detektTest --auto-correct  # исправить оформление автоматически
 cd generator && ./gradlew run --args=../contracts  # генератор на контрактах репозитория: все разрешаются
 ```
 
@@ -81,12 +82,15 @@ cd generator && ./gradlew run --args=../contracts  # генератор на к�
 `gpr.user=<логин>` и `gpr.key=<токен>` в `~/.gradle/gradle.properties`. Gradle ставить не нужно — его скачивает
 `gradlew`. В CI тесты генератора — необязательная задача `generator`: её падение видно в PR, но слияние не
 блокирует.
-Правила кода модуля — `generator/CODESTYLE.md`.
+Правила кода модуля — `generator/CODESTYLE.md`; готовые правила detekt — `generator/detekt.yml`.
 
 Генератор в Android Studio или IntelliJ: сборка лежит в `generator/`, поэтому корень репозитория IDE как Gradle-проект
 не видит. Откройте папку `generator/` (File → Open) или подключите `generator/build.gradle.kts` (правый клик → Link
 Gradle Project); Gradle JDK — 21 (Settings → Build Tools → Gradle). Отчёт покрытия Kover собирается после каждого
-прогона тестов: `generator/build/reports/kover/html/index.html`. В worktree модуль, ещё не слитый в `dev`, есть
+прогона тестов: `generator/build/reports/kover/html/index.html`. Подсветка нарушений detekt при написании кода — плагин detekt
+(Settings → Plugins → detekt): в его настройках (Settings → Tools → detekt) включить, Configuration Files —
+`generator/detekt.yml`, отметить Build Upon Default Configuration. Версия detekt в плагине может отличаться от сборки:
+решает `./gradlew check`. В worktree модуль, ещё не слитый в `dev`, есть
 только в папке, где открыта его ветка.
 
 ## Проверка в Figma

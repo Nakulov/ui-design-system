@@ -7,7 +7,8 @@ import kotlin.system.exitProcess
 
 /** Точка входа: `<каталог contracts>`. Читает и разрешает все контракты; при ошибке — код выхода 1 и список ошибок. */
 fun main(args: Array<String>) {
-    val root = args.singleOrNull() ?: run {
+    val root = args.singleOrNull()
+    if (root == null) {
         System.err.println("Использование: generator <каталог contracts>")
         exitProcess(2)
     }

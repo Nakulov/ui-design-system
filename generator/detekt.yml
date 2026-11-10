@@ -1,0 +1,73 @@
+# Код-стайл генератора (#249): поверх конфига detekt по умолчанию (buildUponDefaultConfig).
+# Правила одинаковы для main и test: исключения '**/test/**' конфига по умолчанию сняты (excludes) у каждого правила,
+# где они есть; исключения не по тестам ('**/*.kts') оставлены.
+
+comments:
+  KDocReferencesNonPublicProperty:
+    excludes: []
+  UndocumentedPublicClass:
+    excludes: []
+  UndocumentedPublicFunction:
+    excludes: []
+  UndocumentedPublicProperty:
+    excludes: []
+
+complexity:
+  LongMethod:
+    allowedLines: 40
+  LargeClass:
+    allowedLines: 250
+  NamedArguments: # больше трёх аргументов в вызове метода/конструктора — все именованные
+    active: true
+    allowedArguments: 3
+  NestedBlockDepth:
+    allowedDepth: 2
+  StringLiteralDuplication:
+    excludes: []
+  TooManyFunctions: # число make… в файле данных растёт с числом случаев; размер держат LongMethod и LargeClass
+    active: false
+    excludes: []
+
+exceptions:
+  InstanceOfCheckForException:
+    excludes: []
+  ThrowingExceptionsWithoutMessageOrCause:
+    excludes: []
+  TooGenericExceptionCaught:
+    excludes: []
+
+naming:
+  FunctionNaming:
+    excludes: []
+
+performance:
+  ForEachOnRange:
+    excludes: []
+  SpreadOperator:
+    excludes: []
+
+potential-bugs:
+  LateinitUsage:
+    excludes: []
+  UnsafeCallOnNullableType:
+    excludes: []
+
+style:
+  MaxLineLength:
+    maxLineLength: 120
+  MagicNumber:
+    excludes: ['**/*.kts']
+  ReturnCount:
+    max: 2
+    excludeGuardClauses: true
+  ForbiddenMethodCall:
+    active: true
+    methods:
+      - reason: 'run прячет блок кода в выражение; пишите блок обычной функцией или локальной переменной.'
+        value: 'kotlin.run'
+
+ktlint:
+  CommentWrapping: # запрещает /* p0 = */ "x" у аргумента Java-метода
+    active: false
+  ClassSignature:
+    forceMultilineWhenParameterCountGreaterOrEqualThan: '1' # строкой: число не принимается
