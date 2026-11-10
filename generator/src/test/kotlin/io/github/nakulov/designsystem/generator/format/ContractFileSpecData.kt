@@ -12,8 +12,8 @@ fun makeObjectContractFile(): ContractFile = ContractFile(
     appearanceContext = listOf("plain", "control"),
     // Статус строкой и объектом с версией — один класс VersionedStatus.
     releaseVersions = ReleaseVersions(
-        android = VersionedStatus(ReleaseStatus.NOT_RELEASED),
-        ios = VersionedStatus(ReleaseStatus.RELEASED, version = "1.2"),
+        android = VersionedStatus(status = ReleaseStatus.NOT_RELEASED),
+        ios = VersionedStatus(status = ReleaseStatus.RELEASED, version = "1.2"),
         figma = ReleaseStatus.RELEASED,
     ),
     properties = listOf(

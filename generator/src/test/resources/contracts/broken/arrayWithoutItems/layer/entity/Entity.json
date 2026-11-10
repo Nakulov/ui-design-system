@@ -1,0 +1,13 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "a",
+      "type": "array",
+      "required": false,
+      "description": "Свойство a"
+    }
+  ]
+}

@@ -1,5 +1,17 @@
 # Код-стайл генератора
 
+## Файлы
+
+1. Один класс на файл, файл называется по классу: модели DTO (`ContractFile.kt`, `ReleaseStatus.kt`) и модели
+   логики (`ObjectContract.kt`, `PropertyType.kt`). Подтипы `sealed`-типа объявляются внутри него и лежат в его файле.
+2. Настройки и сериализаторы тоже лежат каждый в своём файле: `ContractJson.kt`, `VersionedStatusSerializer.kt`.
+3. Закрытые служебные классы, нужные только одному классу, объявляются внутри него: `Loaded` и `Resolution` внутри
+   `ContractResolver`.
+4. Исключения из правила обсуждаются с владельцем до того, как появятся в коде.
+5. Пакеты делятся по роли класса, роли не смешиваются: `format/` — DTO формата, `format/json/` — настройка разбора и
+   сериализаторы, `model/` — разрешённая модель, `resolve/` — резолвер и его исключение. Спека лежит в пакете своего
+   класса.
+
 ## Модели DTO
 
 Модели DTO — классы с `@Serializable`, которые разбираются из JSON или записываются в JSON: классы формата контрактов
@@ -10,6 +22,9 @@
 2. Каждая аннотация — на своей строке, каждое поле — на своей строке. Аннотация и поле в одну строку не пишутся.
 3. Значения `enum` разделяются пустой строкой.
 4. Сначала обязательные поля, затем необязательные. Необязательное поле — nullable со значением по умолчанию `null`.
+5. Сериализатор не указывается у поля (`@Serializable(with = ...)` на поле запрещён). Нестандартный сериализатор
+   регистрирует `Json` формата (`ContractJson`) в `serializersModule` через `contextual`, а файл модели с полем такого
+   типа объявляет его в `@file:UseContextualSerialization(...)`. Пример — `VersionedStatus`: статус строкой или объектом.
 
 ```kotlin
 @Serializable
@@ -57,6 +72,8 @@ enum class ReleaseStatus { @SerialName("released") RELEASED, @SerialName("willNo
    проверяемый метод и сравнивает результат с ожидаемым значением целиком; ожидаемое — литерал в `make…`.
 8. Вход метода, который читает файлы, — образец в `src/test/resources`; код под тесты не меняется (зависимости ради
    моков не вводятся).
+9. Тесты соответствия JSON и DTO (`shouldDecodeTest`, `shouldEncodeTest`) можно собрать в одну спеку на модуль.
+   Разбор и запись разделяются: `shouldDecodeTest` — в одном блоке `withJson`, `shouldEncodeTest` — в другом.
 
 ```kotlin
 // ContractResolverSpec.kt
@@ -64,6 +81,16 @@ shouldReturnTest(makeEnumModel()) { ContractResolver.load(makeContractsRoot("enu
 
 // ContractResolverSpecData.kt
 fun makeEnumModel(): ContractModel = ContractModel(mapOf(ContractId("components/text/TextAlignment") to EnumContract(...)))
+```
+
+```kotlin
+// ContractFileSpec.kt
+withJson(ContractJson) {
+    shouldDecodeTest("format/object.json", makeObjectContractFile())
+}
+withJson(ContractJson) {
+    shouldEncodeTest(makeObjectContractFile(), "format/object.json")
+}
 ```
 
 Не так:

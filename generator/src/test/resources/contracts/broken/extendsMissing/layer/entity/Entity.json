@@ -1,0 +1,14 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "extends": "Missing",
+  "properties": [
+    {
+      "name": "a",
+      "type": "string",
+      "required": true,
+      "description": "Свойство a"
+    }
+  ]
+}

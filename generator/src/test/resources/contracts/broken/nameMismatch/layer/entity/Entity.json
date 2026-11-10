@@ -1,0 +1,13 @@
+{
+  "name": "Other",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "a",
+      "type": "string",
+      "required": true,
+      "description": "Свойство a"
+    }
+  ]
+}

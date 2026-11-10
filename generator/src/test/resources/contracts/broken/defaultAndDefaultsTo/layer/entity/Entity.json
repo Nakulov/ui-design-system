@@ -1,0 +1,21 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "a",
+      "type": "string",
+      "required": true,
+      "description": "Свойство a"
+    },
+    {
+      "name": "b",
+      "type": "string",
+      "default": "x",
+      "defaultsTo": "a",
+      "required": true,
+      "description": "Свойство b"
+    }
+  ]
+}

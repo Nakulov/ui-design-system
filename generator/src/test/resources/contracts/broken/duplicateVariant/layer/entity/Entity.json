@@ -1,0 +1,15 @@
+{
+  "name": "Entity",
+  "type": "oneOf",
+  "description": "Варианты",
+  "oneOf": [
+    {
+      "type": "string",
+      "name": "a"
+    },
+    {
+      "type": "integer",
+      "name": "a"
+    }
+  ]
+}

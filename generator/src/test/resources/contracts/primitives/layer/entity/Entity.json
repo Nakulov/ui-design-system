@@ -1,0 +1,43 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "text",
+      "type": "string",
+      "required": true,
+      "description": "Свойство text"
+    },
+    {
+      "name": "flag",
+      "type": "boolean",
+      "required": true,
+      "description": "Свойство flag"
+    },
+    {
+      "name": "count",
+      "type": "integer",
+      "required": true,
+      "description": "Свойство count"
+    },
+    {
+      "name": "ratio",
+      "type": "float",
+      "required": true,
+      "description": "Свойство ratio"
+    },
+    {
+      "name": "tint",
+      "type": "color",
+      "required": true,
+      "description": "Свойство tint"
+    },
+    {
+      "name": "data",
+      "type": "payload",
+      "required": true,
+      "description": "Свойство data"
+    }
+  ]
+}

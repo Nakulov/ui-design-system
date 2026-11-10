@@ -1,0 +1,11 @@
+{
+  "name": "EntitySecond",
+  "type": "enum",
+  "description": "Перечисление",
+  "values": [
+    {
+      "name": "first",
+      "description": "Первое значение"
+    }
+  ]
+}

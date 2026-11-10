@@ -1,11 +1,25 @@
-package io.github.nakulov.designsystem.generator.model
+package io.github.nakulov.designsystem.generator.resolve
 
 import io.github.nakulov.designsystem.generator.format.ReleaseStatus
 import io.github.nakulov.designsystem.generator.format.ReleaseVersions
 import io.github.nakulov.designsystem.generator.format.VersionedStatus
-import kotlinx.serialization.json.JsonPrimitive
+import io.github.nakulov.designsystem.generator.model.ContractId
+import io.github.nakulov.designsystem.generator.model.ContractKind
+import io.github.nakulov.designsystem.generator.model.ContractModel
+import io.github.nakulov.designsystem.generator.model.DefaultValue
+import io.github.nakulov.designsystem.generator.model.EnumContract
+import io.github.nakulov.designsystem.generator.model.EnumValue
+import io.github.nakulov.designsystem.generator.model.ObjectContract
+import io.github.nakulov.designsystem.generator.model.OneOfContract
+import io.github.nakulov.designsystem.generator.model.PrimitiveType
+import io.github.nakulov.designsystem.generator.model.Property
+import io.github.nakulov.designsystem.generator.model.PropertyType
+import io.github.nakulov.designsystem.generator.model.TypeRef
+import io.github.nakulov.designsystem.generator.model.Variant
+import io.github.nakulov.designsystem.generator.model.VariantData
 import java.nio.file.Path
 import kotlin.io.path.toPath
+import kotlinx.serialization.json.JsonPrimitive
 
 const val COMPONENT_DESCRIPTION = "Базовая модель компонента. Каждый компонент содержит поля базовой модели"
 const val COMPONENT_ID_DESCRIPTION =
@@ -353,6 +367,126 @@ fun makeDefaultModel(): ContractModel = ContractModel(
             kind = ContractKind.HELPER,
             releaseVersions = null,
             values = listOf(EnumValue("edge", "От края родителя", null)),
+            sample = null,
+        ),
+    ),
+)
+
+/** Примитивные типы свойств (раздел 4.1). */
+fun makePrimitivesModel(): ContractModel = ContractModel(
+    mapOf(
+        ContractId("layer/entity/Entity") to ObjectContract(
+            id = ContractId("layer/entity/Entity"),
+            name = "Entity",
+            description = "Объект",
+            kind = ContractKind.PUBLIC,
+            releaseVersions = null,
+            base = null,
+            appearanceContext = emptyList(),
+            properties = listOf(
+                Property(
+                    name = "text",
+                    description = "Свойство text",
+                    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.STRING)),
+                    required = true,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("layer/entity/Entity"),
+                ),
+                Property(
+                    name = "flag",
+                    description = "Свойство flag",
+                    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.BOOLEAN)),
+                    required = true,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("layer/entity/Entity"),
+                ),
+                Property(
+                    name = "count",
+                    description = "Свойство count",
+                    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.INTEGER)),
+                    required = true,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("layer/entity/Entity"),
+                ),
+                Property(
+                    name = "ratio",
+                    description = "Свойство ratio",
+                    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.FLOAT)),
+                    required = true,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("layer/entity/Entity"),
+                ),
+                Property(
+                    name = "tint",
+                    description = "Свойство tint",
+                    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.COLOR)),
+                    required = true,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("layer/entity/Entity"),
+                ),
+                Property(
+                    name = "data",
+                    description = "Свойство data",
+                    type = PropertyType.Single(TypeRef.Primitive(PrimitiveType.PAYLOAD)),
+                    required = true,
+                    default = null,
+                    sample = null,
+                    releaseVersions = null,
+                    declaredIn = ContractId("layer/entity/Entity"),
+                ),
+            ),
+        ),
+    ),
+)
+
+/** Пустые списки: объект без свойств, перечисление без значений, `oneOf` без элементов и с развёрнутым пустым enum. */
+fun makeEmptyModel(): ContractModel = ContractModel(
+    mapOf(
+        ContractId("layer/entity/Entity") to ObjectContract(
+            id = ContractId("layer/entity/Entity"),
+            name = "Entity",
+            description = "Объект",
+            kind = ContractKind.PUBLIC,
+            releaseVersions = null,
+            base = null,
+            appearanceContext = emptyList(),
+            properties = emptyList(),
+        ),
+        ContractId("layer/entity/EntityEnum") to EnumContract(
+            id = ContractId("layer/entity/EntityEnum"),
+            name = "EntityEnum",
+            description = "Перечисление",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            values = emptyList(),
+            sample = null,
+        ),
+        ContractId("layer/entity/EntityInline") to OneOfContract(
+            id = ContractId("layer/entity/EntityInline"),
+            name = "EntityInline",
+            description = "Варианты",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            variants = emptyList(),
+            sample = null,
+        ),
+        ContractId("layer/entity/EntityNone") to OneOfContract(
+            id = ContractId("layer/entity/EntityNone"),
+            name = "EntityNone",
+            description = "Варианты",
+            kind = ContractKind.HELPER,
+            releaseVersions = null,
+            variants = emptyList(),
             sample = null,
         ),
     ),

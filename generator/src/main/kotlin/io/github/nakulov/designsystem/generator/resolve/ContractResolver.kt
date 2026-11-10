@@ -1,10 +1,25 @@
-package io.github.nakulov.designsystem.generator.model
+package io.github.nakulov.designsystem.generator.resolve
 
 import io.github.nakulov.designsystem.generator.format.ContractFile
 import io.github.nakulov.designsystem.generator.format.ContractType
 import io.github.nakulov.designsystem.generator.format.FormatType
 import io.github.nakulov.designsystem.generator.format.OneOfItemDef
 import io.github.nakulov.designsystem.generator.format.PropertyDef
+import io.github.nakulov.designsystem.generator.model.ContractId
+import io.github.nakulov.designsystem.generator.model.ContractKind
+import io.github.nakulov.designsystem.generator.model.ContractModel
+import io.github.nakulov.designsystem.generator.model.DefaultValue
+import io.github.nakulov.designsystem.generator.model.EnumContract
+import io.github.nakulov.designsystem.generator.model.EnumValue
+import io.github.nakulov.designsystem.generator.model.ObjectContract
+import io.github.nakulov.designsystem.generator.model.OneOfContract
+import io.github.nakulov.designsystem.generator.model.PrimitiveType
+import io.github.nakulov.designsystem.generator.model.Property
+import io.github.nakulov.designsystem.generator.model.PropertyType
+import io.github.nakulov.designsystem.generator.model.ResolvedContract
+import io.github.nakulov.designsystem.generator.model.TypeRef
+import io.github.nakulov.designsystem.generator.model.Variant
+import io.github.nakulov.designsystem.generator.model.VariantData
 import java.nio.file.Path
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isRegularFile
@@ -12,10 +27,6 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
-
-/** Ошибки чтения и разрешения контрактов: все найденные сразу, по строке на ошибку. */
-class ContractResolutionException(val errors: List<String>) :
-    IllegalStateException(errors.joinToString("\n", prefix = "Контракты не разрешены:\n"))
 
 /**
  * Читает контракты каталога `contracts/` и разрешает связи между ними (schema-format.md, разделы 5–7, 11.1).
@@ -34,8 +45,8 @@ object ContractResolver {
         val files = mutableMapOf<ContractId, Loaded>()
         for (layer in root.dirs()) for (entity in layer.dirs()) {
             val main = entity.resolve("${entity.name.replaceFirstChar { it.uppercase() }}.json")
-            val helpers = entity.resolve(DEFINITIONS).takeIf { it.isDirectory() }
-                ?.listDirectoryEntries("*.json")?.sorted().orEmpty()
+            val definitions = entity.resolve(DEFINITIONS)
+            val helpers = if (definitions.isDirectory()) definitions.listDirectoryEntries("*.json").sorted() else emptyList()
             val paths = listOfNotNull(main.takeIf { it.isRegularFile() }).map { it to ContractKind.PUBLIC } +
                 helpers.map { it to ContractKind.HELPER }
             for ((path, kind) in paths) {

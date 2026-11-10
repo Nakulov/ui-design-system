@@ -1,0 +1,5 @@
+{
+  "name": "EntityEnum",
+  "type": "enum",
+  "description": "Перечисление"
+}

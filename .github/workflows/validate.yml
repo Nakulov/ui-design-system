@@ -50,12 +50,12 @@ jobs:
           distribution: corretto
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
-      - name: Тесты генератора
+      - name: Тесты и покрытие генератора
         working-directory: generator
         env:
           GPR_USER: ${{ github.actor }}
           GPR_KEY: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew test
+        run: ./gradlew check
       - name: Все контракты разрешаются
         working-directory: generator
         env:

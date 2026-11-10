@@ -1,0 +1,14 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "extends": "EntityBase",
+  "properties": [
+    {
+      "name": "a",
+      "type": "string",
+      "required": true,
+      "description": "Свойство a"
+    }
+  ]
+}

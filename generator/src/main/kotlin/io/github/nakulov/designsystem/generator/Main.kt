@@ -1,7 +1,7 @@
 package io.github.nakulov.designsystem.generator
 
-import io.github.nakulov.designsystem.generator.model.ContractResolutionException
-import io.github.nakulov.designsystem.generator.model.ContractResolver
+import io.github.nakulov.designsystem.generator.resolve.ContractResolutionException
+import io.github.nakulov.designsystem.generator.resolve.ContractResolver
 import kotlin.io.path.Path
 import kotlin.system.exitProcess
 

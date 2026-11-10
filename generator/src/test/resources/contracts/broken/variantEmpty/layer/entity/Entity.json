@@ -1,0 +1,8 @@
+{
+  "name": "Entity",
+  "type": "oneOf",
+  "description": "Варианты",
+  "oneOf": [
+    {}
+  ]
+}
