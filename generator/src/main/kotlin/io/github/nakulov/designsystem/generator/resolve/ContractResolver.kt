@@ -20,6 +20,7 @@ import io.github.nakulov.designsystem.generator.model.ResolvedContract
 import io.github.nakulov.designsystem.generator.model.TypeRef
 import io.github.nakulov.designsystem.generator.model.Variant
 import io.github.nakulov.designsystem.generator.model.VariantData
+import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isRegularFile
@@ -43,21 +44,10 @@ object ContractResolver {
     fun load(root: Path): ContractModel {
         val errors = mutableListOf<String>()
         val files = mutableMapOf<ContractId, Loaded>()
-        for (layer in root.dirs()) for (entity in layer.dirs()) {
-            val main = entity.resolve("${entity.name.replaceFirstChar { it.uppercase() }}.json")
-            val definitions = entity.resolve(DEFINITIONS)
-            val helpers = if (definitions.isDirectory()) definitions.listDirectoryEntries("*.json").sorted() else emptyList()
-            val paths = listOfNotNull(main.takeIf { it.isRegularFile() }).map { it to ContractKind.PUBLIC } +
-                helpers.map { it to ContractKind.HELPER }
-            for ((path, kind) in paths) {
-                val id = ContractId("${layer.name}/${entity.name}/${path.nameWithoutExtension}")
-                val file = try {
-                    ContractFile.parse(path.readText())
-                } catch (e: Exception) {
-                    errors += "$id: ${e.message?.lineSequence()?.first()}"
-                    continue
-                }
-                if (file.name != path.nameWithoutExtension) errors += "$id: имя «${file.name}» не совпадает с именем файла"
+        for (entity in root.dirs().flatMap { layer -> layer.dirs() }) {
+            for ((path, kind) in entityFiles(entity)) {
+                val id = ContractId("${entity.parent.name}/${entity.name}/${path.nameWithoutExtension}")
+                val file = read(id, path, errors) ?: continue
                 files[id] = Loaded(file, kind)
             }
         }
@@ -66,11 +56,51 @@ object ContractResolver {
         return model
     }
 
+    /** Главный файл сущности (если есть) и её определения из `definitions/`. */
+    private fun entityFiles(entity: Path): List<Pair<Path, ContractKind>> {
+        val main = entity.resolve("${entity.name.replaceFirstChar { it.uppercase() }}.json")
+        val definitions = entity.resolve(DEFINITIONS)
+        val helpers = if (definitions.isDirectory()) {
+            definitions.listDirectoryEntries(
+                "*.json",
+            ).sorted()
+        } else {
+            emptyList()
+        }
+        return listOfNotNull(main.takeIf { it.isRegularFile() }).map { it to ContractKind.PUBLIC } +
+            helpers.map { it to ContractKind.HELPER }
+    }
+
+    /** Файл контракта; ошибка чтения или разбора — ошибка контракта, а не падение. */
+    private fun read(id: ContractId, path: Path, errors: MutableList<String>): ContractFile? {
+        val file = try {
+            ContractFile.parse(path.readText())
+        } catch (e: IllegalArgumentException) {
+            errors += "$id: ${e.firstLine()}"
+            null
+        } catch (e: IOException) {
+            errors += "$id: ${e.firstLine()}"
+            null
+        }
+        if (file != null && file.name != path.nameWithoutExtension) {
+            errors += "$id: имя «${file.name}» не совпадает с именем файла"
+        }
+        return file
+    }
+
+    private fun Exception.firstLine(): String? = message?.lineSequence()?.first()
+
     private fun Path.dirs(): List<Path> = listDirectoryEntries().filter { it.isDirectory() }.sorted()
 
-    private class Loaded(val file: ContractFile, val kind: ContractKind)
+    private class Loaded(
+        val file: ContractFile,
+        val kind: ContractKind,
+    )
 
-    private class Resolution(val files: Map<ContractId, Loaded>, val errors: MutableList<String>) {
+    private class Resolution(
+        val files: Map<ContractId, Loaded>,
+        val errors: MutableList<String>,
+    ) {
         private val ownProperties = mutableMapOf<ContractId, List<Property>>()
 
         fun run() = ContractModel(files.mapValues { (id, loaded) -> resolve(id, loaded) })
@@ -81,19 +111,33 @@ object ContractResolver {
                 ContractType.OBJECT -> {
                     val base = file.extends?.let { base(id, it) }
                     ObjectContract(
-                        id, file.name, file.description, loaded.kind, file.releaseVersions,
+                        id = id,
+                        name = file.name,
+                        description = file.description,
+                        kind = loaded.kind,
+                        releaseVersions = file.releaseVersions,
                         base = base,
                         appearanceContext = file.appearanceContext.orEmpty(),
                         properties = base?.let { own(it, files.getValue(it).file) }.orEmpty() + own(id, file),
                     )
                 }
+
                 ContractType.ENUM -> EnumContract(
-                    id, file.name, file.description, loaded.kind, file.releaseVersions,
+                    id = id,
+                    name = file.name,
+                    description = file.description,
+                    kind = loaded.kind,
+                    releaseVersions = file.releaseVersions,
                     values = file.values.orEmpty().map { EnumValue(it.name, it.description, it.releaseVersions) },
                     sample = file.sample,
                 )
+
                 ContractType.ONE_OF -> OneOfContract(
-                    id, file.name, file.description, loaded.kind, file.releaseVersions,
+                    id = id,
+                    name = file.name,
+                    description = file.description,
+                    kind = loaded.kind,
+                    releaseVersions = file.releaseVersions,
                     variants = variants(id, file),
                     sample = file.sample,
                 )
@@ -128,15 +172,22 @@ object ContractResolver {
         }
 
         private fun propertyType(id: ContractId, at: String, def: PropertyDef): PropertyType {
-            if (def.type == FormatType.ARRAY) {
-                val items = def.items
-                if (items == null) {
+            val items = def.items
+            return when {
+                def.type != FormatType.ARRAY -> PropertyType.Single(
+                    typeRef(id = id, at = at, type = def.type, ref = def.ref),
+                )
+
+                items == null -> {
                     errors += "$at: у массива нет items"
-                    return PropertyType.Array(TypeRef.Primitive(PrimitiveType.PAYLOAD), false)
+                    PropertyType.Array(TypeRef.Primitive(PrimitiveType.PAYLOAD), false)
                 }
-                return PropertyType.Array(typeRef(id, at, items.type, items.ref), def.uniqueVariants == true)
+
+                else -> PropertyType.Array(
+                    typeRef(id = id, at = at, type = items.type, ref = items.ref),
+                    def.uniqueVariants == true,
+                )
             }
-            return PropertyType.Single(typeRef(id, at, def.type, def.ref))
         }
 
         /** Значение по умолчанию (раздел 5, правила 1, 4). */
@@ -145,13 +196,23 @@ object ContractResolver {
             if ((def.default != null || def.defaultsTo != null) && !def.required) {
                 errors += "$at: значение по умолчанию у необязательного свойства"
             }
-            def.default?.let { return DefaultValue.Value(it) }
-            val name = def.defaultsTo ?: return null
+            val name = def.defaultsTo
+            return when {
+                def.default != null -> DefaultValue.Value(def.default)
+                name != null -> sibling(at = at, def = def, name = name, siblings = siblings)
+                else -> null
+            }
+        }
+
+        /** `defaultsTo` — соседнее обязательное свойство того же типа без своего `defaultsTo`. */
+        private fun sibling(at: String, def: PropertyDef, name: String, siblings: List<PropertyDef>): DefaultValue {
             val target = siblings.find { it.name == name }
             when {
                 target == null || target === def -> errors += "$at: defaultsTo «$name» — не соседнее свойство"
+
                 !target.required || target.defaultsTo != null ->
                     errors += "$at: defaultsTo «$name» — свойство необязательное или само с defaultsTo"
+
                 target.type != def.type || target.ref != def.ref || target.items != def.items ->
                     errors += "$at: тип отличается от типа «$name»"
             }
@@ -167,48 +228,98 @@ object ContractResolver {
         }
 
         private fun variant(id: ContractId, item: OneOfItemDef): List<Variant> {
-            if (item.type != null) {
-                if (item.ref != null) errors += "$id: у элемента oneOf и type, и \$ref"
-                val name = item.name ?: run {
-                    errors += "$id: у элемента oneOf с type нет name"
-                    return emptyList()
+            val ref = item.ref
+            return when {
+                item.type != null -> valueVariant(id, item, item.type)
+
+                ref == null -> {
+                    errors += "$id: у элемента oneOf нет ни type, ни \$ref"
+                    emptyList()
                 }
-                val type = typeRef(id, "$id.$name", item.type, null)
-                return listOf(Variant(name, null, VariantData.Value(type), item.sample, item.releaseVersions))
+
+                else -> refVariants(id, item, ref)
             }
-            val target = item.ref?.let { reference(id, it) } ?: run {
-                if (item.ref == null) errors += "$id: у элемента oneOf нет ни type, ни \$ref"
+        }
+
+        /** Вариант со значением примитива: `type` и `name`. */
+        private fun valueVariant(id: ContractId, item: OneOfItemDef, type: FormatType): List<Variant> {
+            if (item.ref != null) errors += "$id: у элемента oneOf и type, и \$ref"
+            val name = item.name
+            if (name == null) {
+                errors += "$id: у элемента oneOf с type нет name"
                 return emptyList()
             }
+            val data = VariantData.Value(typeRef(id = id, at = "$id.$name", type = type, ref = null))
+            return listOf(
+                Variant(
+                    name = name,
+                    description = null,
+                    data = data,
+                    sample = item.sample,
+                    releaseVersions = item.releaseVersions,
+                ),
+            )
+        }
+
+        /** Вариант по ссылке; `inline` — значения `enum` вариантами без данных. */
+        private fun refVariants(id: ContractId, item: OneOfItemDef, ref: String): List<Variant> {
+            val target = reference(id, ref) ?: return emptyList()
+            if (item.inline == true) return inlineVariants(id, item, target)
             val file = files.getValue(target).file
-            if (item.inline == true) {
-                if (item.name != null) errors += "$id: name вместе с inline"
-                if (file.type != ContractType.ENUM) {
-                    errors += "$id: inline ссылается на $target, а не на enum"
-                    return emptyList()
-                }
-                return file.values.orEmpty()
-                    .map { Variant(it.name, it.description, VariantData.None, null, it.releaseVersions) }
-            }
             val name = item.name ?: file.name.replaceFirstChar { it.lowercase() }
             val data = if (file.type == ContractType.OBJECT) {
                 VariantData.Fields(target)
             } else {
                 VariantData.Value(TypeRef.Contract(target))
             }
-            return listOf(Variant(name, null, data, item.sample, item.releaseVersions))
+            return listOf(
+                Variant(
+                    name = name,
+                    description = null,
+                    data = data,
+                    sample = item.sample,
+                    releaseVersions = item.releaseVersions,
+                ),
+            )
+        }
+
+        private fun inlineVariants(id: ContractId, item: OneOfItemDef, target: ContractId): List<Variant> {
+            val file = files.getValue(target).file
+            if (item.name != null) errors += "$id: name вместе с inline"
+            if (file.type != ContractType.ENUM) {
+                errors += "$id: inline ссылается на $target, а не на enum"
+                return emptyList()
+            }
+            return file.values.orEmpty().map {
+                Variant(
+                    name = it.name,
+                    description = it.description,
+                    data = VariantData.None,
+                    sample = null,
+                    releaseVersions = it.releaseVersions,
+                )
+            }
         }
 
         private fun typeRef(id: ContractId, at: String, type: FormatType?, ref: String?): TypeRef {
             if ((type == null) == (ref == null)) errors += "$at: нужен ровно один из type и \$ref"
-            if (ref != null) return reference(id, ref)?.let { TypeRef.Contract(it) } ?: TypeRef.Primitive(PrimitiveType.PAYLOAD)
+            if (ref != null) {
+                val target = reference(id, ref)
+                return if (target != null) TypeRef.Contract(target) else TypeRef.Primitive(PrimitiveType.PAYLOAD)
+            }
             return when (type) {
                 FormatType.STRING -> TypeRef.Primitive(PrimitiveType.STRING)
+
                 FormatType.BOOLEAN -> TypeRef.Primitive(PrimitiveType.BOOLEAN)
+
                 FormatType.INTEGER -> TypeRef.Primitive(PrimitiveType.INTEGER)
+
                 FormatType.FLOAT -> TypeRef.Primitive(PrimitiveType.FLOAT)
+
                 FormatType.COLOR -> TypeRef.Primitive(PrimitiveType.COLOR)
+
                 FormatType.PAYLOAD, null -> TypeRef.Primitive(PrimitiveType.PAYLOAD)
+
                 FormatType.ARRAY -> {
                     errors += "$at: вложенный массив"
                     TypeRef.Primitive(PrimitiveType.PAYLOAD)

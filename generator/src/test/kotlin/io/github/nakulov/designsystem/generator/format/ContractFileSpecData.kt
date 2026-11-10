@@ -16,37 +16,40 @@ fun makeObjectContractFile(): ContractFile = ContractFile(
         ios = VersionedStatus(status = ReleaseStatus.RELEASED, version = "1.2"),
         figma = ReleaseStatus.RELEASED,
     ),
-    properties = listOf(
-        PropertyDef(
-            name = "title",
-            description = "Необязательная строка",
-            required = false,
-            type = FormatType.STRING,
-            sample = JsonPrimitive("Заголовок"),
-            releaseVersions = ReleaseVersions(figma = ReleaseStatus.WILL_NOT_BE_RELEASED),
-        ),
-        PropertyDef(
-            name = "spacing",
-            description = "Ссылка со значением по умолчанию",
-            required = true,
-            ref = "foundation/spacing/Spacing",
-            default = JsonObject(mapOf("custom" to JsonObject(mapOf("value" to JsonPrimitive(6))))),
-        ),
-        PropertyDef(
-            name = "pressed",
-            description = "Значение по умолчанию — соседнее свойство",
-            required = true,
-            ref = "foundation/spacing/Spacing",
-            defaultsTo = "spacing",
-        ),
-        PropertyDef(
-            name = "events",
-            description = "Массив без повторов вариантов",
-            required = false,
-            type = FormatType.ARRAY,
-            items = ArrayItemsDef(ref = "core/event/Event"),
-            uniqueVariants = true,
-        ),
+    properties = makeExamplePropertyDefs(),
+)
+
+/** Свойства `Example`: все поля `PropertyDef`. */
+private fun makeExamplePropertyDefs(): List<PropertyDef> = listOf(
+    PropertyDef(
+        name = "title",
+        description = "Необязательная строка",
+        required = false,
+        type = FormatType.STRING,
+        sample = JsonPrimitive("Заголовок"),
+        releaseVersions = ReleaseVersions(figma = ReleaseStatus.WILL_NOT_BE_RELEASED),
+    ),
+    PropertyDef(
+        name = "spacing",
+        description = "Ссылка со значением по умолчанию",
+        required = true,
+        ref = "foundation/spacing/Spacing",
+        default = JsonObject(mapOf("custom" to JsonObject(mapOf("value" to JsonPrimitive(value = 6))))),
+    ),
+    PropertyDef(
+        name = "pressed",
+        description = "Значение по умолчанию — соседнее свойство",
+        required = true,
+        ref = "foundation/spacing/Spacing",
+        defaultsTo = "spacing",
+    ),
+    PropertyDef(
+        name = "events",
+        description = "Массив без повторов вариантов",
+        required = false,
+        type = FormatType.ARRAY,
+        items = ArrayItemsDef(ref = "core/event/Event"),
+        uniqueVariants = true,
     ),
 )
 

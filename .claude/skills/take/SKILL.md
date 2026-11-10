@@ -36,7 +36,7 @@ description: Взять задачу GitHub в работу — ветка от 
    `samples/min.json` и `samples/max.json`, обновляет блоки образцов в README и список контрактов в
    `.idea/jsonSchemas.xml`. Затем
    `python3 tools/validate.py --base origin/dev` без ошибок. Если менялся `generator/`, в нём без ошибок
-   `./gradlew check` (тесты и порог покрытия Kover) и `./gradlew run --args=../contracts` (все контракты разрешаются).
+   `./gradlew check` (тесты, порог покрытия Kover и detekt) и `./gradlew run --args=../contracts` (все контракты разрешаются).
    Пройди «Критерии готовности» задачи и отметь выполненные в теле задачи.
    Новые термины из изменения (понятия и новые значения слов) есть в глоссарии `specifications/glossary.md`.
 7. **Проверка в Figma.** Если задача меняет плагин или то, что он рисует (контракты, образцы, тему), пересобери набор

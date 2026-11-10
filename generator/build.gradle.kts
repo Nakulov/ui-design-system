@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kover)
+    alias(libs.plugins.detekt)
     application
 }
 
@@ -14,6 +15,8 @@ dependencies {
 
     testImplementation(libs.kotestkit)
     testImplementation(libs.kotestkit.serialization)
+
+    detektPlugins(libs.detekt.rules.ktlint.wrapper)
 }
 
 kotlin {
@@ -42,4 +45,17 @@ kover {
             rule { minBound(95) }
         }
     }
+}
+
+// Код-стайл: готовые правила detekt поверх конфига по умолчанию, оформление — правила ktlint через обёртку detekt.
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(file("detekt.yml"))
+}
+
+// NamedArguments работает только с анализом типов: check запускает detektMain и detektTest вместо простой detekt.
+// Автоисправление оформления: ./gradlew detektMain detektTest --auto-correct.
+tasks.named("check") {
+    setDependsOn(dependsOn.filterNot { it is TaskProvider<*> && it.name == "detekt" })
+    dependsOn("detektMain", "detektTest")
 }
