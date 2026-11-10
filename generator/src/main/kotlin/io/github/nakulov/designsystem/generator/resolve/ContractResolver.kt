@@ -91,7 +91,7 @@ object ContractResolver {
     }
 
     private fun Path.dirs(): List<Path> {
-        return listDirectoryEntries().filter { path -> path.isDirectory() }.sorted()
+        return listDirectoryEntries().filter { it.isDirectory() }.sorted()
     }
 
     private class Loaded(
