@@ -5,5 +5,7 @@ package io.github.nakulov.designsystem.generator.model
 value class ContractId(
     val value: String,
 ) {
-    override fun toString(): String = value
+    override fun toString(): String {
+        return value
+    }
 }

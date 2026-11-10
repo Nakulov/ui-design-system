@@ -67,7 +67,35 @@ style:
         value: 'kotlin.run'
 
 ktlint:
+  FunctionExpressionBody: # обратное своему BlockBody: тело функции — блок с return
+    active: false
   CommentWrapping: # запрещает /* p0 = */ "x" у аргумента Java-метода
     active: false
   ClassSignature:
     forceMultilineWhenParameterCountGreaterOrEqualThan: '1' # строкой: число не принимается
+
+# Свои правила (generator/detekt-rules, CODESTYLE.md).
+codestyle:
+  active: true
+  OneClassPerFile:
+    active: true
+  SerialAnnotationOnOwnLine:
+    active: true
+  SerialNameRequired:
+    active: true
+  SerialEnumBlankLine:
+    active: true
+  SerialRequiredFirst:
+    active: true
+  NoFieldSerializer:
+    active: true
+  BlockBody:
+    active: true
+  NamedLiteralArgument:
+    active: true
+  NoImplicitIt:
+    active: true
+  BehaviorSpecOnly:
+    active: true
+  SpecDataContent:
+    active: true

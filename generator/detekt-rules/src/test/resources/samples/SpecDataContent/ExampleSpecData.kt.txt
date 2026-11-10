@@ -1,0 +1,17 @@
+package sample
+
+const val NAME = "x"
+
+typealias Name = String
+
+data class Fixture(
+    val name: Name,
+)
+
+fun makeId(): String {
+    return NAME
+}
+
+private fun makeHelper(): String {
+    return NAME
+}

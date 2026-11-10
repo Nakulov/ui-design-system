@@ -1,0 +1,7 @@
+@Serializable
+data class Dto(
+    @SerialName("a")
+    val a: String? = null,
+    @SerialName("b")
+    val b: String,
+)

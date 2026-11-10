@@ -1,0 +1,17 @@
+package sample
+
+const val NAME = "x"
+
+val shared = listOf(1)
+
+fun id(): String {
+    return NAME
+}
+
+fun makeup(): String {
+    return NAME
+}
+
+class ExampleSpec :
+    BehaviorSpec({
+    })

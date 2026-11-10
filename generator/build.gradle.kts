@@ -17,6 +17,7 @@ dependencies {
     testImplementation(libs.kotestkit.serialization)
 
     detektPlugins(libs.detekt.rules.ktlint.wrapper)
+    detektPlugins(project(":detekt-rules"))
 }
 
 kotlin {

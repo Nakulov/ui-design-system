@@ -1,0 +1,4 @@
+fun upper(names: List<String>): List<String> {
+    val size by lazy { names.size }
+    return names.map { name -> name.uppercase() }
+}

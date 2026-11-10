@@ -1,0 +1,7 @@
+data class Plain(
+    @Deprecated("old") val a: String,
+)
+
+enum class Kind {
+    @Deprecated("old") ONE,
+}

@@ -1,0 +1,7 @@
+fun name(): String {
+    return "x"
+}
+
+interface Named {
+    fun name(): String
+}

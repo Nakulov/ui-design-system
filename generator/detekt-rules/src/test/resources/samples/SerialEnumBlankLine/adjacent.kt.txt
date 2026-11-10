@@ -1,0 +1,7 @@
+@Serializable
+enum class Kind {
+    @SerialName("one")
+    ONE,
+    @SerialName("two")
+    TWO,
+}

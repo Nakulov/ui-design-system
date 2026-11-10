@@ -1,0 +1,7 @@
+data class Plain(
+    val a: String,
+)
+
+enum class Kind {
+    ONE,
+}

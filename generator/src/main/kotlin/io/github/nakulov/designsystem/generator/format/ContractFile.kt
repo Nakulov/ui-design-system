@@ -35,6 +35,8 @@ data class ContractFile(
     val releaseVersions: ReleaseVersions? = null,
 ) {
     companion object {
-        fun parse(text: String): ContractFile = ContractJson.decodeFromString<ContractFile>(text)
+        fun parse(text: String): ContractFile {
+            return ContractJson.decodeFromString<ContractFile>(text)
+        }
     }
 }

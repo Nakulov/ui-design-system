@@ -1,0 +1,7 @@
+@file:UseContextualSerialization(Status::class)
+
+@Serializable
+data class Dto(
+    @SerialName("status")
+    val status: Status,
+)

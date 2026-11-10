@@ -7,8 +7,8 @@ import io.kotest.core.spec.style.BehaviorSpec
 class ContractFileSpec :
     BehaviorSpec({
         withJson(ContractJson) {
-            shouldDecodeTest("format/object.json", makeObjectContractFile())
-            shouldDecodeTest("format/enum.json", makeEnumContractFile())
-            shouldDecodeTest("format/oneOf.json", makeOneOfContractFile())
+            shouldDecodeTest(resource = "format/object.json", expected = makeObjectContractFile())
+            shouldDecodeTest(resource = "format/enum.json", expected = makeEnumContractFile())
+            shouldDecodeTest(resource = "format/oneOf.json", expected = makeOneOfContractFile())
         }
     })

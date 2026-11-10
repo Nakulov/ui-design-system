@@ -1,0 +1,7 @@
+fun name(): String = "x"
+
+class Id(
+    val value: String,
+) {
+    override fun toString(): String = value
+}
