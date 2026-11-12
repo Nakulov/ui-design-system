@@ -3,6 +3,7 @@ package io.github.nakulov.designsystem.generator.resolve
 import io.github.nakulov.designsystem.generator.format.ReleaseStatus
 import io.github.nakulov.designsystem.generator.format.ReleaseVersions
 import io.github.nakulov.designsystem.generator.format.VersionedStatus
+import io.github.nakulov.designsystem.generator.model.BaseContract
 import io.github.nakulov.designsystem.generator.model.ContractId
 import io.github.nakulov.designsystem.generator.model.ContractKind
 import io.github.nakulov.designsystem.generator.model.ContractModel
@@ -125,15 +126,13 @@ fun makeInheritanceModel(): ContractModel {
 }
 
 /** `Component` с заданными статусами и свойствами. */
-private fun makeComponent(releaseVersions: ReleaseVersions?, properties: List<Property>): ObjectContract {
-    return ObjectContract(
+private fun makeComponent(releaseVersions: ReleaseVersions?, properties: List<Property>): BaseContract {
+    return BaseContract(
         id = ContractId(value = "core/component/Component"),
         name = "Component",
         description = COMPONENT_DESCRIPTION,
         kind = ContractKind.PUBLIC,
         releaseVersions = releaseVersions,
-        base = null,
-        appearanceContext = emptyList(),
         properties = properties,
     )
 }

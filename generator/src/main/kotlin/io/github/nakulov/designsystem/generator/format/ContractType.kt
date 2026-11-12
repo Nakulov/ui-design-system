@@ -8,6 +8,9 @@ enum class ContractType {
     @SerialName("object")
     OBJECT,
 
+    @SerialName("base")
+    BASE,
+
     @SerialName("enum")
     ENUM,
 

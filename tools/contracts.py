@@ -196,7 +196,7 @@ class Registry:
 
     def declared_properties(self, contract):
         """Пары (контракт, где объявлено свойство; свойство): ссылки свойства разрешаются от его контракта."""
-        base = self.by_id.get(COMPONENT) if "extends" in contract.data else None
+        base = self.base(contract)
         inherited = [(base, prop) for prop in base.data["properties"]] if base else []
         return [*inherited, *((contract, prop) for prop in contract.data.get("properties", []))]
 
@@ -220,8 +220,18 @@ class Registry:
                 result.append(Variant(name, element, target))
         return result
 
+    def base(self, contract):
+        """Базовая модель реализации — контракт типа base по `extends` (раздел 5.2), иначе None."""
+        target = self.resolve(contract, contract.data.get("extends"))
+        return target if target is not None and target.type == "base" else None
+
+    def implementations(self, base):
+        """Реализации базовой модели по имени: контракты, `extends` которых ссылается на base (раздел 5.2)."""
+        return {c.name: c for c in self if self.base(c) is base}
+
     def components(self):
-        return {c.name: c for c in self if "extends" in c.data}
+        """Реализации всех базовых моделей по имени; сейчас базовая модель одна — Component, и это компоненты."""
+        return {c.name: c for c in self if self.base(c) is not None}
 
     def value_errors(self, value, kind, at):
         """Ошибки записи значения типа kind — примитивного типа или контракта (раздел 4.5)."""
@@ -232,13 +242,13 @@ class Registry:
             if not PRIMITIVES[kind](value):
                 yield f"{at}: {value!r} — не {kind}"
             return
-        if kind.id == COMPONENT:
-            components = self.components()
-            if not (isinstance(value, dict) and len(value) == 1 and next(iter(value)) in components):
-                yield f"{at}: ожидается объект с одним ключом — именем компонента"
+        if kind.type == "base":
+            implementations = self.implementations(kind)
+            if not (isinstance(value, dict) and len(value) == 1 and next(iter(value)) in implementations):
+                yield f"{at}: ожидается объект с одним ключом — именем реализации {kind.name}"
                 return
             name, data = next(iter(value.items()))
-            yield from self.value_errors(data, components[name], f"{at}.{name}")
+            yield from self.value_errors(data, implementations[name], f"{at}.{name}")
         elif kind.type == "object":
             if not isinstance(value, dict):
                 yield f"{at}: ожидается объект {kind.name}"
@@ -253,11 +263,12 @@ class Registry:
                     yield f"{at}: нет обязательного поля «{prop['name']}»"
             for owner, prop in properties:
                 other = prop.get("defaultsTo")
-                if prop["name"] in value and other in value and self.resolve(owner, prop.get("$ref")) is self.by_id.get(COMPONENT):
+                target = self.resolve(owner, prop.get("$ref"))
+                if prop["name"] in value and other in value and target is not None and target.type == "base":
                     mine, theirs = (next(iter(v)) if isinstance(v, dict) and len(v) == 1 else None
                                     for v in (value[prop["name"]], value[other]))
                     if mine and theirs and mine != theirs:
-                        yield f"{at}.{prop['name']}: {mine}, а у «{other}» — {theirs}: компонент тот же (defaultsTo)"
+                        yield f"{at}.{prop['name']}: {mine}, а у «{other}» — {theirs}: реализация та же (defaultsTo)"
             appearance = value.get("appearance")
             context = kind.data.get("appearanceContext")
             if context and isinstance(appearance, dict) and len(appearance) == 1:
@@ -319,10 +330,12 @@ class Registry:
             counts = Counter([data["id"]] if isinstance(data.get("id"), str) else [])
             for child, child_data, child_at in self.nested(data, contract, at, skip_root=True):
                 counts += ids(child, child_data, child_at)
-            for states, trees_at in self.state_trees(data, contract, at):
+            for states, kind_of_states, trees_at in self.state_trees(data, contract, at):
                 merged = Counter()
+                types = {prop["name"]: self.resolve(kind_of_states, prop.get("$ref"))
+                         for prop in kind_of_states.data["properties"]}
                 for key, tree in states.items():
-                    for child, child_data, child_at in self.nested(tree, self.by_id[COMPONENT], f"{trees_at}.{key}"):
+                    for child, child_data, child_at in self.nested(tree, types.get(key), f"{trees_at}.{key}"):
                         appearance = child_data.get("appearance")
                         if contract.id == PRESSABLE and isinstance(appearance, dict) and list(appearance) != ["plain"]:
                             problems.append(f"{child_at}.appearance: корень дерева состояния — только plain")
@@ -340,15 +353,16 @@ class Registry:
             yield f"{at}: id «{duplicate}» встречается больше одного раза (component-model.md, раздел 5)"
 
     def state_trees(self, value, kind, at):
-        """Объекты деревьев состояний в значении компонента, без захода во вложенные компоненты: (деревья, путь)."""
+        """Объекты деревьев состояний в значении компонента, без захода во вложенные компоненты: (деревья, контракт
+        объекта состояний, путь)."""
         if isinstance(kind, str) or kind is None or not isinstance(value, dict) or kind.type != "object":
             return
         if kind.id in STATE_TREES:
-            yield value, at
+            yield value, kind, at
             return
         for owner, prop in self.declared_properties(kind):
             target = self.resolve(owner, prop.get("$ref"))
-            if prop["name"] in value and target is not None and target.type == "object" and "extends" not in target.data:
+            if prop["name"] in value and target is not None and target.type == "object" and self.base(target) is None:
                 yield from self.state_trees(value[prop["name"]], target, f"{at}.{prop['name']}")
 
     def text_field_errors(self, data, at):
@@ -385,13 +399,13 @@ class Registry:
         skip_root — обойти свойства такого значения, а не вернуть его."""
         if isinstance(kind, str) or kind is None or value is None:
             return
-        if "extends" in kind.data and not skip_root:
+        if self.base(kind) is not None and not skip_root:
             if isinstance(value, dict):
                 yield kind.name, value, at
         elif kind.id in STATE_TREES:
             return
-        elif kind.id == COMPONENT:
-            if isinstance(value, dict) and len(value) == 1 and next(iter(value)) in self.components():
+        elif kind.type == "base":
+            if isinstance(value, dict) and len(value) == 1 and next(iter(value)) in self.implementations(kind):
                 name, data = next(iter(value.items()))
                 if isinstance(data, dict):
                     yield name, data, f"{at}.{name}"
@@ -419,11 +433,11 @@ class Registry:
         с подсказкой sample типа или свойства, не обходятся (раздел 11.1, правила 2, 4)."""
         if isinstance(kind, str) or kind is None or value is None or value == kind.data.get("sample"):
             return
-        if kind.id == COMPONENT:
+        if kind.type == "base":
             if inside_component or not (isinstance(value, dict) and len(value) == 1):
                 return
             name, data = next(iter(value.items()))
-            yield from self.objects(data, self.components().get(name), f"{at}.{name}", True)
+            yield from self.objects(data, self.implementations(kind).get(name), f"{at}.{name}", True)
         elif kind.type == "object":
             if not isinstance(value, dict):
                 return

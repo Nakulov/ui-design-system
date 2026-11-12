@@ -302,7 +302,7 @@ def check_samples(registry):
                 error(path, "нет образца: python3 tools/sync.py")
             elif path.read_text() != expected:
                 mismatch(path, path.read_text(), expected, "образец устарел: python3 tools/sync.py")
-        kind = registry.by_id.get(COMPONENT) if "extends" in contract.data else contract
+        kind = registry.base(contract) or contract
         for name, path in samples.items():
             if not LOWER_CAMEL.fullmatch(name):
                 error(path, "имя образца не в lowerCamelCase")
@@ -694,8 +694,8 @@ def check_types(registry, contract):
                 error(contract.path, f"«{prop['name']}»: тип не совпадает с типом «{other['name']}» (defaultsTo, раздел 5)")
         if "default" in prop:
             target = registry.resolve(contract, prop.get("$ref"))
-            if prop.get("type") in ("array", "payload") or (target is not None and target.id == COMPONENT):
-                error(contract.path, f"«{prop['name']}»: default не указывается у array, ссылки на Component и payload (раздел 5)")
+            if prop.get("type") in ("array", "payload") or (target is not None and target.type == "base"):
+                error(contract.path, f"«{prop['name']}»: default не указывается у array, ссылки на base и payload (раздел 5)")
             else:
                 for problem in registry.property_value_errors(contract, prop, prop["default"], f"«{prop['name']}».default"):
                     error(contract.path, problem)
@@ -706,7 +706,23 @@ def check_types(registry, contract):
     for name in duplicates([v.name for v in registry.variants(contract)]):
         error(contract.path, f"вариант «{name}» после разворачивания встречается больше одного раза")
     for name in duplicates([p["name"] for p in registry.properties(contract)]):
-        error(contract.path, f"свойство «{name}» встречается больше одного раза (с учётом свойств Component)")
+        error(contract.path, f"свойство «{name}» встречается больше одного раза (с учётом свойств базовой модели)")
+
+
+def check_reference_cycles(registry):
+    """Цикл ссылок контрактов (`$ref` свойств, `items`, элементы `oneOf`) проходит через контракт типа base
+    (раздел 6): цикл в графе без базовых моделей — ошибка; `extends` ребром не считается."""
+    graph = {}
+    for contract in registry:
+        if contract.type == "base":
+            continue
+        refs = [p.get("$ref") or p.get("items", {}).get("$ref") for p in contract.data.get("properties", [])]
+        refs += [e.get("$ref") for e in contract.data.get("oneOf", [])]
+        targets = {registry.resolve(contract, ref) for ref in refs}
+        graph[contract.id] = {t.id for t in targets if t is not None and t.type != "base"}
+    for cycle in cycles(graph):
+        error(registry.by_id[cycle[0]].path,
+              f"цикл ссылок без базовой модели: {' → '.join(cycle)} (раздел 6)")
 
 
 def check_component(registry, contract):
@@ -717,8 +733,8 @@ def check_component(registry, contract):
         error(contract.path, "extends допустим только у публичных контрактов components/ (раздел 5.2)")
     if "extends" not in contract.data:
         return
-    if registry.resolve(contract, contract.data["extends"]) is not registry.by_id.get(COMPONENT):
-        error(contract.path, "extends ссылается только на Component (раздел 5.2)")
+    if registry.base(contract) is None:
+        error(contract.path, "extends ссылается только на контракт типа base (раздел 5.2)")
     appearance = registry.by_id.get(APPEARANCE)
     allowed = {v.name for v in registry.variants(appearance)} if appearance else set()
     for name in contract.data["appearanceContext"]:
@@ -918,7 +934,7 @@ def figma_mapping(registry, owner, prop):
         return "instanceSwap", {"layer"}
     if target.type == "enum":
         return "variant", {"mode", "override"}
-    if target.type == "object":
+    if target.type in ("object", "base"):
         return None, {"override", "layer", "render"}
     if target.type != "oneOf":
         return None, set()
@@ -1412,6 +1428,7 @@ def main():
     registry = Registry(contracts)
     check_files(registry, referenced)
     check_release_versions(registry)
+    check_reference_cycles(registry)
     for contract in registry:
         check_figma_unrepresentable(registry, contract)
         check_types(registry, contract)

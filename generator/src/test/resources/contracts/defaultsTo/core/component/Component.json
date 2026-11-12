@@ -1,6 +1,6 @@
 {
   "name": "Component",
-  "type": "object",
+  "type": "base",
   "description": "Базовая модель компонента. Каждый компонент содержит поля базовой модели",
   "properties": [
     {
