@@ -216,14 +216,14 @@ export class DocumentationBuilder {
     })];
   }
 
-  /** Строки Properties: поля объекта или варианты `oneOf`; платформы — по наследованию `releaseVersions`. */
+  /** Строки Properties: поля объекта или базовой модели (`base`) либо варианты `oneOf`; платформы — по наследованию `releaseVersions`. */
   private properties(id: Id, contract: Contract): Model[] {
     const release = inherit({}, contract.releaseVersions);
     const row = (name: string, type: string, description: string, own: unknown) => this.element(`${ELEMENTS}propertyRow`, {
       name, type, description, platforms: this.platforms(inherit(release, own)),
     });
     const target = (ref: unknown) => (typeof ref === "string" ? this.bundle.contracts[ref] : undefined);
-    if (contract.type === "object") {
+    if (contract.type === "object" || contract.type === "base") {
       return (contract.properties as Record<string, unknown>[]).map((prop) => {
         const items = prop.items as Record<string, unknown> | undefined;
         const type = prop.type === "array" ? `${target(items?.$ref)?.name ?? items?.type}[]` : target(prop.$ref)?.name ?? String(prop.type);
