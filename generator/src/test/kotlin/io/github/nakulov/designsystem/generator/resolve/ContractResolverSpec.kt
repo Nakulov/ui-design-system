@@ -58,9 +58,8 @@ class ContractResolverSpec :
                 arg2 = "broken/extendsMissing",
             ),
             case(
-                arg1 = "layer/entity/Entity: extends ссылается на layer/entity/EntityBase, " +
-                    "а не на core/component/Component",
-                arg2 = "broken/extendsNotComponent",
+                arg1 = "layer/entity/Entity: extends ссылается на layer/entity/EntityBase — не контракт типа base",
+                arg2 = "broken/extendsNotBase",
             ),
             case(arg1 = "layer/entity/Entity.b: default и defaultsTo вместе", arg2 = "broken/defaultAndDefaultsTo"),
             case(arg1 = "layer/entity/Entity.a: defaultsTo «a» — не соседнее свойство", arg2 = "broken/defaultsToSelf"),

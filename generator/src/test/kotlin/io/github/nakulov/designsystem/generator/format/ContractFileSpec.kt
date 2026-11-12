@@ -8,6 +8,7 @@ class ContractFileSpec :
     BehaviorSpec({
         withJson(ContractJson) {
             shouldDecodeTest(resource = "format/object.json", expected = makeObjectContractFile())
+            shouldDecodeTest(resource = "format/base.json", expected = makeBaseContractFile())
             shouldDecodeTest(resource = "format/enum.json", expected = makeEnumContractFile())
             shouldDecodeTest(resource = "format/oneOf.json", expected = makeOneOfContractFile())
         }

@@ -57,6 +57,23 @@ private fun makeExamplePropertyDefs(): List<PropertyDef> {
     )
 }
 
+/** Ожидаемый разбор `format/base.json`: базовая модель со свойствами. */
+fun makeBaseContractFile(): ContractFile {
+    return ContractFile(
+        name = "ExampleBase",
+        type = ContractType.BASE,
+        description = "Базовая модель",
+        releaseVersions = ReleaseVersions(
+            android = VersionedStatus(status = ReleaseStatus.RELEASED),
+            ios = VersionedStatus(status = ReleaseStatus.RELEASED),
+            figma = ReleaseStatus.RELEASED,
+        ),
+        properties = listOf(
+            PropertyDef(name = "id", description = "Идентификатор", required = false, type = FormatType.STRING),
+        ),
+    )
+}
+
 /** Ожидаемый разбор `format/enum.json`. */
 fun makeEnumContractFile(): ContractFile {
     return ContractFile(

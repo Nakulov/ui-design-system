@@ -6,7 +6,7 @@
   "required": ["name", "type", "description"],
   "properties": {
     "name": { "$ref": "#/$defs/pascalCaseName" },
-    "type": { "enum": ["object", "enum", "oneOf"] },
+    "type": { "enum": ["object", "base", "enum", "oneOf"] },
     "description": { "$ref": "#/$defs/description" },
     "properties": {
       "type": "array",
@@ -24,8 +24,8 @@
       "items": { "$ref": "#/$defs/oneOfItem" }
     },
     "extends": {
-      "description": "Ссылка на базовую модель Component (раздел 5.2).",
-      "allOf": [{ "$ref": "#/$defs/ref" }, { "const": "core/component/Component" }]
+      "description": "Ссылка на базовую модель — контракт типа base (раздел 5.2); тип контракта по ссылке проверяет валидатор.",
+      "$ref": "#/$defs/ref"
     },
     "appearanceContext": {
       "description": "Контекст оформления компонента (раздел 5.2).",
@@ -50,6 +50,18 @@
           { "not": { "required": ["values"] } },
           { "not": { "required": ["oneOf"] } },
           { "not": { "required": ["sample"] } }
+        ]
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "base" } } },
+      "then": {
+        "allOf": [
+          { "not": { "required": ["values"] } },
+          { "not": { "required": ["oneOf"] } },
+          { "not": { "required": ["sample"] } },
+          { "not": { "required": ["extends"] } },
+          { "not": { "required": ["appearanceContext"] } }
         ]
       }
     },

@@ -5,6 +5,7 @@ import io.github.nakulov.designsystem.generator.format.ContractType
 import io.github.nakulov.designsystem.generator.format.FormatType
 import io.github.nakulov.designsystem.generator.format.OneOfItemDef
 import io.github.nakulov.designsystem.generator.format.PropertyDef
+import io.github.nakulov.designsystem.generator.model.BaseContract
 import io.github.nakulov.designsystem.generator.model.ContractId
 import io.github.nakulov.designsystem.generator.model.ContractKind
 import io.github.nakulov.designsystem.generator.model.ContractModel
@@ -35,9 +36,6 @@ import kotlin.io.path.readText
  * Структуру файлов и записи значений проверяет tools/validate.py; здесь — только то, без чего модель не построить.
  */
 object ContractResolver {
-    /** Базовая модель компонента (раздел 5.2). */
-    val COMPONENT = ContractId(value = "core/component/Component")
-
     private const val DEFINITIONS = "definitions"
 
     /** Все контракты `<root>/<слой>/<сущность>/`: главный и вспомогательные определения. */
@@ -112,20 +110,16 @@ object ContractResolver {
         private fun resolve(id: ContractId, loaded: Loaded): ResolvedContract {
             val file = loaded.file
             return when (file.type) {
-                ContractType.OBJECT -> {
-                    val base = file.extends?.let { ref -> base(id, ref) }
-                    ObjectContract(
-                        id = id,
-                        name = file.name,
-                        description = file.description,
-                        kind = loaded.kind,
-                        releaseVersions = file.releaseVersions,
-                        base = base,
-                        appearanceContext = file.appearanceContext.orEmpty(),
-                        properties = base?.let { baseId -> own(baseId, files.getValue(baseId).file) }.orEmpty() +
-                            own(id, file),
-                    )
-                }
+                ContractType.OBJECT -> objectContract(id, loaded)
+
+                ContractType.BASE -> BaseContract(
+                    id = id,
+                    name = file.name,
+                    description = file.description,
+                    kind = loaded.kind,
+                    releaseVersions = file.releaseVersions,
+                    properties = own(id, file),
+                )
 
                 ContractType.ENUM -> EnumContract(
                     id = id,
@@ -151,11 +145,29 @@ object ContractResolver {
             }
         }
 
-        /** `extends` — только ссылка на `Component` (раздел 5.2, правило 2). */
+        /** Контракт типа `object`; у реализации базовой модели — сначала её свойства (раздел 5.2, правило 1). */
+        private fun objectContract(id: ContractId, loaded: Loaded): ObjectContract {
+            val file = loaded.file
+            val base = file.extends?.let { ref -> base(id, ref) }
+            return ObjectContract(
+                id = id,
+                name = file.name,
+                description = file.description,
+                kind = loaded.kind,
+                releaseVersions = file.releaseVersions,
+                base = base,
+                appearanceContext = file.appearanceContext.orEmpty(),
+                properties = base?.let { baseId -> own(baseId, files.getValue(baseId).file) }.orEmpty() +
+                    own(id, file),
+            )
+        }
+
+        /** `extends` — только ссылка на контракт типа `base` (раздел 5.2, правило 2). */
         private fun base(id: ContractId, ref: String): ContractId? {
             val base = reference(id, ref) ?: return null
-            if (base != COMPONENT) errors += "$id: extends ссылается на $base, а не на $COMPONENT"
-            return base.takeIf { baseId -> baseId == COMPONENT }
+            val isBase = files.getValue(base).file.type == ContractType.BASE
+            if (!isBase) errors += "$id: extends ссылается на $base — не контракт типа base"
+            return base.takeIf { isBase }
         }
 
         /** Собственные свойства; у компонента базовые идут перед ними (раздел 5.2, правило 1). */
@@ -270,7 +282,10 @@ object ContractResolver {
             )
         }
 
-        /** Вариант по ссылке; `inline` — значения `enum` вариантами без данных. */
+        /**
+         * Вариант по ссылке; `inline` — значения `enum` вариантами без данных. Данные варианта — поля `object`,
+         * у других типов, в том числе `base`, — одно значение (раздел 7, правило 4).
+         */
         private fun refVariants(id: ContractId, item: OneOfItemDef, ref: String): List<Variant> {
             val target = reference(id, ref) ?: return emptyList()
             if (item.inline == true) return inlineVariants(id, item, target)

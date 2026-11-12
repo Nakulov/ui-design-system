@@ -6,7 +6,7 @@
 import json
 import re
 
-from contracts import COMPONENT, has_default
+from contracts import has_default
 
 # Величины-заглушки примитивных типов без подсказки sample; name — имя ближайшего свойства или варианта (раздел 11.1, правило 8).
 PLACEHOLDERS = {
@@ -25,8 +25,8 @@ def dumps(value):
 
 
 def required_samples(contract):
-    """Образцы, которые генерируются для публичного контракта: min и max у object, кроме Component."""
-    if contract.kind == "public" and contract.type == "object" and contract.id != COMPONENT:
+    """Образцы, которые генерируются для публичного контракта: min и max у object (у base их нет по типу)."""
+    if contract.kind == "public" and contract.type == "object":
         return ("min", "max")
     return ()
 
@@ -43,8 +43,9 @@ def generate(registry, contract, mode):
             return None  # ссылка не разрешилась: об этом сообщает проверка ссылок
         if isinstance(kind, str):
             return PLACEHOLDERS[kind](name)
-        if kind.id == COMPONENT:
-            return {root.name: generate(registry, root, "min")[root.name]} if "extends" in root.data else None
+        if kind.type == "base":
+            # Ссылка на базовую модель — сама реализация в min (раздел 11.1), если образец — её реализация.
+            return {root.name: generate(registry, root, "min")[root.name]} if registry.base(root) is kind else None
         if "sample" in kind.data:
             return kind.data["sample"]
         if kind.type == "object":
