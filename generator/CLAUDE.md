@@ -4,6 +4,12 @@
 
 @CODESTYLE.md
 
+Модуль `generator/models`: исходники, которые попадают в артефакт, — целиком вывод генератора, руками они не пишутся.
+Руками — только тесты модуля и скрипт сборки `generator/models/build.gradle.kts` (он не попадает в артефакт). Общие
+классы, не зависящие от контрактов (`Rgba`, `OneOfSerializer`…), — шаблоны генератора в
+`generator/src/main/resources/shared/`, генератор кладёт их в вывод. Артефакт не тянет зависимости: внешние
+библиотеки — `compileOnly`, библиотека отрисовки подключает их сама.
+
 Тесты пиши по стандарту KotestKit для проектов-потребителей: [«Как писать тесты» и «JSON и DTO»](https://github.com/Nakulov/KotestKit/blob/v2.2.0/README.md#как-писать-тесты).
 Форма выбирается по тому, что проверяет тест: значение — `shouldReturnTest`, исключение — `shouldThrow*Test`,
 соответствие JSON и DTO — `shouldDecodeTest` / `shouldEncodeTest` внутри `withJson(ContractJson)`, образец без ожидаемого
