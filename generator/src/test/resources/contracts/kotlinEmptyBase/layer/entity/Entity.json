@@ -1,0 +1,5 @@
+{
+  "name": "Entity",
+  "type": "base",
+  "description": "Базовая модель без свойств"
+}

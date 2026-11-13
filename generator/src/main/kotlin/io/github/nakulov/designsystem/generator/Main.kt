@@ -25,7 +25,11 @@ fun main(args: Array<String>) {
         for ((path, text) in files) {
             Path(output, path).createParentDirectories().writeText(text)
         }
-        println(message = "Модели Kotlin: ${files.size} файлов в $output")
+        for (path in KotlinOutput.sharedFiles) {
+            val text = KotlinOutput::class.java.getResource(/* name = */ "/shared/$path")!!.readText()
+            Path(output, path).createParentDirectories().writeText(text)
+        }
+        println(message = "Модели Kotlin: ${files.size + KotlinOutput.sharedFiles.size} файлов в $output")
     } catch (e: ContractResolutionException) {
         System.err.println(e.message)
         exitProcess(status = 1)

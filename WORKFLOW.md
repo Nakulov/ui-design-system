@@ -76,7 +76,7 @@ cd figma-plugin && npm ci && npm run build         # плагин: dist/
 cd generator && ./gradlew check                    # тесты генератора, порог покрытия Kover, detekt; отчёты: build/reports/kover/html, build/reports/detekt
 cd generator && ./gradlew detektMain detektTest --auto-correct  # исправить оформление автоматически
 cd generator && ./gradlew run --args=../contracts  # генератор на контрактах репозитория: все разрешаются
-cd generator && ./gradlew :models:check            # модели Kotlin из контрактов (models/build/generated) компилируются; входит в check
+cd generator && ./gradlew :models:check            # модели Kotlin из контрактов компилируются, все образцы разбираются туда и обратно; входит в check
 cd generator && ./gradlew :models:publishToMavenLocal  # артефакт io.github.nakulov:design-system-kotlin в ~/.m2
 ```
 

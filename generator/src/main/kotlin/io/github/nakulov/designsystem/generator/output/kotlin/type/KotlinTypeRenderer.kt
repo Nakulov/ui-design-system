@@ -7,6 +7,7 @@ import io.github.nakulov.designsystem.generator.model.PropertyType
 import io.github.nakulov.designsystem.generator.model.TypeRef
 import io.github.nakulov.designsystem.generator.output.kotlin.file.KotlinFileBuilder
 import io.github.nakulov.designsystem.generator.output.kotlin.name.KotlinNames
+import io.github.nakulov.designsystem.generator.output.kotlin.name.KotlinSerialNames
 import io.github.nakulov.designsystem.generator.output.kotlin.name.KotlinTypeName
 
 private val list = KotlinTypeName(packageName = "kotlin.collections", names = listOf(element = "List"))
@@ -43,10 +44,18 @@ class KotlinTypeRenderer(
     }
 
     private fun contractType(id: ContractId, shadowed: Set<String>): String {
+        useSerializer(id)
         val name = file.ref(types.typeName(id), shadowed)
         val contract = types.contract(id) as? ObjectContract
-        val base = contract?.let { objectContract -> types.genericBase(objectContract) }
-        return if (base == null) name else "$name<out ${file.ref(types.typeName(base), shadowed)}>"
+        val base = contract?.let { objectContract -> types.genericBase(objectContract) } ?: return name
+        useSerializer(base)
+        return "$name<out ${file.ref(types.typeName(base), shadowed)}>"
+    }
+
+    /** Запись `oneOf`, перечисления и базовой модели — своим сериализатором во всём файле (раздел 4.5). */
+    private fun useSerializer(id: ContractId) {
+        val contract = types.contract(id)
+        if (contract !is ObjectContract) file.useSerializer(KotlinSerialNames.serializer(id))
     }
 
     private fun primitive(type: PrimitiveType): KotlinTypeName {

@@ -1,0 +1,124 @@
+{
+  "Container": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "m"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "arrangement": {
+      "horizontal": {
+        "alignment": "center",
+        "distribution": "spaceBetween"
+      }
+    },
+    "children": [
+      {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "m"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Осенняя распродажа"
+          },
+          "typography": "bodyMedium",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "start"
+        }
+      },
+      {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "m"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Осенняя распродажа"
+          },
+          "typography": "bodyMedium",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "start"
+        }
+      },
+      {
+        "Text": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "m"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "content": {
+            "plain": "Осенняя распродажа"
+          },
+          "typography": "bodyMedium",
+          "color": {
+            "solid": "onSurface"
+          },
+          "alignment": "start",
+          "events": [
+            {
+              "click": {
+                "payload": {
+                  "action": "a"
+                }
+              }
+            },
+            {
+              "click": {
+                "payload": {
+                  "action": "b"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

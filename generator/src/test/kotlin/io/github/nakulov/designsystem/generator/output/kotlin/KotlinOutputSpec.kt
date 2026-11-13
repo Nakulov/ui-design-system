@@ -17,6 +17,7 @@ class KotlinOutputSpec :
             case(arg1 = makeNamesFiles(), arg2 = "kotlinNames"),
             case(arg1 = makePrimitivesFiles(), arg2 = "primitives"),
             case(arg1 = makeEmptyFiles(), arg2 = "empty"),
+            case(arg1 = makeEmptyBaseFiles(), arg2 = "kotlinEmptyBase"),
         ) { expected, case ->
             shouldReturnTest(expected) { KotlinOutput.generate(ContractResolver.load(makeContractsRoot(case))) }
         }
