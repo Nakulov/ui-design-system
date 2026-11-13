@@ -162,3 +162,5 @@ figma-plugin/dist/
 # Генератор: служебные каталоги Gradle и Kotlin (сборка — в build/ выше)
 generator/.gradle/
 generator/.kotlin/
+# Дампы памяти JVM при нехватке памяти (OutOfMemoryError) — сотни МБ, не для git
+*.hprof
