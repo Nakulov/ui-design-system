@@ -2,7 +2,7 @@ name: validate
 
 on:
   pull_request:
-    branches: [dev]
+    branches: [dev, 'feature/**']
   push:
     branches: [dev]
 
@@ -15,10 +15,11 @@ jobs:
           fetch-depth: 0
       - name: Зависимости
         run: python3 -m pip install -r tools/requirements.txt
+      # Версии спецификаций в PR — относительно dev и для PR в long-term ветку: версия поднимается один раз на задачу.
       - name: Контракты, значения, версии спецификаций
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            python3 tools/validate.py --base "origin/${{ github.base_ref }}"
+            python3 tools/validate.py --base origin/dev
           else
             python3 tools/validate.py
           fi
