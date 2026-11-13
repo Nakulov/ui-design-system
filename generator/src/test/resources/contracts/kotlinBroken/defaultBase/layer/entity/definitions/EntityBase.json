@@ -1,0 +1,6 @@
+{
+  "name": "EntityBase",
+  "type": "base",
+  "description": "Базовая модель",
+  "properties": []
+}

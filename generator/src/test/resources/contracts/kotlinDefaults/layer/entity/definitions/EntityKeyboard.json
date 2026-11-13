@@ -1,0 +1,21 @@
+{
+  "name": "EntityKeyboard",
+  "type": "object",
+  "description": "Объект EntityKeyboard",
+  "properties": [
+    {
+      "name": "type",
+      "default": "auto",
+      "$ref": "EntityMode",
+      "required": true,
+      "description": "Свойство type"
+    },
+    {
+      "name": "in",
+      "type": "boolean",
+      "default": false,
+      "required": true,
+      "description": "Свойство in"
+    }
+  ]
+}

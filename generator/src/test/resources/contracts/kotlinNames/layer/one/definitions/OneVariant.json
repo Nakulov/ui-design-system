@@ -1,0 +1,15 @@
+{
+  "name": "OneVariant",
+  "type": "oneOf",
+  "description": "Варианты OneVariant",
+  "oneOf": [
+    {
+      "$ref": "OneIcon",
+      "name": "icon"
+    },
+    {
+      "name": "string",
+      "type": "string"
+    }
+  ]
+}

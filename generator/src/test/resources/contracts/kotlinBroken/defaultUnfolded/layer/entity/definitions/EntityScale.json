@@ -1,0 +1,11 @@
+{
+  "name": "EntityScale",
+  "type": "enum",
+  "description": "Шкала",
+  "values": [
+    {
+      "name": "zero",
+      "description": "Ноль"
+    }
+  ]
+}

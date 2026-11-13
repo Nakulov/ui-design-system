@@ -1,0 +1,19 @@
+{
+  "name": "AppearanceControl",
+  "type": "object",
+  "description": "Объект AppearanceControl",
+  "properties": [
+    {
+      "name": "default",
+      "$ref": "AppearancePlain",
+      "required": true,
+      "description": "Свойство default"
+    },
+    {
+      "name": "pressed",
+      "$ref": "AppearancePlain",
+      "required": true,
+      "description": "Свойство pressed"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Component",
+  "type": "base",
+  "description": "Базовая модель",
+  "properties": [
+    {
+      "name": "id",
+      "type": "string",
+      "required": false,
+      "description": "Свойство id"
+    },
+    {
+      "name": "appearance",
+      "$ref": "core/appearance/Appearance",
+      "required": true,
+      "description": "Свойство appearance"
+    },
+    {
+      "name": "events",
+      "type": "array",
+      "items": {
+        "$ref": "core/event/Event"
+      },
+      "uniqueVariants": true,
+      "required": false,
+      "description": "Свойство events"
+    }
+  ]
+}

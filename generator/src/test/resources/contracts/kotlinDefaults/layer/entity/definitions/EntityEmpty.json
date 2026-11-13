@@ -1,0 +1,6 @@
+{
+  "name": "EntityEmpty",
+  "type": "object",
+  "description": "Объект EntityEmpty",
+  "properties": []
+}

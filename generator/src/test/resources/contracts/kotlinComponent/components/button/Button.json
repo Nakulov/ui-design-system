@@ -1,0 +1,38 @@
+{
+  "name": "Button",
+  "type": "object",
+  "description": "Объект Button",
+  "extends": "core/component/Component",
+  "appearanceContext": [
+    "control"
+  ],
+  "properties": [
+    {
+      "name": "label",
+      "type": "string",
+      "required": true,
+      "description": "Свойство label"
+    },
+    {
+      "name": "click",
+      "$ref": "core/event/EventData",
+      "required": false,
+      "description": "Свойство click"
+    },
+    {
+      "name": "states",
+      "$ref": "ButtonStates",
+      "required": true,
+      "description": "Свойство states"
+    },
+    {
+      "name": "children",
+      "type": "array",
+      "items": {
+        "$ref": "core/component/Component"
+      },
+      "required": false,
+      "description": "Свойство children"
+    }
+  ]
+}

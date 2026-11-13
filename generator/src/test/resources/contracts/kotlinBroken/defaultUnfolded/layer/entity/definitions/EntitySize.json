@@ -1,0 +1,11 @@
+{
+  "name": "EntitySize",
+  "type": "oneOf",
+  "description": "Варианты",
+  "oneOf": [
+    {
+      "$ref": "EntityScale",
+      "inline": true
+    }
+  ]
+}

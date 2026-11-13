@@ -1,0 +1,13 @@
+{
+  "name": "Two",
+  "type": "object",
+  "description": "Объект Two",
+  "properties": [
+    {
+      "name": "icon",
+      "$ref": "layer/icon/Icon",
+      "required": true,
+      "description": "Свойство icon"
+    }
+  ]
+}

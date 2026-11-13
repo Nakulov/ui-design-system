@@ -318,7 +318,7 @@ object ContractResolver {
                 Variant(
                     name = value.name,
                     description = value.description,
-                    data = VariantData.None,
+                    data = VariantData.Unfolded(target),
                     sample = null,
                     releaseVersions = value.releaseVersions,
                 )

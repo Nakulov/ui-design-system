@@ -1,0 +1,19 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "tags",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "a"
+      ],
+      "required": true,
+      "description": "Свойство tags"
+    }
+  ]
+}

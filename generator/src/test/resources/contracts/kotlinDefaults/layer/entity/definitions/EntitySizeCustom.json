@@ -1,0 +1,13 @@
+{
+  "name": "EntitySizeCustom",
+  "type": "object",
+  "description": "Объект EntitySizeCustom",
+  "properties": [
+    {
+      "name": "value",
+      "type": "integer",
+      "required": true,
+      "description": "Свойство value"
+    }
+  ]
+}

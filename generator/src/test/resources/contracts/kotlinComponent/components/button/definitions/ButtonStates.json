@@ -1,0 +1,26 @@
+{
+  "name": "ButtonStates",
+  "type": "object",
+  "description": "Объект ButtonStates",
+  "properties": [
+    {
+      "name": "default",
+      "$ref": "core/component/Component",
+      "required": true,
+      "description": "Свойство default"
+    },
+    {
+      "name": "pressed",
+      "defaultsTo": "default",
+      "$ref": "core/component/Component",
+      "required": true,
+      "description": "Свойство pressed"
+    },
+    {
+      "name": "disabled",
+      "$ref": "core/component/Component",
+      "required": true,
+      "description": "Свойство disabled"
+    }
+  ]
+}

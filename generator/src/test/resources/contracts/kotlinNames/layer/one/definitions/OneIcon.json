@@ -1,0 +1,13 @@
+{
+  "name": "OneIcon",
+  "type": "object",
+  "description": "Объект OneIcon",
+  "properties": [
+    {
+      "name": "name",
+      "$ref": "layer/icon/Icon",
+      "required": true,
+      "description": "Свойство name"
+    }
+  ]
+}

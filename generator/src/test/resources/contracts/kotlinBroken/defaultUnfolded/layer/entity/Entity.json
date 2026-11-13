@@ -1,0 +1,16 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "size",
+      "default": {
+        "zero": {}
+      },
+      "$ref": "EntitySize",
+      "required": true,
+      "description": "Свойство size"
+    }
+  ]
+}
