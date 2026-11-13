@@ -1,0 +1,13 @@
+{
+  "name": "EventData",
+  "type": "object",
+  "description": "Объект EventData",
+  "properties": [
+    {
+      "name": "payload",
+      "type": "payload",
+      "required": true,
+      "description": "Свойство payload"
+    }
+  ]
+}

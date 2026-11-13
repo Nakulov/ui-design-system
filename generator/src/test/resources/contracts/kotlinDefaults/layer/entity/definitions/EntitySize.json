@@ -1,0 +1,19 @@
+{
+  "name": "EntitySize",
+  "type": "oneOf",
+  "description": "Варианты EntitySize",
+  "oneOf": [
+    {
+      "$ref": "EntitySizeScale",
+      "inline": true
+    },
+    {
+      "$ref": "EntitySizeCustom",
+      "name": "custom"
+    },
+    {
+      "name": "fixed",
+      "type": "integer"
+    }
+  ]
+}

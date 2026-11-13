@@ -1,0 +1,15 @@
+{
+  "name": "Event",
+  "type": "oneOf",
+  "description": "Варианты Event",
+  "oneOf": [
+    {
+      "$ref": "EventData",
+      "name": "click"
+    },
+    {
+      "$ref": "EventData",
+      "name": "focus"
+    }
+  ]
+}

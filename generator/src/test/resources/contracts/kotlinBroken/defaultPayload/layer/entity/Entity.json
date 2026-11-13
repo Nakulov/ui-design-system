@@ -1,0 +1,14 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "data",
+      "type": "payload",
+      "default": "x",
+      "required": true,
+      "description": "Свойство data"
+    }
+  ]
+}

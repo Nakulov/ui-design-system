@@ -1,0 +1,15 @@
+{
+  "name": "Pin",
+  "type": "oneOf",
+  "description": "Варианты Pin",
+  "oneOf": [
+    {
+      "$ref": "PinOffset",
+      "name": "start"
+    },
+    {
+      "$ref": "PinOffset",
+      "name": "end"
+    }
+  ]
+}

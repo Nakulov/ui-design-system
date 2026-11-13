@@ -1,0 +1,15 @@
+{
+  "name": "Appearance",
+  "type": "oneOf",
+  "description": "Варианты Appearance",
+  "oneOf": [
+    {
+      "$ref": "AppearancePlain",
+      "name": "plain"
+    },
+    {
+      "$ref": "AppearanceControl",
+      "name": "control"
+    }
+  ]
+}

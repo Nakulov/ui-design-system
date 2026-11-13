@@ -1,8 +1,13 @@
 package io.github.nakulov.designsystem.generator.model
 
 sealed interface VariantData {
-    /** Вариант из развёрнутого перечисления: данных нет, запись — строка с именем. */
-    data object None : VariantData
+    /**
+     * Вариант из значения перечисления [contract], развёрнутого `inline` (раздел 7, правило 1): данных нет, запись —
+     * строка с именем.
+     */
+    data class Unfolded(
+        val contract: ContractId,
+    ) : VariantData
 
     /** Данные — свойства объекта [contract] (раздел 7, правило 4). */
     data class Fields(

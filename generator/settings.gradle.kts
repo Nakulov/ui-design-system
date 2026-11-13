@@ -28,3 +28,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "generator"
 include(":detekt-rules")
+include(":models")

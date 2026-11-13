@@ -1,0 +1,14 @@
+{
+  "name": "AppearancePlain",
+  "type": "object",
+  "description": "Объект AppearancePlain",
+  "properties": [
+    {
+      "name": "clip",
+      "type": "boolean",
+      "default": false,
+      "required": true,
+      "description": "Свойство clip"
+    }
+  ]
+}

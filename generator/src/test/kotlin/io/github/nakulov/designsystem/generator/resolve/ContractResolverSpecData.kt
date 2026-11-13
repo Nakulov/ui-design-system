@@ -241,7 +241,7 @@ private fun makeScaleVariant(name: String, description: String): Variant {
     return Variant(
         name = name,
         description = description,
-        data = VariantData.None,
+        data = VariantData.Unfolded(ContractId(value = "foundation/borderWidth/BorderWidthScale")),
         sample = null,
         releaseVersions = null,
     )

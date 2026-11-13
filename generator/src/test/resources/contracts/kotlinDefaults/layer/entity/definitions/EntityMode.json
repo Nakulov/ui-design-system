@@ -1,0 +1,15 @@
+{
+  "name": "EntityMode",
+  "type": "enum",
+  "description": "Перечисление EntityMode",
+  "values": [
+    {
+      "name": "auto",
+      "description": "Значение auto"
+    },
+    {
+      "name": "email",
+      "description": "Значение email"
+    }
+  ]
+}

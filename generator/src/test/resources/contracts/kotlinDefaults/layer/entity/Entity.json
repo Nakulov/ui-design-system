@@ -1,0 +1,121 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект Entity",
+  "properties": [
+    {
+      "name": "text",
+      "type": "string",
+      "default": "say \"hi\" $x\\",
+      "required": true,
+      "description": "Свойство text"
+    },
+    {
+      "name": "copy",
+      "type": "string",
+      "defaultsTo": "text",
+      "required": true,
+      "description": "Свойство copy"
+    },
+    {
+      "name": "flag",
+      "type": "boolean",
+      "default": true,
+      "required": true,
+      "description": "Свойство flag"
+    },
+    {
+      "name": "count",
+      "type": "integer",
+      "default": 2,
+      "required": true,
+      "description": "Свойство count"
+    },
+    {
+      "name": "ratio",
+      "type": "float",
+      "default": 1.5,
+      "required": true,
+      "description": "Свойство ratio"
+    },
+    {
+      "name": "whole",
+      "type": "float",
+      "default": 0,
+      "required": true,
+      "description": "Свойство whole"
+    },
+    {
+      "name": "tint",
+      "type": "color",
+      "default": "#C9A227",
+      "required": true,
+      "description": "Свойство tint"
+    },
+    {
+      "name": "shade",
+      "type": "color",
+      "default": "#1E2B4414",
+      "required": true,
+      "description": "Свойство shade"
+    },
+    {
+      "name": "mode",
+      "default": "auto",
+      "$ref": "EntityMode",
+      "required": true,
+      "description": "Свойство mode"
+    },
+    {
+      "name": "size",
+      "default": "zero",
+      "$ref": "EntitySize",
+      "required": true,
+      "description": "Свойство size"
+    },
+    {
+      "name": "custom",
+      "default": {
+        "custom": {
+          "value": 6
+        }
+      },
+      "$ref": "EntitySize",
+      "required": true,
+      "description": "Свойство custom"
+    },
+    {
+      "name": "fixed",
+      "default": {
+        "fixed": 4
+      },
+      "$ref": "EntitySize",
+      "required": true,
+      "description": "Свойство fixed"
+    },
+    {
+      "name": "keyboard",
+      "default": {},
+      "$ref": "EntityKeyboard",
+      "required": true,
+      "description": "Свойство keyboard"
+    },
+    {
+      "name": "email",
+      "default": {
+        "type": "email",
+        "in": true
+      },
+      "$ref": "EntityKeyboard",
+      "required": true,
+      "description": "Свойство email"
+    },
+    {
+      "name": "nothing",
+      "default": {},
+      "$ref": "EntityEmpty",
+      "required": true,
+      "description": "Свойство nothing"
+    }
+  ]
+}

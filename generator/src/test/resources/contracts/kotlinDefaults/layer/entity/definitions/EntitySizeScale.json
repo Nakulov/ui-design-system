@@ -1,0 +1,15 @@
+{
+  "name": "EntitySizeScale",
+  "type": "enum",
+  "description": "Перечисление EntitySizeScale",
+  "values": [
+    {
+      "name": "zero",
+      "description": "Значение zero"
+    },
+    {
+      "name": "xs2",
+      "description": "Значение xs2"
+    }
+  ]
+}

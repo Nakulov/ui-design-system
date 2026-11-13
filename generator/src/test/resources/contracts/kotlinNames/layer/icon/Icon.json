@@ -1,0 +1,11 @@
+{
+  "name": "Icon",
+  "type": "enum",
+  "description": "Перечисление Icon",
+  "values": [
+    {
+      "name": "close",
+      "description": "Значение close"
+    }
+  ]
+}

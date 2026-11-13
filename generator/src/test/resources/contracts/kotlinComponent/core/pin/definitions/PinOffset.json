@@ -1,0 +1,13 @@
+{
+  "name": "PinOffset",
+  "type": "object",
+  "description": "Объект PinOffset",
+  "properties": [
+    {
+      "name": "offset",
+      "type": "integer",
+      "required": true,
+      "description": "Свойство offset"
+    }
+  ]
+}

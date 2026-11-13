@@ -1,0 +1,14 @@
+{
+  "name": "Entity",
+  "type": "object",
+  "description": "Объект",
+  "properties": [
+    {
+      "name": "child",
+      "default": {},
+      "$ref": "EntityBase",
+      "required": true,
+      "description": "Свойство child"
+    }
+  ]
+}

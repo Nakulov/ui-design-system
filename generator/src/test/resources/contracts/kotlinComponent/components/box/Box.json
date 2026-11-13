@@ -1,0 +1,18 @@
+{
+  "name": "Box",
+  "type": "object",
+  "description": "Объект Box",
+  "extends": "core/component/Component",
+  "appearanceContext": [
+    "plain",
+    "control"
+  ],
+  "properties": [
+    {
+      "name": "content",
+      "$ref": "core/component/Component",
+      "required": true,
+      "description": "Свойство content"
+    }
+  ]
+}
