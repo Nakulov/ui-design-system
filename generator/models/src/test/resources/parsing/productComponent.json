@@ -1,0 +1,47 @@
+{
+  "Container": {
+    "layout": {
+      "width": {
+        "sizing": "hug"
+      },
+      "height": {
+        "sizing": "hug"
+      },
+      "position": "flow"
+    },
+    "padding": {
+      "all": "m"
+    },
+    "appearance": {
+      "plain": {}
+    },
+    "arrangement": {
+      "horizontal": {
+        "alignment": "center",
+        "distribution": "spaceBetween"
+      }
+    },
+    "children": [
+      {
+        "OrderStatus": {
+          "layout": {
+            "width": {
+              "sizing": "hug"
+            },
+            "height": {
+              "sizing": "hug"
+            },
+            "position": "flow"
+          },
+          "padding": {
+            "all": "m"
+          },
+          "appearance": {
+            "plain": {}
+          },
+          "status": "Доставлен"
+        }
+      }
+    ]
+  }
+}
