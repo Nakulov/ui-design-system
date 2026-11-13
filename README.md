@@ -54,3 +54,4 @@ python3 tools/validate_model.py model.json
 
 Для работы с ассистентом в `.claude/skills/` есть скиллы: `contract-authoring` (проектирование контрактов), `groom`
 («давай погрумим …») и `take` («берём в работу #N»).
+
